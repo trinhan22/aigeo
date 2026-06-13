@@ -80,21 +80,21 @@
                 <p class="mt-2 text-slate-600">Thêm, xóa và quản lý các khóa API cho các dịch vụ bên ngoài.</p>
                 
                 <div class="mt-8 bg-white rounded-xl shadow-lg p-8">
-                    <h2 class="text-xl font-bold text-slate-800 mb-2">OpenRouter API Keys (DeepSeek V3.1)</h2>
+                    <h2 class="text-xl font-bold text-slate-800 mb-2">Groq API Keys (Llama 3.3 70B)</h2>
                     <p class="text-sm text-slate-500 mb-6">
                         Key này dùng cho **TẤT CẢ** các tính năng AI của hệ thống: 
                         **Chatbot AI**, **Nhận xét kết quả bài làm**, và **Trích xuất câu hỏi từ File**. 
-                        Hệ thống sẽ luân phiên sử dụng các key để đảm bảo tính sẵn sàng.
+                        Hệ thống sẽ luân phiên sử dụng các key này để tối ưu hạn mức (rate limit) của Groq.
                     </p>
-                    <div id="openrouter-keys-container" class="space-y-4">
-                        <div id="openrouter-loader" class="space-y-4">
+                    <div id="groq-keys-container" class="space-y-4">
+                        <div id="groq-loader" class="space-y-4">
                             <div class="skeleton h-10 w-full"></div>
                             <div class="skeleton h-10 w-full"></div>
                         </div>
                     </div>
-                     <div class="mt-4">
-                        <button id="add-openrouter-key-btn" class="bg-slate-100 text-slate-700 font-semibold px-4 py-2 rounded-lg hover:bg-slate-200 flex items-center transition-colors text-sm">
-                            <i data-feather="plus" class="w-4 h-4 mr-2"></i>Thêm Key OpenRouter
+                    <div class="mt-4">
+                        <button id="add-groq-key-btn" class="bg-slate-100 text-slate-700 font-semibold px-4 py-2 rounded-lg hover:bg-slate-200 flex items-center transition-colors text-sm">
+                            <i data-feather="plus" class="w-4 h-4 mr-2"></i>Thêm Key Groq
                         </button>
                     </div>
                 </div>
@@ -142,16 +142,16 @@
             const toastContainer = document.getElementById('toast-container');
             // Cập nhật containers và addBtns
             const containers = {
-                openrouter: document.getElementById('openrouter-keys-container'),
+                groq: document.getElementById('groq-keys-container'), // Đổi từ openrouter
                 imgbb: document.getElementById('imgbb-keys-container')
             };
             const addBtns = {
-                openrouter: document.getElementById('add-openrouter-key-btn'),
+                groq: document.getElementById('add-groq-key-btn'), // Đổi từ add-openrouter-key-btn
                 imgbb: document.getElementById('add-imgbb-key-btn')
             };
             const saveKeysBtn = document.getElementById('save-keys-btn');
             const apiKeyDocRef = doc(db, "system_settings", "api_keys");
-            const openrouterLoader = document.getElementById('openrouter-loader');
+            const groqLoader = document.getElementById('groq-loader'); // Đổi tên biến
             const imgbbLoader = document.getElementById('imgbb-loader');
 
 
@@ -186,19 +186,17 @@
                 try {
                     const docSnap = await getDoc(apiKeyDocRef);
                     
-                    // Xóa skeleton loaders
-                    if (openrouterLoader) openrouterLoader.remove();
+                    if (groqLoader) groqLoader.remove(); // Đổi tên
                     if (imgbbLoader) imgbbLoader.remove();
 
                     Object.values(containers).forEach(c => c.innerHTML = '');
-                    
                     const data = docSnap.exists() ? docSnap.data() : {};
                     
-                    // Render keys, thêm một key trống nếu chưa có key nào
-                    if ((data.openrouter_keys || []).length > 0) {
-                        (data.openrouter_keys || []).forEach(key => renderKeyInput(key, 'openrouter'));
+                    // Render Groq keys thay vì OpenRouter
+                    if ((data.groq_keys || []).length > 0) {
+                        (data.groq_keys || []).forEach(key => renderKeyInput(key, 'groq'));
                     } else {
-                         renderKeyInput('', 'openrouter');
+                        renderKeyInput('', 'groq');
                     }
 
                     if ((data.imgbb_keys || []).length > 0) {
@@ -289,9 +287,8 @@
             });
 
             saveKeysBtn.addEventListener('click', async () => {
-                // Thu thập keys từ tất cả các containers
                 const keysToSave = {
-                    openrouter_keys: Array.from(containers.openrouter.querySelectorAll('input')).map(i => i.value.trim()).filter(Boolean),
+                    groq_keys: Array.from(containers.groq.querySelectorAll('input')).map(i => i.value.trim()).filter(Boolean), // Đổi tên trường
                     imgbb_keys: Array.from(containers.imgbb.querySelectorAll('input')).map(i => i.value.trim()).filter(Boolean)
                 };
                 
@@ -308,7 +305,7 @@
                 try {
                     await setDoc(apiKeyDocRef, keysToSave);
                     showToast('Lưu API keys thành công!', 'success');
-                } catch (error) {
+                }  catch (error) {
                     console.error("Error saving API keys:", error);
                     showToast('Lỗi khi lưu API keys.', 'error');
                 } finally {

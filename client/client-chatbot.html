@@ -197,7 +197,7 @@
             const limitOverlay = document.getElementById('limit-overlay');
             
             let session = JSON.parse(localStorage.getItem('aigeo_client_session')) || { chatCount: 0 };
-            let openRouterKeys = [];
+            let groqKeys = [];
             let chatHistory = [];
 
             feather.replace();
@@ -217,14 +217,17 @@
 
             async function loadApiKeys() {
                 const apiKeySnap = await getDoc(doc(db, "system_settings", "api_keys"));
-                if (apiKeySnap.exists()) openRouterKeys = apiKeySnap.data().openrouter_keys || [];
+                if (apiKeySnap.exists()) {
+                    groqKeys = apiKeySnap.data().groq_keys || []; // Lấy mảng groq_keys
+                }
             }
 
+            // Cập nhật hàm lấy Key luân phiên từ mảng groqKeys
             function getNextApiKey() {
-                if (openRouterKeys.length === 0) return null;
+                if (groqKeys.length === 0) return null;
                 let idx = parseInt(sessionStorage.getItem('orKeyIndex') || '0');
-                sessionStorage.setItem('orKeyIndex', (idx + 1) % openRouterKeys.length);
-                return openRouterKeys[idx];
+                sessionStorage.setItem('orKeyIndex', (idx + 1) % groqKeys.length);
+                return groqKeys[idx];
             }
 
             function addMessage(text, role) {
@@ -261,20 +264,32 @@
 
                 try {
                     const apiKey = getNextApiKey();
-                    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                    if (!apiKey) throw new Error("Chưa có API Key");
+
+                    // THAY ĐỔI: Endpoint của Groq
+                    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                         method: "POST",
                         headers: {
                             "Authorization": `Bearer ${apiKey}`,
                             "Content-Type": "application/json"
                         },
                         body: JSON.stringify({
-                            model: "mistralai/mistral-7b-instruct",
+                            // THAY ĐỔI: Tên Model Llama 3.3 70B
+                            model: "llama-3.3-70b-versatile",
                             messages: [
-                                { role: "system", content: "Bạn là chuyên gia Địa lý của AIGEO. Trả lời chuyên sâu nhưng dễ hiểu, sử dụng tiếng Việt và trình bày đẹp bằng Markdown." },
+                                { 
+                                    role: "system", 
+                                    content: "Bạn là chuyên gia Địa lý của AIGEO. Trả lời chuyên sâu nhưng dễ hiểu, sử dụng tiếng Việt và trình bày đẹp bằng Markdown." 
+                                },
                                 ...chatHistory
-                            ]
+                            ],
+                            // Cấu hình tối ưu cho Groq
+                            temperature: 0.7,
+                            max_tokens: 2048
                         })
                     });
+
+                    if (!response.ok) throw new Error("API Error");
 
                     const data = await response.json();
                     const aiText = data.choices[0].message.content;
@@ -287,7 +302,8 @@
                     updateChatLimit();
 
                 } catch (e) {
-                    addMessage("Xin lỗi, hệ thống đang bận. Bạn hãy thử lại sau nhé!", "assistant");
+                    console.error(e);
+                    addMessage("Rất tiếc, trợ lý đang bận xử lý dữ liệu. Bạn hãy thử lại sau nhé!", "assistant");
                 } finally {
                     typingIndicator.classList.add('hidden');
                     chatInput.disabled = false;
