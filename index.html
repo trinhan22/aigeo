@@ -152,6 +152,21 @@
             transform: translateX(3px); /* Hiệu ứng mũi tên bay về phía trước */
         }
         
+
+        /* Hiệu ứng lưới hạt mịn cho Card CTA */
+
+        .btn-white-glow {
+            background: white;
+            color: #0D9488;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .btn-white-glow:hover {
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+            transform: translateY(-3px) scale(1.02);
+        }
+
         /* --- GLOBAL SCROLLBAR STYLE --- */
 
         /* 1. Thiết lập độ rộng/cao của thanh trượt */
@@ -251,7 +266,7 @@
 
             <div class="hero-image relative">
                 <div class="main-card">
-                    <img src="https://images.unsplash.com/photo-1521295121783-8a321d551ad2?auto=format&fit=crop&w=800&q=80" alt="Geography Learning">
+                    <img src="https://scontent.fsgn5-2.fna.fbcdn.net/v/t39.30808-6/518388894_122097566198955209_97094124198416558_n.jpg?stp=dst-jpg_tt6&cstp=mx2048x2048&ctp=s2048x2048&_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=cUy8ZMr_UvAQ7kNvwFhZTtQ&_nc_oc=AdrUd1SjcSGmGbR1V6rApbGkk6vvM2GWD9qDIMQTd0z49gl6ZdcXmWP7e4ryjJmuwDb-J0rK2tfDnhcoIQ9oTSMD&_nc_zt=23&_nc_ht=scontent.fsgn5-2.fna&_nc_gid=ZnJep8KgqmJ3r8C_1Xrz2w&_nc_ss=7b2a8&oh=00_Af8JxVe4MBLTJkHWl5dO_ItgA_sxvShCLdQfF-7ukCYWIw&oe=6A32AFDD" alt="Geography Learning">
                 </div>
                 <!-- Badges -->
                 <div class="floating-badge badge-1 glass shadow-xl">
@@ -445,13 +460,39 @@
     <!-- CTA Card -->
     <div class="container mx-auto px-6 mb-24">
         <div class="bg-slate-900 rounded-[40px] p-12 md:p-20 text-center text-white relative overflow-hidden">
-            <div class="relative z-10">
-                <h2 class="text-3xl md:text-5xl font-extrabold mb-6">Sẵn sàng cho cuộc phiêu lưu tri thức?</h2>
-                <p class="text-slate-400 mb-10 max-w-2xl mx-auto">Tham gia cùng hàng trăm học viên khác và bắt đầu nâng cao điểm số của bạn ngay.</p>
-                <a href="auth.html" class="btn-primary py-4 px-10 rounded-full text-lg shadow-2xl shadow-teal-500/20">Bắt đầu miễn phí <i class="fas fa-arrow-right ml-2"></i></a>
+            
+            <!-- Các khối decor phát sáng chìm -->
+            <div class="absolute -top-24 -right-24 h-80 w-80 rounded-full bg-teal-500/20 blur-[120px]"></div>
+            <div class="absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-emerald-500/20 blur-[120px]"></div>
+
+            <div class="relative z-10 mx-auto max-w-3xl">
+                <!-- Huy hiệu nhỏ phía trên -->
+                <div class="mb-8 inline-flex items-center gap-3 rounded-full bg-white/10 px-4 py-2 backdrop-blur-md border border-white/10">
+                    <span class="relative flex h-2 w-2">
+                        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-teal-400 opacity-75"></span>
+                        <span class="relative inline-flex h-2 w-2 rounded-full bg-teal-500"></span>
+                    </span>
+                    <span class="text-[10px] font-black uppercase tracking-[0.3em] text-teal-200">Hành trình tri thức mới</span>
+                </div>
+
+                <h2 class="text-3xl md:text-5xl font-extrabold mb-6">
+                    Sẵn sàng bứt phá
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 via-emerald-200 to-teal-300 animate-gradient-x">điểm số?</span>
+                </h2>
+
+                <p class="text-slate-400 mb-10 max-w-2xl mx-auto">
+                    Tham gia cùng hàng trăm học viên khác và bắt đầu nâng cao điểm số của bạn ngay.
+                </p>
+
+                <div class="flex flex-col items-center justify-center gap-6 sm:flex-row">
+                    <a href="auth.html" class="btn-white-glow flex items-center gap-3 rounded-full px-10 py-4 text-lg font-black transition-all">
+                        Đăng ký tài khoản ngay
+                    </a>
+                </div>
             </div>
-            <div class="absolute top-0 right-0 w-64 h-64 bg-teal-500 blur-[120px] opacity-20"></div>
-            <div class="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500 blur-[120px] opacity-20"></div>
+            
+            <!-- Hình ảnh trang trí chìm (Optional: biểu tượng bản đồ hoặc robot) -->
+            <i data-feather="map" class="absolute -bottom-10 -right-10 w-48 h-48 text-white opacity-[0.03] rotate-12"></i>
         </div>
     </div>
 
