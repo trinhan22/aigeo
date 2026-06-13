@@ -285,7 +285,7 @@
             let editCurrentImageUrl = ''; // Image URL for Edit form
             let imgbbApiKeys = [];
             let currentImgbbKeyIndex = 0;
-            let openRouterKeys = []; // Cho AI
+            let groqKeys = [];  // Cho AI
             let extractedQuestions = []; // Lưu trữ kết quả từ AI
 
             // --- Reusable Form HTML Generator ---
@@ -455,7 +455,8 @@
                     if (apiKeysSnap.exists()) {
                         const keys = apiKeysSnap.data();
                         imgbbApiKeys = keys.imgbb_keys || [];
-                        openRouterKeys = keys.openrouter_keys || [];
+                        // THAY ĐỔI: Lấy trường groq_keys
+                        groqKeys = keys.groq_keys || []; 
                     }
 
                     setupFilters();
@@ -1194,48 +1195,64 @@
             }
 
             async function processTextWithAI(text) {
-                const apiKey = openRouterKeys[0]; // Simple selection
+                // Chọn một key ngẫu nhiên từ danh sách Groq Keys để chia tải
+                const apiKey = groqKeys[Math.floor(Math.random() * groqKeys.length)];
+                if (!apiKey) throw new Error("Chưa cấu hình API Key cho Groq.");
+
                 const prompt = `
-                    Bạn là một trợ lý AI chuyên soạn câu hỏi trắc nghiệm. 
+                    Bạn là một trợ lý AI chuyên gia soạn câu hỏi trắc nghiệm Địa lý. 
                     Hãy phân tích văn bản sau và trích xuất các câu hỏi dưới dạng JSON.
-                    Văn bản: "${text.substring(0, 15000)}" (Cắt ngắn nếu quá dài)
+                    Văn bản: "${text.substring(0, 15000)}"
                     
                     Yêu cầu Output JSON Array, mỗi object có cấu trúc:
                     {
                         "content": "Nội dung câu hỏi",
                         "type": "multiple_choice" | "true_false_group" | "short_answer",
                         "difficulty": "nhan_biet" | "thong_hieu" | "van_dung",
-                        "options": ["A", "B", "C", "D"], // Chỉ cho multiple_choice. Cần trích xuất nội dung đầy đủ, KHÔNG chỉ ghi 'A.'.
-                        "correctAnswer": "A", // Cho multiple_choice
-                        "statements": { "1": "Mệnh đề 1", "2": "Mệnh đề 2" ... }, // Cho true_false_group
-                        "answers": { "1": true, "2": false ... }, // Cho true_false_group
-                        "correctAnswer": "Đáp án text", // Cho short_answer
-                        "explanation": "Giải thích ngắn gọn"
+                        "options": ["Nội dung A", "Nội dung B", "Nội dung C", "Nội dung D"], 
+                        "correctAnswer": "A", 
+                        "statements": { "1": "Mệnh đề 1", "2": "Mệnh đề 2" },
+                        "answers": { "1": true, "2": false },
+                        "explanation": "Giải thích tại sao đáp án đó đúng"
                     }
-                    Chỉ trả về JSON thuần, không markdown. Nếu trắc nghiệm không tìm thấy đáp án, hãy để mặc định 'A'.
+                    Trả về JSON thuần túy, không bao gồm các ký tự markdown như \`\`\`json.
                 `;
 
-                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                // THAY ĐỔI: Endpoint và Cấu trúc gọi Groq API
+                const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                     method: "POST",
                     headers: {
                         "Authorization": `Bearer ${apiKey}`,
-                        "Content-Type": "application/json",
-                        "HTTP-Referer": window.location.href,
-                        "X-Title": "AIGEO Admin Import"
+                        "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        model: "openai/gpt-oss-20b:free", 
-                        messages: [{ role: "user", content: prompt }]
+                        model: "llama-3.3-70b-versatile", // Sử dụng Model mới nhất
+                        messages: [
+                            { role: "system", content: "Bạn là một máy trích xuất dữ liệu JSON chính xác. Chỉ trả về mảng JSON, không giải thích gì thêm." },
+                            { role: "user", content: prompt }
+                        ],
+                        temperature: 0.2, // Giữ độ chính xác cao cho dữ liệu cấu trúc
+                        max_tokens: 4096
                     })
                 });
 
-                if (!response.ok) throw new Error("Lỗi kết nối AI Service");
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.error?.message || "Lỗi kết nối Groq AI");
+                }
+
                 const data = await response.json();
                 let content = data.choices[0].message.content;
                 
-                // Cleanup JSON string if needed
+                // Làm sạch chuỗi JSON nếu AI vô tình trả về markdown
                 content = content.replace(/```json|```/g, '').trim();
-                return JSON.parse(content);
+                
+                try {
+                    return JSON.parse(content);
+                } catch (e) {
+                    console.error("Dữ liệu AI trả về không phải JSON hợp lệ:", content);
+                    throw new Error("AI trả về định dạng không hợp lệ, vui lòng thử lại.");
+                }
             }
 
             function renderAiPreview(questions) {

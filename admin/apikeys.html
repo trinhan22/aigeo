@@ -209,8 +209,8 @@
                 } catch (error) { 
                     console.error("Error fetching API keys:", error);
                     showToast("Lỗi tải API keys.", "error");
-                    // Fallback nếu có lỗi và loaders vẫn còn
-                    if(openrouterLoader) openrouterLoader.innerHTML = '<p class="text-red-500 text-sm">Lỗi tải dữ liệu.</p>';
+                    // Sửa lại tên biến ở đây cho đúng với khai báo groqLoader mới của bạn
+                    if(groqLoader) groqLoader.innerHTML = '<p class="text-red-500 text-sm">Lỗi tải dữ liệu.</p>';
                     if(imgbbLoader) imgbbLoader.innerHTML = '<p class="text-red-500 text-sm">Lỗi tải dữ liệu.</p>';
                 }
             }
@@ -287,22 +287,27 @@
             });
 
             saveKeysBtn.addEventListener('click', async () => {
+                // 1. Thu thập dữ liệu từ các input (Dùng groq_keys)
                 const keysToSave = {
-                    groq_keys: Array.from(containers.groq.querySelectorAll('input')).map(i => i.value.trim()).filter(Boolean), // Đổi tên trường
+                    groq_keys: Array.from(containers.groq.querySelectorAll('input')).map(i => i.value.trim()).filter(Boolean),
                     imgbb_keys: Array.from(containers.imgbb.querySelectorAll('input')).map(i => i.value.trim()).filter(Boolean)
                 };
                 
-                // Lọc bỏ input trống cuối cùng trước khi lưu
+                // 2. Xóa các input trống trên giao diện trước khi lưu cho gọn
                 Object.keys(containers).forEach(type => {
-                     const inputs = containers[type].querySelectorAll('input');
-                     if (inputs.length > 0 && inputs[inputs.length - 1].value.trim() === '') {
-                        inputs[inputs.length - 1].closest('.key-item').remove();
+                    const inputs = containers[type].querySelectorAll('input');
+                    if (inputs.length > 1) { // Chỉ xóa nếu có nhiều hơn 1 ô
+                        inputs.forEach(input => {
+                            if(input.value.trim() === '') input.closest('.key-item').remove();
+                        });
                     }
                 });
 
                 saveKeysBtn.disabled = true;
                 saveKeysBtn.textContent = 'Đang lưu...';
+
                 try {
+                    // 3. Lưu vào Firestore
                     await setDoc(apiKeyDocRef, keysToSave);
                     showToast('Lưu API keys thành công!', 'success');
                 }  catch (error) {
@@ -311,9 +316,11 @@
                 } finally {
                     saveKeysBtn.disabled = false;
                     saveKeysBtn.textContent = 'Lưu tất cả thay đổi';
-                    // Đảm bảo có ít nhất một input trống sau khi lưu
-                    if (keysToSave.openrouter_keys.length === 0) renderKeyInput('', 'openrouter');
+
+                    // 4. FIX LỖI NÀY: Đảm bảo có ít nhất một input trống sau khi lưu (Dùng groq)
+                    if (keysToSave.groq_keys.length === 0) renderKeyInput('', 'groq');
                     if (keysToSave.imgbb_keys.length === 0) renderKeyInput('', 'imgbb');
+                    
                     feather.replace();
                 }
             });

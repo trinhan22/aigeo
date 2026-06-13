@@ -256,13 +256,14 @@
 
             // [LOGIC GIỮ NGUYÊN TỪ FILE CỦA BẠN]
             let currentUser = null, chatHistory = [];
-            let openRouterKeys = [], currentKeyIndex = 0;
+            let groqKeys = [];
+            let currentKeyIndex = 0;
             let userName = 'Học sinh', nameInitial = 'S';
             
             const getNextApiKey = () => {
-                if (openRouterKeys.length === 0) return null;
-                const key = openRouterKeys[currentKeyIndex];
-                currentKeyIndex = (currentKeyIndex + 1) % openRouterKeys.length;
+                if (groqKeys.length === 0) return null;
+                const key = groqKeys[currentKeyIndex];
+                currentKeyIndex = (currentKeyIndex + 1) % groqKeys.length;
                 sessionStorage.setItem('orKeyIndex', currentKeyIndex.toString());
                 return key;
             };
@@ -300,10 +301,10 @@
             });
             
             async function loadApiKeys() {
-                 const apiKeySnap = await getDoc(doc(db, "system_settings", "api_keys"));
-                if (apiKeySnap.exists() && apiKeySnap.data().openrouter_keys && apiKeySnap.data().openrouter_keys.length > 0) {
-                    openRouterKeys = apiKeySnap.data().openrouter_keys;
-                    currentKeyIndex = parseInt(sessionStorage.getItem('orKeyIndex') || '0', 10) % openRouterKeys.length;
+                const apiKeySnap = await getDoc(doc(db, "system_settings", "api_keys"));
+                if (apiKeySnap.exists() && apiKeySnap.data().groq_keys) {
+                    groqKeys = apiKeySnap.data().groq_keys;
+                    currentKeyIndex = parseInt(sessionStorage.getItem('orKeyIndex') || '0', 10) % groqKeys.length;
                 }
             }
 
@@ -387,7 +388,7 @@
                     chatInput.value = '';
                     chatMessages.scrollTop = chatMessages.scrollHeight;
 
-                    const aiResponse = await getOpenRouterResponse(newHistory); 
+                    const aiResponse = await getGroqResponse(newHistory);
                     
                     const finalHistory = [...newHistory, { role: 'assistant', content: aiResponse }];
                     addMessage(aiResponse, 'assistant');
@@ -402,82 +403,64 @@
                 }
             }
             
-            async function getOpenRouterResponse(history) {
+            async function getGroqResponse(history) {
                 const MAX_RETRIES = 3;
                 let lastError = null;
 
+                // Thiết lập Prompt hệ thống cho Học sinh
                 const messagesToSend = [
-                    // *** ĐÃ CẬP NHẬT PROMPT HỆ THỐNG ***
                     { 
                         role: "system", 
-                        content: "Bạn là một trợ lý AI chuyên gia về Địa lý cho AIGEO. Nhiệm vụ duy nhất của bạn là trả lời các câu hỏi liên quan đến Địa lý. Nếu học sinh hỏi về chủ đề khác (như toán, văn, lịch sử, hay các chủ đề chung), hãy từ chối một cách lịch sự. Ví dụ: 'Xin lỗi, tôi chỉ có thể hỗ trợ các câu hỏi liên quan đến Địa lý.' Luôn trả lời bằng tiếng Việt và sử dụng KaTeX cho công thức toán nếu cần." 
+                        content: "Bạn là một trợ lý AI chuyên gia về Địa lý cho AIGEO. Nhiệm vụ duy nhất của bạn là trả lời các câu hỏi liên quan đến Địa lý bằng tiếng Việt. Nếu học sinh hỏi về chủ đề khác, hãy từ chối lịch sự. Sử dụng Markdown và KaTeX để trình bày nội dung chuyên nghiệp." 
                     },
                     ...history 
                 ];
 
                 for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
                     const apiKey = getNextApiKey();
-                    if (!apiKey) {
-                        lastError = new Error("Chưa cấu hình OpenRouter API Key trên trang Admin.");
-                        break; 
-                    }
+                    if (!apiKey) break;
 
-                    const API_URL = "https://openrouter.ai/api/v1/chat/completions";
+                    // Endpoint chính thức của Groq
+                    const API_URL = "https://api.groq.com/openai/v1/chat/completions";
                     
                     try {
                         const response = await fetch(API_URL, {
                             method: 'POST',
                             headers: {
                                 'Authorization': `Bearer ${apiKey}`,
-                                'Content-Type': 'application/json',
-                                'HTTP-Referer': `https://${firebaseConfig.projectId}.web.app`,
-                                'X-Title': 'AIGEO Student Chat'
+                                'Content-Type': 'application/json'
                             },
                             body: JSON.stringify({
-                                model: "openai/gpt-oss-20b:free",
-                                messages: messagesToSend
+                                // Model Llama 3.3 70B cực mạnh của Groq
+                                model: "llama-3.3-70b-versatile",
+                                messages: messagesToSend,
+                                temperature: 0.6,
+                                max_tokens: 4096 // Tăng giới hạn phản hồi cho học sinh
                             })
                         });
 
                         if (response.ok) {
-                            // THÀNH CÔNG
                             const result = await response.json();
-                            const generatedText = result.choices[0]?.message?.content;
-                            if (!generatedText) throw new Error("Phản hồi từ AI không hợp lệ.");
-                            return generatedText.trim(); // Success, exit function
+                            return result.choices[0]?.message?.content.trim();
                         }
 
-                        // LỖI HTTP, kiểm tra status
-                        lastError = new Error(`Lỗi API: ${response.status} ${response.statusText}`);
+                        // Xử lý lỗi Rate Limit (429) hoặc Server (5xx)
+                        if (response.status === 429 || response.status >= 500) {
+                            if (attempt < MAX_RETRIES) {
+                                await new Promise(resolve => setTimeout(resolve, 2000)); // Đợi 2s thử lại key khác
+                                continue;
+                            }
+                        }
                         
-                        if (response.status === 400 || response.status === 403) {
-                            // Lỗi client (ví dụ: bad request), không thử lại
-                            try {
-                                const errorData = await response.json();
-                                lastError = new Error(errorData.error.message || `Lỗi ${response.status}`);
-                            } catch (e) { /* Bỏ qua nếu lỗi không phải JSON */ }
-                            break; // Thoát vòng lặp, sẽ báo lỗi
-                        }
+                        const errorData = await response.json();
+                        throw new Error(errorData.error?.message || "Lỗi API");
 
-                        // Lỗi server (5xx), Rate Limit (429), Timeout (408), và 401 (User not found) -> Thử lại
-                        if (attempt < MAX_RETRIES) {
-                            const delay = Math.pow(2, attempt) * 1000; // 2s, 4s
-                            console.warn(`Attempt ${attempt} failed with status ${response.status}. Retrying in ${delay / 1000}s...`);
-                            await new Promise(resolve => setTimeout(resolve, delay));
-                        }
-
-                    } catch (error) { // Lỗi mạng (fetch thất bại)
+                    } catch (error) {
                         lastError = error;
-                        console.error(`Attempt ${attempt} network error:`, error);
-                        if (attempt < MAX_RETRIES) {
-                            const delay = Math.pow(2, attempt) * 1000;
-                            await new Promise(resolve => setTimeout(resolve, delay));
-                        }
+                        if (attempt < MAX_RETRIES) await new Promise(res => setTimeout(res, 2000));
                     }
                 }
-                
-                // Nếu vòng lặp kết thúc mà không return, nghĩa là đã thất bại
-                throw lastError || new Error("AI không phản hồi sau nhiều lần thử.");
+                throw lastError || new Error("AI không phản hồi.");
             }
             
             async function handleClearChat() {
