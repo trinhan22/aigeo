@@ -4,114 +4,147 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tiến độ Học sinh - AIGEO</title>
+    <title>AIGEO - Tiến độ Học sinh</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/feather-icons"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Rendering Engines -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
     <style>
         :root {
-            --primary-teal: #0D9488;
-            --primary-emerald: #10B981;
+            --primary: #0D9488;
+            --primary-light: #F0FDFA;
+            --secondary: #10B981;
+            --text-main: #1E293B;
+            --text-light: #64748B;
+            --bg-body: #F8FAFC;
+            --primary-gradient: linear-gradient(135deg, #0D9488 0%, #10B981 100%);
         }
-        body { 
-            font-family: 'Be Vietnam Pro', sans-serif; 
-            background-color: #f1f5f9; 
-        }
-        .sidebar-link { display: flex; align-items: center; padding: 0.75rem 1rem; border-radius: 0.5rem; transition: background-color 0.2s, color 0.2s; }
-        .sidebar-link:hover { background-color: #e2e8f0; color: #0f172a; }
-        .sidebar-link.active { 
-            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
-            color: white; 
-            font-weight: 600; 
-            box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2);
-        }
-        .sidebar-link.active:hover { background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald)); }
-        .sidebar-link.active svg { color: white; }
-        .sidebar-link svg { margin-right: 0.75rem; }
-        .brand-gradient-text {
-            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .skeleton { background-color: #e2e8f0; border-radius: 0.5rem; animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body); color: var(--text-main); overflow: hidden; }
+
+        /* --- SIDEBAR STYLE (Đồng bộ) --- */
+        .sidebar { width: 280px; background: white; border-right: 1px solid #E2E8F0; height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; }
+        .nav-group-title { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #94A3B8; padding: 1.5rem 1.5rem 0.5rem; }
+        .sidebar-link { display: flex; align-items: center; padding: 0.8rem 1.5rem; color: var(--text-light); font-weight: 600; font-size: 0.9rem; transition: 0.3s; gap: 12px; }
+        .sidebar-link i { width: 18px; height: 18px; }
+        .sidebar-link:hover { color: var(--primary); background: var(--primary-light); }
+        .sidebar-link.active { background: var(--primary-gradient); color: white; border-radius: 12px; margin: 0 12px; box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.2); }
+
+        /* --- DASHBOARD CARDS --- */
+        .bento-card { background: white; border-radius: 24px; border: 1px solid #E2E8F0; padding: 24px; transition: 0.3s; }
+        .bento-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px -10px rgba(0,0,0,0.05); }
+
+        /* --- TABLE STYLE --- */
+        .modern-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .modern-table th { padding: 16px 20px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #94A3B8; border-bottom: 1px solid #F1F5F9; text-align: left; }
+        .modern-table td { padding: 16px 20px; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+        .modern-table tr:hover td { background-color: #F8FAFC; }
+
+        .score-badge { font-weight: 800; padding: 4px 12px; border-radius: 100px; font-size: 0.75rem; display: inline-block; }
+        .score-good { background: #DCFCE7; color: #166534; }
+        .score-avg { background: #FEF9C3; color: #854D0E; }
+        .score-bad { background: #FEE2E2; color: #991B1B; }
+
+        /* --- MODAL --- */
+        .modal-backdrop { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); z-index: 100; }
+        .modal-content { background: white; border-radius: 32px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2); position: relative; overflow: hidden; }
+        
+        .answer-box { border-radius: 16px; padding: 12px 16px; border: 2px solid #F1F5F9; margin-top: 8px; font-size: 0.9rem; }
+        .answer-box.correct { background: #F0FDFA; border-color: #5EEAD4; color: #0F766E; }
+        .answer-box.incorrect { background: #FEF2F2; border-color: #FECACA; color: #991B1B; }
+
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #0D9488; border-radius: 10px; }
+        .skeleton { background: #E2E8F0; animation: pulse 2s infinite; border-radius: 12px; }
         @keyframes pulse { 50% { opacity: .5; } }
-        .score {
-            font-weight: 600;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-        }
-        .score-good { background-color: #dcfce7; color: #166534; }
-        .score-avg { background-color: #fef9c3; color: #854d0e; }
-        .score-bad { background-color: #fee2e2; color: #991b1b; }
-
-        /* Modal Styles */
-        .modal-backdrop { background-color: rgba(0, 0, 0, 0.5); transition: opacity 0.3s ease; }
-        .modal-content { transition: transform 0.3s ease, opacity 0.3s ease; transform: translateY(-20px); }
-        .prose { max-width: none; }
-        .answer-option.correct { background-color: #dcfce7 !important; border-color: #22c55e !important; }
-        .answer-option.incorrect { background-color: #fee2e2 !important; border-color: #ef4444 !important; }
-
     </style>
 </head>
 <body class="flex h-screen">
 
-    <aside class="w-64 bg-white shadow-md flex-shrink-0 flex flex-col">
-        <div class="h-16 flex-shrink-0 flex items-center justify-center border-b px-4">
-            <a href="/index.html" class="flex items-center gap-2">
-                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" alt="AIGEO Logo" class="h-8 w-auto">
-                <span class="text-2xl font-bold brand-gradient-text">AIGEO</span>
+    <!-- Sidebar (Đồng bộ) -->
+    <aside class="sidebar">
+        <div class="p-8">
+            <a href="/index.html" class="flex items-center gap-3">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" class="h-9 w-auto">
+                <span class="text-xl font-black text-teal-600 tracking-tight">AIGEO</span>
             </a>
         </div>
-        <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
-            <a href="index.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="home"></i>Bảng điều khiển</a>
-            <a href="classrooms.html" class="sidebar-link active"><i data-feather="users"></i>Quản lý Lớp học</a>
-            <a href="question-bank.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="database"></i>Ngân hàng câu hỏi</a>
-            <a href="tests.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="file-text"></i>Quản lý đề thi</a>
-            <a href="account.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="user"></i>Tài khoản</a>
+        <nav class="flex-grow overflow-y-auto">
+            <a href="index.html" class="sidebar-link"><i data-feather="grid"></i> Tổng quan</a>
+            <div class="nav-group-title">Quản lý học tập</div>
+            <a href="classrooms.html" class="sidebar-link active"><i data-feather="users"></i> Quản lý Lớp học</a>
+            <a href="tests.html" class="sidebar-link"><i data-feather="file-text"></i> Quản lý đề thi</a>
+            <a href="question-bank.html" class="sidebar-link"><i data-feather="database"></i> Ngân hàng câu hỏi</a>
+            <div class="nav-group-title">Cá nhân</div>
+            <a href="account.html" class="sidebar-link"><i data-feather="user"></i> Tài khoản</a>
         </nav>
-        <div class="p-4 border-t flex-shrink-0"><button id="logout-btn" class="w-full sidebar-link text-slate-600 text-left"><i data-feather="log-out"></i>Đăng xuất</button></div>
+        <div class="p-4 border-t">
+            <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 rounded-xl transition">
+                <i data-feather="log-out"></i> Đăng xuất
+            </button>
+        </div>
     </aside>
 
     <main class="flex-1 flex flex-col overflow-hidden">
-        <header class="bg-white shadow-sm h-16 flex items-center justify-end px-6">
-            <div class="flex items-center">
-                <span id="user-name" class="font-semibold text-gray-700 mr-4">Đang tải...</span>
-                <img id="user-avatar" class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/40x40/E2E8F0/475569?text=T" alt="Teacher Avatar">
+        <!-- Header -->
+        <header class="h-16 bg-white border-b flex items-center justify-between px-8 shrink-0">
+            <div class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">
+                <a href="index.html" class="hover:text-teal-600">Dashboard</a>
+                <span>/</span>
+                <a href="classrooms.html" class="hover:text-teal-600">Classrooms</a>
+                <span>/</span>
+                <span class="text-slate-800">Student progress</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="text-right hidden sm:block">
+                    <p id="user-name" class="text-sm font-black text-slate-800 leading-none">Đang tải...</p>
+                    <span class="text-[10px] font-bold text-teal-600 uppercase tracking-tighter">Teacher Account</span>
+                </div>
+                <img id="user-avatar" class="h-10 w-10 rounded-xl border-2 border-slate-100 object-cover shadow-sm">
             </div>
         </header>
-        <div class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-100 p-8">
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50/50 p-8">
             <div class="max-w-7xl mx-auto">
-                <div id="page-header" class="flex items-center mb-6">
-                    <a href="javascript:history.back()" class="p-2 rounded-md hover:bg-slate-200 mr-4"><i data-feather="arrow-left" class="w-6 h-6 text-slate-600"></i></a>
+                <!-- Profile Banner -->
+                <div id="page-header" class="flex items-center gap-6 mb-10">
+                    <a href="javascript:history.back()" class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center border border-slate-200 hover:bg-slate-50 transition shadow-sm">
+                        <i data-feather="chevron-left" class="text-slate-600"></i>
+                    </a>
                     <div>
-                        <h1 id="student-name-header" class="text-3xl font-bold text-slate-800">Đang tải...</h1>
-                        <p class="mt-1 text-slate-500">Chi tiết tiến độ học tập</p>
+                        <h1 id="student-name-header" class="text-3xl font-black text-slate-900 tracking-tight">Đang tải...</h1>
+                        <p class="text-teal-600 font-bold mt-1 uppercase text-[10px] tracking-widest italic">Phân tích học lực chi tiết</p>
                     </div>
                 </div>
                 
-                <div id="stats-container">
-                    <!-- Stats and chart will be rendered here -->
+                <!-- Stats and Content Injected by JS -->
+                <div id="stats-container" class="space-y-10">
+                    <div class="skeleton h-64 w-full rounded-[32px]"></div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Result Modal -->
-    <div id="result-modal" class="fixed inset-0 z-50 items-center justify-center hidden">
-        <div id="result-modal-backdrop" class="fixed inset-0 bg-gray-900 bg-opacity-50"></div>
-        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-4xl modal-content flex flex-col max-h-[90vh] relative z-10">
-            <div class="flex justify-between items-center flex-shrink-0 mb-4 border-b pb-2">
-                <h2 id="result-modal-title" class="text-xl font-bold text-slate-800">Chi tiết bài làm</h2>
-                <button id="result-modal-close-btn" class="p-2 hover:bg-slate-100 rounded-full"><i data-feather="x"></i></button>
+    <!-- Result Modal (Đồng bộ style SaaS) -->
+    <div id="result-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop p-4">
+        <div class="modal-content w-full max-w-4xl max-h-[90vh] flex flex-col">
+            <div class="p-6 border-b flex justify-between items-center shrink-0">
+                <h2 id="result-modal-title" class="text-xl font-black text-slate-800">Chi tiết bài làm</h2>
+                <button id="result-modal-close-btn" class="w-10 h-10 flex items-center justify-center bg-slate-50 rounded-full hover:bg-slate-100 transition"><i data-feather="x" class="w-4"></i></button>
             </div>
-            <div id="result-modal-content" class="flex-grow overflow-y-auto pr-2 space-y-6">
-                <!-- Skeleton loader here initially -->
-                <div class="skeleton h-64 w-full"></div>
+            <div id="result-modal-content" class="flex-grow overflow-y-auto p-8 space-y-8">
+                <!-- Questions injected here -->
             </div>
         </div>
     </div>
@@ -148,7 +181,7 @@
                     if (docSnap.exists() && docSnap.data().role === 'teacher') {
                         const userData = docSnap.data();
                         document.getElementById('user-name').textContent = userData.name || 'Giáo viên';
-                        document.getElementById('user-avatar').src = `https://placehold.co/40x40/10B981/FFFFFF?text=${(userData.name || 'T').charAt(0)}`;
+                        document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=0D9488&color=fff&bold=true`;
                         initPage();
                     } else {
                         window.location.href = `../${docSnap.data()?.role || 'auth'}/index.html`;
@@ -205,69 +238,72 @@
                 });
             }
 
-            function renderStats(submissions) {
+            window.renderStats = (submissions) => {
                 const testsTaken = submissions.length;
                 const totalScore = submissions.reduce((sum, r) => sum + (r.score / r.totalQuestions), 0);
                 const avgScore = testsTaken > 0 ? ((totalScore / testsTaken) * 10).toFixed(1) : 'N/A';
 
                 let statsHTML = `
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-white p-5 rounded-xl shadow-sm">
-                            <h4 class="font-semibold text-slate-600">Điểm trung bình</h4>
-                            <p class="text-3xl font-bold text-teal-500 mt-1">${avgScore}</p>
+                        <div class="bento-card border-l-4 border-l-teal-500 flex items-center gap-6">
+                            <div class="w-14 h-14 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center shrink-0"><i data-feather="award"></i></div>
+                            <div>
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Điểm trung bình</p>
+                                <h3 class="text-3xl font-black text-slate-800">${avgScore}</h3>
+                            </div>
                         </div>
-                        <div class="bg-white p-5 rounded-xl shadow-sm">
-                            <h4 class="font-semibold text-slate-600">Số bài đã làm</h4>
-                            <p class="text-3xl font-bold text-blue-500 mt-1">${testsTaken}</p>
+                        <div class="bento-card border-l-4 border-l-blue-500 flex items-center gap-6">
+                            <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center shrink-0"><i data-feather="file-text"></i></div>
+                            <div>
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Bài làm đã nộp</p>
+                                <h3 class="text-3xl font-black text-slate-800">${testsTaken}</h3>
+                            </div>
                         </div>
                     </div>
-                    <div class="mt-8 bg-white p-6 rounded-xl shadow-sm">
-                        <h2 class="text-xl font-bold text-slate-800 mb-4">Biểu đồ Tiến độ (10 bài gần nhất)</h2>
-                        <div class="relative h-96"><canvas id="progress-chart"></canvas></div>
+
+                    <div class="bento-card">
+                        <h2 class="text-lg font-black text-slate-800 mb-6 flex items-center gap-2"><i class="fas fa-chart-line text-teal-600"></i> Biểu đồ Tiến độ</h2>
+                        <div class="relative h-[350px]"><canvas id="progress-chart"></canvas></div>
                     </div>
-                    <div class="mt-8">
-                        <h2 class="text-xl font-bold text-slate-700 mb-4">Lịch sử làm bài</h2>
-                        <div class="bg-white rounded-xl shadow-sm overflow-x-auto">
-                            <table class="w-full text-sm text-left text-slate-500">
-                                <thead class="text-xs text-slate-700 uppercase bg-slate-50">
+
+                    <div class="space-y-6">
+                        <h2 class="text-xl font-black text-slate-800">Lịch sử bài tập</h2>
+                        <div class="bento-card !p-0 overflow-hidden">
+                            <table class="modern-table">
+                                <thead>
                                     <tr>
-                                        <th scope="col" class="px-6 py-3">Tên bài làm</th>
-                                        <th scope="col" class="px-6 py-3 text-center">Điểm</th>
-                                        <th scope="col" class="px-6 py-3 text-center">Ngày làm</th>
-                                        <th scope="col" class="px-6 py-3 text-right"></th>
+                                        <th>Tên đề thi</th>
+                                        <th class="text-center">Kết quả</th>
+                                        <th class="text-center">Ngày làm</th>
+                                        <th class="text-right">Hành động</th>
                                     </tr>
                                 </thead>
                                 <tbody>`;
                 
                 submissions.forEach(sub => {
-                    const score = sub.score;
-                    const total = sub.totalQuestions;
-                    const percentage = total > 0 ? (score / total) * 100 : 0;
+                    const percentage = (sub.score / sub.totalQuestions) * 100;
                     let scoreClass = percentage >= 80 ? 'score-good' : (percentage < 50 ? 'score-bad' : 'score-avg');
                     const date = sub.completedAt.toDate().toLocaleDateString('vi-VN');
                     
                     statsHTML += `
-                        <tr class="bg-white border-b hover:bg-slate-50">
-                            <th scope="row" class="px-6 py-4 font-medium text-slate-900">${sub.testName}</th>
-                            <td class="px-6 py-4 text-center"><span class="score ${scoreClass}">${score}/${total}</span></td>
-                            <td class="px-6 py-4 text-center">${date}</td>
-                            <td class="px-6 py-4 text-right">
-                                <button data-submission-id="${sub.id}" class="view-result-btn font-medium text-teal-600 hover:underline">Xem lại</button>
+                        <tr>
+                            <td class="font-bold text-slate-700">${sub.testName}</td>
+                            <td class="text-center"><span class="score-badge ${scoreClass}">${sub.score}/${sub.totalQuestions}</span></td>
+                            <td class="text-center text-slate-400 font-bold text-xs">${date}</td>
+                            <td class="text-right">
+                                <button data-submission-id="${sub.id}" class="view-result-btn text-teal-600 font-black text-xs hover:tracking-widest transition-all">CHI TIẾT →</button>
                             </td>
                         </tr>`;
                 });
 
                 statsHTML += `</tbody></table></div></div>`;
-                statsContainer.innerHTML = statsHTML;
+                document.getElementById('stats-container').innerHTML = statsHTML;
                 feather.replace();
 
                 renderProgressChart(submissions.slice(0, 10).reverse());
 
-                document.querySelectorAll('.view-result-btn').forEach(link => {
-                    link.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        showResultModal(this.dataset.submissionId);
-                    });
+                document.querySelectorAll('.view-result-btn').forEach(btn => {
+                    btn.onclick = () => showResultModal(btn.dataset.submissionId);
                 });
             }
 
@@ -404,6 +440,46 @@
             feather.replace();
         });
     </script>
+
+<script type="text/javascript">
+    // 1. Chặn Chuột phải (Để ẩn menu "Inspect/Kiểm tra" và "View Source/Xem nguồn")
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        // Không hiện thông báo gì cả để trải nghiệm mượt mà hơn
+    });
+
+    // 2. Chặn các phím tắt Developer Tools
+    document.addEventListener('keydown', function(e) {
+        // Chặn F12
+        if (e.key === 'F12' || e.keyCode === 123) {
+            e.preventDefault();
+            return false;
+        }
+
+        // Chặn các tổ hợp phím Ctrl + ...
+        if (e.ctrlKey) {
+            switch (e.key.toLowerCase()) {
+                case 'u': // Chặn Ctrl + U (Xem source code)
+                case 's': // Chặn Ctrl + S (Lưu trang web)
+                case 'p': // Chặn Ctrl + P (In trang web - thường hiện code)
+                // Lưu ý: KHÔNG chặn 'c' (Copy) và 'a' (Select All)
+                    e.preventDefault();
+                    return false;
+            }
+
+            // Chặn Ctrl + Shift + ... (Các phím mở DevTools)
+            if (e.shiftKey) {
+                switch (e.key.toLowerCase()) {
+                    case 'i': // Inspect Element
+                    case 'j': // Console
+                    case 'c': // Element Inspector
+                        e.preventDefault();
+                        return false;
+                }
+            }
+        }
+    });
+</script>
 </body>
 </html>
 

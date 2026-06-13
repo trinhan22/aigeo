@@ -4,138 +4,162 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xem trước Đề thi - AIGEO</title>
+    <title>AIGEO - Xem trước Đề thi</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/feather-icons"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Rendering Engines -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
     <style>
         :root {
-            --primary-teal: #0D9488;
-            --primary-emerald: #10B981;
+            --primary: #0D9488;
+            --secondary: #10B981;
+            --text-main: #1E293B;
+            --text-light: #64748B;
+            --bg-body: #F8FAFC;
+            --primary-gradient: linear-gradient(135deg, #0D9488 0%, #10B981 100%);
         }
-        html { scroll-behavior: smooth; }
-        body { 
-            font-family: 'Be Vietnam Pro', sans-serif; 
-            background-color: #f1f5f9; 
-        }
-        .sidebar-link { display: flex; align-items: center; padding: 0.75rem 1rem; border-radius: 0.5rem; transition: background-color 0.2s, color 0.2s; }
-        .sidebar-link:hover { background-color: #e2e8f0; color: #0f172a; }
-        .sidebar-link.active { 
-            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
-            color: white; 
-            font-weight: 600; 
-            box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2);
-        }
-        .sidebar-link.active:hover { background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald)); }
-        .sidebar-link.active svg { color: white; }
-        .sidebar-link svg { margin-right: 0.75rem; }
-        
-        .brand-gradient-text {
-            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .cta-button {
-            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.2);
-        }
-        .cta-button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(13, 148, 136, 0.3);
-        }
-        .prose { max-width: none; }
+
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body); color: var(--text-main); overflow: hidden; height: 100vh; display: flex; }
+
+        /* --- SIDEBAR STYLE (Đồng bộ) --- */
+        .sidebar { width: 280px; background: white; border-right: 1px solid #E2E8F0; height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; }
+        .nav-group-title { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #94A3B8; padding: 1.5rem 1.5rem 0.5rem; }
+        .sidebar-link { display: flex; align-items: center; padding: 0.8rem 1.5rem; color: var(--text-light); font-weight: 600; font-size: 0.9rem; transition: 0.3s; gap: 12px; }
+        .sidebar-link i { width: 18px; height: 18px; }
+        .sidebar-link:hover { color: var(--primary); background: #F0FDFA; }
+        .sidebar-link.active { background: var(--primary-gradient); color: white; border-radius: 12px; margin: 0 12px; box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.2); }
+
+        /* --- HEADER STYLE --- */
+        header { height: 72px; background: white; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: space-between; padding: 0 32px; shrink: 0; z-index: 20; }
+
+        /* --- CONTENT AREA --- */
+        .main-layout { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .content-workspace { flex: 1; display: flex; overflow: hidden; }
+        #main-content-scroll { flex: 1; overflow-y: auto; padding: 32px; background: #F8FAFC; }
+
+        /* --- QUESTION CARDS (Giữ nguyên logic hiển thị) --- */
+        .question-card { background: white; border-radius: 24px; padding: 32px; border: 1px solid #E2E8F0; margin-bottom: 32px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
         .answer-option.correct { background-color: #dcfce7 !important; border-color: #22c55e !important; color: #15803d; font-weight: 600; }
         .answer-option-tf.correct { background-color: #dcfce7; border-color: #22c55e; }
         .answer-option-tf.incorrect { background-color: #fee2e2; border-color: #ef4444; }
 
-        .toast { transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; transform: translateY(100%); opacity: 0; }
+        /* --- SIDEBAR RIGHT (Question Map) --- */
+        #question-map { width: 300px; background: white; border-left: 1px solid #E2E8F0; padding: 24px; display: flex; flex-direction: column; flex-shrink: 0; }
+        .question-grid-btn { aspect-ratio: 1; border-radius: 10px; border: 2px solid #F1F5F9; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #94A3B8; text-decoration: none; transition: 0.2s; }
+        .question-grid-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+        /* --- BUTTONS --- */
+        .cta-button { background: var(--primary-gradient); color: white; padding: 10px 24px; border-radius: 12px; font-weight: 800; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; border: none; cursor: pointer; box-shadow: 0 10px 20px rgba(13, 148, 136, 0.15); }
+        .cta-button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(13, 148, 136, 0.2); }
+
+        .modal-backdrop { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); }
+        .toast { transition: 0.3s; transform: translateY(100%); opacity: 0; }
         .toast.show { transform: translateY(0); opacity: 1; }
-        
-        .modal-backdrop { background-color: rgba(0, 0, 0, 0.5); }
-        .modal-content { transition: transform 0.3s ease, opacity 0.3s ease; transform: translateY(-20px); }
-        .question-section:not(:last-child) {
-            border-bottom: 2px dashed #cbd5e1;
-            padding-bottom: 2rem;
-            margin-bottom: 2rem;
-        }
+
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #0D9488; border-radius: 10px; }
     </style>
 </head>
-<body class="flex h-screen">
+<body>
     
-    <aside class="w-64 bg-white shadow-md flex-shrink-0 flex flex-col">
-        <div class="h-16 flex-shrink-0 flex items-center justify-center border-b px-4">
-            <a href="/index.html" class="flex items-center gap-2">
-                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" alt="AIGEO Logo" class="h-8 w-auto">
-                <span class="text-2xl font-bold brand-gradient-text">AIGEO</span>
+    <!-- Sidebar (Đồng bộ Menu) -->
+    <aside class="sidebar">
+        <div class="p-8">
+            <a href="/index.html" class="flex items-center gap-3">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" class="h-9 w-auto">
+                <span class="text-xl font-black text-teal-600 tracking-tight">AIGEO</span>
             </a>
         </div>
-        <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
-            <a href="index.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="home"></i>Bảng điều khiển</a>
-            <a href="classrooms.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="users"></i>Quản lý Lớp học</a>
-            <a href="question-bank.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="database"></i>Ngân hàng câu hỏi</a>
-            <a href="tests.html" class="sidebar-link active"><i data-feather="file-text"></i>Quản lý đề thi</a>
-            <a href="account.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="user"></i>Tài khoản</a>
+        <nav class="flex-grow overflow-y-auto">
+            <a href="index.html" class="sidebar-link"><i data-feather="grid"></i> Tổng quan</a>
+            <div class="nav-group-title">Quản lý</div>
+            <a href="classrooms.html" class="sidebar-link"><i data-feather="users"></i> Quản lý Lớp học</a>
+            <a href="tests.html" class="sidebar-link active"><i data-feather="file-text"></i> Quản lý đề thi</a>
+            <a href="question-bank.html" class="sidebar-link"><i data-feather="database"></i> Ngân hàng câu hỏi</a>
+            <div class="nav-group-title">Cá nhân</div>
+            <a href="account.html" class="sidebar-link"><i data-feather="user"></i> Tài khoản</a>
         </nav>
-        <div class="p-4 border-t flex-shrink-0"><button id="logout-btn" class="w-full sidebar-link text-slate-600 text-left"><i data-feather="log-out"></i>Đăng xuất</button></div>
+        <div class="p-4 border-t">
+            <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 rounded-xl transition">
+                <i data-feather="log-out"></i> Đăng xuất
+            </button>
+        </div>
     </aside>
 
-    <div class="flex-1 flex flex-col overflow-hidden">
-        <header class="bg-white shadow-md h-16 w-full flex-shrink-0 flex items-center justify-between px-6 z-20">
-             <div class="flex items-center space-x-4">
-                 <a href="tests.html" class="p-2 rounded-md hover:bg-slate-100 nav-link"><i data-feather="arrow-left" class="w-6 h-6 text-slate-600"></i></a>
-                 <h1 id="test-name-header" class="text-2xl font-bold text-slate-800">Đang tải đề thi...</h1>
-            </div>
-            <div class="flex items-center space-x-4">
-                <a id="edit-btn" href="#" class="nav-link bg-slate-100 text-slate-700 font-semibold px-4 py-2 rounded-lg hover:bg-slate-200 flex items-center">
-                    <i data-feather="edit" class="w-4 h-4 mr-2"></i>Chỉnh sửa
+    <div class="main-layout">
+        <!-- Header (Đồng bộ Thanh trên) -->
+        <header>
+            <div class="flex items-center gap-4">
+                <a href="tests.html" class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center border border-slate-100 hover:bg-slate-100 transition text-slate-400">
+                    <i data-feather="chevron-left" class="w-5"></i>
                 </a>
-                <button id="assign-btn" class="cta-button text-white font-semibold px-4 py-2 rounded-lg flex items-center">
-                    <i data-feather="send" class="w-4 h-4 mr-2"></i>Giao bài
-                </button>
-                <div class="flex items-center border-l pl-4 ml-2">
-                    <span id="user-name" class="font-semibold text-gray-700 mr-4">Đang tải...</span>
-                    <img id="user-avatar" class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/40x40/E2E8F0/475569?text=T" alt="Teacher Avatar">
+                <h1 id="test-name-header" class="text-lg font-black text-slate-800 uppercase tracking-tighter truncate max-w-md">Đang tải đề...</h1>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <a id="edit-btn" href="#" class="px-5 py-2.5 bg-slate-100 text-slate-600 font-extrabold text-[10px] uppercase tracking-widest rounded-xl hover:bg-slate-200 transition">Chỉnh sửa</a>
+                <button id="assign-btn" class="cta-button text-[10px] uppercase tracking-widest px-6 py-2.5 shadow-none">Giao bài</button>
+                <div class="h-8 w-[1px] bg-slate-100 mx-2"></div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right hidden sm:block">
+                        <p id="user-name" class="text-sm font-black text-slate-800 leading-none">Đang tải...</p>
+                        <span class="text-[10px] font-bold text-teal-600 uppercase tracking-tighter">Teacher Account</span>
+                    </div>
+                    <img id="user-avatar" class="h-10 w-10 rounded-xl border-2 border-slate-100 object-cover shadow-sm">
                 </div>
             </div>
         </header>
 
-        <div class="flex-1 flex overflow-hidden">
-            <main id="main-content-scroll" class="flex-1 p-4 md:p-8 overflow-y-auto">
+        <div class="content-workspace">
+            <!-- Nội dung câu hỏi -->
+            <main id="main-content-scroll">
                 <div class="max-w-4xl mx-auto">
                     <div id="main-content-area" class="space-y-8">
+                        <!-- Câu hỏi sẽ được load vào đây bởi JS -->
+                        <div class="flex flex-col items-center justify-center py-20 text-slate-300 font-bold uppercase tracking-widest text-xs gap-4">
+                            <div class="w-10 h-10 border-4 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
+                            Nạp nội dung đề thi...
                         </div>
+                    </div>
                 </div>
             </main>
 
-            <aside id="question-map" class="w-72 bg-white border-l p-4 flex-shrink-0 flex flex-col overflow-y-auto">
-                <h2 class="font-bold mb-4">Danh sách câu hỏi</h2>
+            <!-- Bản đồ câu hỏi bên phải -->
+            <aside id="question-map">
+                <h2 class="font-black text-slate-800 text-[10px] uppercase tracking-[0.2em] mb-6">Bản đồ câu hỏi</h2>
                 <div id="question-grid" class="grid grid-cols-5 gap-2"></div>
-                <div class="mt-auto pt-4 space-y-2">
-                    <button id="show-answer-btn" class="w-full bg-amber-500 text-white font-bold py-3 rounded-lg hover:bg-amber-600">Xem đáp án</button>
+                <div class="mt-auto pt-6 border-t border-slate-50">
+                    <button id="show-answer-btn" class="w-full bg-amber-500 text-white font-black py-4 rounded-xl text-[10px] uppercase tracking-widest hover:bg-amber-600 transition shadow-lg shadow-amber-100">Hiển thị đáp án</button>
                 </div>
             </aside>
         </div>
     </div>
     
-    <div id="assign-confirm-modal" class="fixed inset-0 z-40 items-center justify-center hidden modal-backdrop">
-        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg modal-content">
-            <h2 class="text-xl font-bold">Giao bài cho lớp</h2>
-            <p id="assign-modal-test-name" class="mt-2 text-gray-600"></p>
-            <div id="classrooms-list" class="mt-4 max-h-60 overflow-y-auto space-y-2 border p-3 rounded-md">
-                <p class="text-slate-500">Đang tải danh sách lớp...</p>
+    <!-- Modal Giao bài -->
+    <div id="assign-confirm-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop p-4">
+        <div class="bg-white rounded-[32px] p-8 w-full max-w-lg shadow-2xl">
+            <h2 class="text-2xl font-black text-slate-800 mb-2 tracking-tight">Giao bài cho lớp</h2>
+            <p id="assign-modal-test-name" class="text-[10px] font-black text-teal-600 uppercase tracking-widest mb-8"></p>
+            <div id="classrooms-list" class="space-y-2 max-h-60 overflow-y-auto p-4 bg-slate-50 rounded-2xl border border-slate-100 mb-8">
+                <p class="text-slate-400 text-xs font-bold text-center">Đang tải danh sách lớp...</p>
             </div>
-            <div class="flex justify-end space-x-3 mt-6">
-                <button type="button" id="assign-cancel-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 font-semibold">Hủy</button>
-                <button type="button" id="assign-confirm-btn" class="cta-button text-white px-4 py-2 rounded-lg font-semibold">Xác nhận Giao bài</button>
+            <div class="flex gap-3">
+                <button type="button" id="assign-cancel-btn" class="flex-1 py-3 font-bold text-slate-400">Hủy bỏ</button>
+                <button type="button" id="assign-confirm-btn" class="flex-1 cta-button justify-center py-3">Xác nhận giao</button>
             </div>
         </div>
     </div>
 
-    <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 w-80"></div>
+    <div id="toast-container" class="fixed bottom-10 right-10 z-[100] flex flex-col gap-3"></div>
     
     <script src="../firebase-config.js"></script>
     <script type="module">
@@ -192,7 +216,7 @@
                         const userData = docSnap.data();
                         userNameEl.textContent = userData.name || 'Giáo viên';
                         const nameInitial = (userData.name || 'T').charAt(0).toUpperCase();
-                        userAvatarEl.src = `https://placehold.co/40x40/10B981/FFFFFF?text=${nameInitial}`;
+                        userAvatarEl.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=0D9488&color=fff&bold=true`;
                         initTestView();
                     } else {
                         const userRole = docSnap.data()?.role;
@@ -491,5 +515,45 @@
             feather.replace();
         });
     </script>
+
+<script type="text/javascript">
+    // 1. Chặn Chuột phải (Để ẩn menu "Inspect/Kiểm tra" và "View Source/Xem nguồn")
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        // Không hiện thông báo gì cả để trải nghiệm mượt mà hơn
+    });
+
+    // 2. Chặn các phím tắt Developer Tools
+    document.addEventListener('keydown', function(e) {
+        // Chặn F12
+        if (e.key === 'F12' || e.keyCode === 123) {
+            e.preventDefault();
+            return false;
+        }
+
+        // Chặn các tổ hợp phím Ctrl + ...
+        if (e.ctrlKey) {
+            switch (e.key.toLowerCase()) {
+                case 'u': // Chặn Ctrl + U (Xem source code)
+                case 's': // Chặn Ctrl + S (Lưu trang web)
+                case 'p': // Chặn Ctrl + P (In trang web - thường hiện code)
+                // Lưu ý: KHÔNG chặn 'c' (Copy) và 'a' (Select All)
+                    e.preventDefault();
+                    return false;
+            }
+
+            // Chặn Ctrl + Shift + ... (Các phím mở DevTools)
+            if (e.shiftKey) {
+                switch (e.key.toLowerCase()) {
+                    case 'i': // Inspect Element
+                    case 'j': // Console
+                    case 'c': // Element Inspector
+                        e.preventDefault();
+                        return false;
+                }
+            }
+        }
+    });
+</script>
 </body>
 </html>

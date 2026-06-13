@@ -4,103 +4,215 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soạn Đề thi (Bước 2/2) - AIGEO</title>
+    <title>AIGEO - Soạn Đề thi (Bước 2/2)</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/feather-icons"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Rendering Engines -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
     <style>
         :root {
-            --primary-teal: #0D9488;
-            --primary-emerald: #10B981;
+            --primary: #0D9488;
+            --primary-light: #F0FDFA;
+            --secondary: #10B981;
+            --text-main: #1E293B;
+            --text-light: #64748B;
+            --bg-body: #F8FAFC;
+            --primary-gradient: linear-gradient(135deg, #0D9488 0%, #10B981 100%);
         }
-        body { 
-            font-family: 'Be Vietnam Pro', sans-serif; 
-            background-color: #f1f5f9; 
-        }
-        .sidebar-link { display: flex; align-items: center; padding: 0.75rem 1rem; border-radius: 0.5rem; transition: background-color 0.2s, color 0.2s; }
-        .sidebar-link:hover { background-color: #e2e8f0; color: #0f172a; }
-        .sidebar-link.active { 
-            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
-            color: white; 
-            font-weight: 600; 
-            box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2);
-        }
-        .sidebar-link.active:hover { background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald)); }
-        .sidebar-link.active svg { color: white; }
-        .sidebar-link svg { margin-right: 0.75rem; }
-        .brand-gradient-text {
-            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .cta-button {
-            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.2);
-        }
-        .cta-button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(13, 148, 136, 0.3);
-        }
-        .toast { transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; transform: translateY(100%); opacity: 0; }
+
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body); color: var(--text-main); overflow: hidden; }
+
+        /* --- SIDEBAR STYLE (Đồng bộ) --- */
+        .sidebar { width: 280px; background: white; border-right: 1px solid #E2E8F0; height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; }
+        .nav-group-title { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #94A3B8; padding: 1.5rem 1.5rem 0.5rem; }
+        .sidebar-link { display: flex; align-items: center; padding: 0.8rem 1.5rem; color: var(--text-light); font-weight: 600; font-size: 0.9rem; transition: 0.3s; gap: 12px; }
+        .sidebar-link i { width: 18px; height: 18px; }
+        .sidebar-link:hover { color: var(--primary); background: var(--primary-light); }
+        .sidebar-link.active { background: var(--primary-gradient); color: white; border-radius: 12px; margin: 0 12px; box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.2); }
+
+        /* --- DASHBOARD COMPONENTS --- */
+        .bento-card { background: white; border-radius: 24px; border: 1px solid #E2E8F0; padding: 24px; transition: 0.3s; }
+        
+        .step-pill { padding: 6px 16px; border-radius: 100px; font-weight: 800; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .step-active { background: var(--primary-light); color: var(--primary); }
+        .step-done { background: #DCFCE7; color: #166534; }
+
+        /* --- FORM CONTROLS --- */
+        .form-label { display: block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #94A3B8; letter-spacing: 0.05em; margin-bottom: 8px; margin-left: 4px; }
+        .form-input, .editable-div { width: 100%; padding: 14px 20px; background: #F8FAFC; border: 2px solid #F1F5F9; border-radius: 16px; font-weight: 600; outline: none; transition: 0.3s; }
+        .form-input:focus, .editable-div:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1); }
+        .editable-div { min-height: 100px; cursor: text; }
+
+        /* --- QUESTION BLOCK LIST --- */
+        .question-item { background: white; border: 1px solid #F1F5F9; border-radius: 20px; padding: 20px; margin-bottom: 16px; transition: 0.3s; border-left: 4px solid #E2E8F0; }
+        .question-item:hover { border-color: var(--primary); transform: translateX(5px); }
+
+        /* --- BUTTONS --- */
+        .cta-button { background: var(--primary-gradient); color: white; padding: 12px 24px; border-radius: 14px; font-weight: 800; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; border: none; cursor: pointer; box-shadow: 0 10px 20px rgba(13, 148, 136, 0.15); }
+        .cta-button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(13, 148, 136, 0.25); }
+
+        .btn-ghost { background: #F1F5F9; color: #64748B; font-weight: 700; padding: 10px 20px; border-radius: 12px; transition: 0.3s; }
+        .btn-ghost:hover { background: #E2E8F0; color: var(--text-main); }
+
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #0D9488; border-radius: 10px; }
+        .toast { transition: 0.3s; transform: translateY(100%); opacity: 0; }
         .toast.show { transform: translateY(0); opacity: 1; }
-        .form-input, .editable-div {
-            width: 100%; padding: 0.75rem 1rem; border: 1px solid #cbd5e1;
-            border-radius: 0.5rem; background-color: white; transition: all 0.2s ease-in-out;
-        }
-        .form-input:focus, .editable-div:focus {
-            outline: none; border-color: var(--primary-teal);
-            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
-        }
-        .prose { max-width: none; }
-        .editable-div { min-height: 4rem; }
-        .editable-div img { max-width: 100%; height: auto; border-radius: 0.25rem; margin: 0.5rem 0;}
-        .question-block {
-            border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            position: relative;
-            background-color: white;
-        }
     </style>
 </head>
 <body class="flex h-screen">
 
-    <aside class="w-64 bg-white shadow-md flex-shrink-0 flex flex-col">
-        <div class="h-16 flex-shrink-0 flex items-center justify-center border-b px-4">
-            <a href="/index.html" class="flex items-center gap-2">
-                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" alt="AIGEO Logo" class="h-8 w-auto">
-                <span class="text-2xl font-bold brand-gradient-text">AIGEO</span>
+    <!-- Sidebar (Đồng bộ) -->
+    <aside class="sidebar">
+        <div class="p-8">
+            <a href="/index.html" class="flex items-center gap-3">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" class="h-9 w-auto">
+                <span class="text-xl font-black text-teal-600 tracking-tight">AIGEO</span>
             </a>
         </div>
-         <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
-            <a href="index.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="home"></i>Bảng điều khiển</a>
-            <a href="classrooms.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="users"></i>Quản lý Lớp học</a>
-            <a href="question-bank.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="database"></i>Ngân hàng câu hỏi</a>
-            <a href="tests.html" class="sidebar-link active"><i data-feather="file-text"></i>Quản lý đề thi</a>
-            <a href="account.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="user"></i>Tài khoản</a>
+        <nav class="flex-grow overflow-y-auto">
+            <a href="index.html" class="sidebar-link"><i data-feather="grid"></i> Tổng quan</a>
+            <div class="nav-group-title">Quản lý</div>
+            <a href="classrooms.html" class="sidebar-link"><i data-feather="users"></i> Quản lý Lớp học</a>
+            <a href="tests.html" class="sidebar-link active"><i data-feather="file-text"></i> Quản lý đề thi</a>
+            <a href="question-bank.html" class="sidebar-link"><i data-feather="database"></i> Ngân hàng câu hỏi</a>
+            <div class="nav-group-title">Cá nhân</div>
+            <a href="account.html" class="sidebar-link"><i data-feather="user"></i> Tài khoản</a>
         </nav>
-        <div class="p-4 border-t flex-shrink-0"><button id="logout-btn" class="w-full sidebar-link text-slate-600 text-left"><i data-feather="log-out"></i>Đăng xuất</button></div>
+        <div class="p-4 border-t">
+            <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 rounded-xl transition">
+                <i data-feather="log-out"></i> Thoát
+            </button>
+        </div>
     </aside>
 
     <main class="flex-1 flex flex-col overflow-hidden">
-        <header class="bg-white shadow-sm h-16 flex items-center justify-end px-6">
-            <div class="flex items-center">
-                <span id="user-name" class="font-semibold text-gray-700 mr-4">Đang tải...</span>
-                <img id="user-avatar" class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/40x40/E2E8F0/475569?text=T" alt="Teacher Avatar">
+        <!-- Header -->
+        <header class="h-16 bg-white border-b flex items-center justify-between px-8 shrink-0">
+            <div class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">
+                <a href="index.html" class="hover:text-teal-600">Dashboard</a>
+                <span>/</span>
+                <a href="tests.html" class="hover:text-teal-600">Tests Management</a>
+                <span>/</span>
+                <span class="text-slate-800">Create test</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="text-right hidden sm:block">
+                    <p id="user-name" class="text-sm font-black text-slate-800 leading-none">Đang tải...</p>
+                    <span class="text-[10px] font-bold text-teal-600 uppercase tracking-tighter">Teacher Account</span>
+                </div>
+                <img id="user-avatar" class="h-10 w-10 rounded-xl border-2 border-slate-100 object-cover shadow-sm">
             </div>
         </header>
-        <div class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-100 p-8">
-            <div id="page-container" class="max-w-4xl mx-auto">
+
+        <!-- Main Workspace -->
+        <div class="flex-1 overflow-y-auto bg-slate-50/50 p-8">
+            <div id="page-container" class="max-w-4xl mx-auto space-y-8 pb-20">
+                
+                <!-- Step Indicator & Header -->
+                <div class="flex flex-col gap-4">
+                    <div class="flex items-center gap-2">
+                        <span class="step-pill step-done flex items-center gap-1"><i class="fas fa-check-circle text-[10px]"></i> Bước 1: Thiết lập cơ bản</span>
+                        <div class="h-[2px] w-8 bg-green-200"></div>
+                        <span class="step-pill step-active">Bước 2: Soạn câu hỏi</span>
+                    </div>
+                    <h1 class="text-3xl font-black text-slate-900 tracking-tight">Soạn nội dung đề thi</h1>
+                    <p id="test-name-subtitle" class="text-slate-500 font-medium">Đang soạn câu hỏi cho đề thi...</p>
                 </div>
+
+                <!-- Questions List (Scrollable area) -->
+                <div class="space-y-4">
+                    <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Danh sách câu hỏi đã soạn</h3>
+                    <div id="questions-list-container" class="space-y-3">
+                        <!-- Items injected here -->
+                        <div class="bg-white p-6 rounded-[24px] border border-slate-100 text-center py-10">
+                            <p class="text-slate-300 font-bold text-sm">Chưa có câu hỏi nào được thêm.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Form Card -->
+                <div class="bento-card shadow-sm border-t-4 border-t-teal-500">
+                    <form id="add-question-form" class="space-y-8">
+                        <div class="flex justify-between items-center">
+                            <h2 id="form-title" class="text-xl font-black text-slate-800">Thêm câu hỏi mới</h2>
+                            <div class="w-10 h-10 bg-teal-50 text-teal-600 rounded-xl flex items-center justify-center"><i data-feather="plus"></i></div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+                            <!-- Question Content -->
+                            <div class="md:col-span-7 space-y-6">
+                                <div>
+                                    <label class="form-label">Nội dung câu hỏi (Markdown & KaTeX)</label>
+                                    <div id="q-content" contenteditable="true" class="editable-div" placeholder="Nhập nội dung câu hỏi tại đây..."></div>
+                                </div>
+                                
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="form-label">Loại câu hỏi</label>
+                                        <select id="q-type" class="form-input appearance-none">
+                                            <option value="multiple_choice">Trắc nghiệm PA</option>
+                                            <option value="true_false">Đúng / Sai</option>
+                                            <option value="short_answer">Trả lời ngắn</option>
+                                        </select>
+                                    </div>
+                                    <div class="flex items-end">
+                                        <button type="button" id="cancel-edit-btn" class="hidden btn-ghost w-full">Hủy chỉnh sửa</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Image Upload Zone -->
+                            <div class="md:col-span-5">
+                                <label class="form-label">Hình ảnh đính kèm</label>
+                                <div id="image-drop-zone" class="border-2 border-dashed border-slate-200 rounded-3xl p-6 text-center hover:border-teal-500 transition-all flex flex-col items-center justify-center min-h-[220px]">
+                                    <div id="image-placeholder" class="space-y-3">
+                                        <div class="w-12 h-12 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center mx-auto"><i data-feather="image"></i></div>
+                                        <p class="text-xs font-bold text-slate-400 leading-relaxed uppercase tracking-tighter">Kéo thả ảnh hoặc <label for="q-image-input" class="text-teal-600 cursor-pointer hover:underline">Tải từ máy</label></p>
+                                        <input id="q-image-input" type="file" class="hidden" accept="image/*">
+                                    </div>
+                                    <div id="image-preview-container" class="hidden w-full">
+                                        <img id="q-image-preview" class="max-h-32 rounded-xl mx-auto border shadow-sm mb-4">
+                                        <button type="button" id="q-image-remove-btn" class="text-[10px] font-black text-red-500 uppercase tracking-widest hover:underline">Xóa ảnh này</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Answer Options Dynamic Area -->
+                        <div id="answer-fields" class="pt-6 border-t border-slate-50">
+                            <!-- Field contents -->
+                        </div>
+
+                        <div class="flex justify-end pt-4">
+                            <button type="submit" id="add-q-btn" class="cta-button px-10">Lưu câu hỏi <i data-feather="save" class="w-4"></i></button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Final Action -->
+                <div class="flex justify-center pt-10">
+                    <a href="tests.html" class="cta-button !bg-slate-900 shadow-none hover:!scale-105">
+                        Hoàn tất đề thi & Lưu kho <i class="fas fa-check-double ml-2"></i>
+                    </a>
+                </div>
+
+            </div>
         </div>
     </main>
-    
-    <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2"></div>
+
+    <div id="toast-container" class="fixed bottom-10 right-10 z-[100] flex flex-col gap-3"></div>
 
     <script src="../firebase-config.js"></script>
     <script type="module">
@@ -176,7 +288,7 @@
                         const userData = docSnap.data();
                         document.getElementById('user-name').textContent = userData.name || 'Giáo viên';
                         const nameInitial = (userData.name || 'T').charAt(0).toUpperCase();
-                        document.getElementById('user-avatar').src = `https://placehold.co/40x40/10B981/FFFFFF?text=${nameInitial}`;
+                        document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=0D9488&color=fff&bold=true`;
                         initPage();
                     } else {
                         window.location.href = `../${docSnap.data()?.role || 'auth'}/index.html`;
@@ -232,42 +344,81 @@
             // =====================================================================
             function renderBankSelectionUI() {
                 pageContainer.innerHTML = `
-                    <a href="create-test-teacher.html" class="flex items-center text-slate-500 hover:text-teal-600 font-semibold mb-4 nav-link">
-                        <i data-feather="arrow-left" class="mr-2 w-4 h-4"></i>Quay lại Bước 1
-                    </a>
-                    <h1 class="text-3xl font-bold text-slate-800">Chọn câu hỏi từ Ngân hàng</h1>
-                    <div id="test-info-display" class="mt-4 bg-teal-50 border-l-4 border-teal-500 text-teal-800 p-4 rounded-r-lg"></div>
-                    
-                    <div class="mt-8 bg-white p-8 rounded-xl shadow-lg space-y-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">1. Chọn (nhiều) bài học để lấy câu hỏi</label>
-                            <div id="lesson-list-container" class="mt-2 max-h-60 overflow-y-auto p-3 border rounded-lg bg-slate-50">
-                                <p class="text-sm text-slate-500">Đang tải...</p>
-                            </div>
+                    <!-- Header & Breadcrumbs -->
+                    <div class="flex flex-col gap-4 mb-8">
+                        <div class="flex items-center gap-2">
+                            <a href="create-test-teacher.html" class="p-2 -ml-2 rounded-lg hover:bg-white transition text-slate-400"><i data-feather="arrow-left" class="w-4"></i></a>
+                            <span class="step-pill step-done flex items-center gap-1"><i class="fas fa-check-circle text-[10px]"></i> Bước 1: Thiết lập cơ bản</span>
+                            <div class="h-[2px] w-8 bg-green-200"></div>
+                            <span class="step-pill step-active">Bước 2: Soạn câu hỏi</span>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">2. Nhập số lượng câu hỏi cần lấy cho mỗi loại</label>
-                            <div id="question-counts" class="mt-2 grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
-                                    <label for="mc-count" class="text-xs font-semibold">Trắc nghiệm 4 PA</label>
-                                    <input type="number" id="mc-count" min="0" placeholder="0" class="form-input !mt-1">
-                                    <span id="mc-available" class="text-xs text-slate-500"></span>
-                                </div>
-                                <div>
-                                    <label for="tf-count" class="text-xs font-semibold">Đúng/Sai</label>
-                                    <input type="number" id="tf-count" min="0" placeholder="0" class="form-input !mt-1">
-                                    <span id="tf-available" class="text-xs text-slate-500"></span>
-                                </div>
-                                <div>
-                                    <label for="sa-count" class="text-xs font-semibold">Trả lời ngắn</label>
-                                    <input type="number" id="sa-count" min="0" placeholder="0" class="form-input !mt-1">
-                                    <span id="sa-available" class="text-xs text-slate-500"></span>
-                                </div>
-                            </div>
-                        </div>
+                        <h1 class="text-3xl font-black text-slate-900 tracking-tight">Thiết lập câu hỏi</h1>
+                        <p class="text-slate-500 font-medium text-sm">Hệ thống sẽ tự động bốc câu hỏi ngẫu nhiên từ các bài học bạn chọn.</p>
                     </div>
-                    <div class="mt-8 flex justify-end">
-                        <button id="generate-test-btn" class="cta-button text-white font-bold px-8 py-4 rounded-lg">Tạo đề & Hoàn tất</button>
+
+                    <!-- Mini Info Card -->
+                    <div id="test-info-display" class="mb-8 p-5 bg-white border border-slate-100 rounded-3xl shadow-sm flex items-center gap-6">
+                        <!-- Nội dung nạp từ JS (subjectSnap) sẽ vào đây -->
+                        <div class="animate-pulse w-full h-6 bg-slate-100 rounded-lg"></div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                        <!-- Cột trái: Chọn bài học -->
+                        <div class="lg:col-span-7 space-y-4">
+                            <div class="bento-card shadow-sm h-full">
+                                <label class="form-label mb-4 flex items-center gap-2">
+                                    <i class="fas fa-list-ul text-teal-600"></i> 1. Chọn bài học lấy dữ liệu
+                                </label>
+                                <div id="lesson-list-container" class="space-y-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                                    <div class="p-10 text-center text-slate-300 font-bold uppercase tracking-widest text-xs">Đang nạp danh sách bài học...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cột phải: Chọn số lượng -->
+                        <div class="lg:col-span-5 space-y-6">
+                            <div class="bento-card shadow-sm border-t-4 border-t-orange-500">
+                                <label class="form-label mb-6 flex items-center gap-2">
+                                    <i class="fas fa-calculator text-orange-500"></i> 2. Số lượng mỗi loại
+                                </label>
+                                
+                                <div class="space-y-5" id="question-counts">
+                                    <!-- Trắc nghiệm -->
+                                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 group focus-within:border-teal-500 transition">
+                                        <div class="flex justify-between items-center mb-3">
+                                            <span class="text-xs font-black text-slate-700 uppercase tracking-tighter">Trắc nghiệm 4 PA</span>
+                                            <span id="mc-available" class="px-2 py-1 bg-teal-100 text-teal-700 rounded-lg text-[10px] font-black uppercase">Có sẵn: 0</span>
+                                        </div>
+                                        <input type="number" id="mc-count" min="0" placeholder="Nhập số lượng..." class="w-full bg-transparent border-none outline-none font-black text-slate-800 placeholder-slate-300">
+                                    </div>
+
+                                    <!-- Đúng Sai -->
+                                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 group focus-within:border-teal-500 transition">
+                                        <div class="flex justify-between items-center mb-3">
+                                            <span class="text-xs font-black text-slate-700 uppercase tracking-tighter">Câu hỏi Đúng/Sai</span>
+                                            <span id="tf-available" class="px-2 py-1 bg-orange-100 text-orange-700 rounded-lg text-[10px] font-black uppercase">Có sẵn: 0</span>
+                                        </div>
+                                        <input type="number" id="tf-count" min="0" placeholder="Nhập số lượng..." class="w-full bg-transparent border-none outline-none font-black text-slate-800 placeholder-slate-300">
+                                    </div>
+
+                                    <!-- Trả lời ngắn -->
+                                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 group focus-within:border-teal-500 transition">
+                                        <div class="flex justify-between items-center mb-3">
+                                            <span class="text-xs font-black text-slate-700 uppercase tracking-tighter">Trả lời ngắn</span>
+                                            <span id="sa-available" class="px-2 py-1 bg-blue-100 text-blue-700 rounded-lg text-[10px] font-black uppercase">Có sẵn: 0</span>
+                                        </div>
+                                        <input type="number" id="sa-count" min="0" placeholder="Nhập số lượng..." class="w-full bg-transparent border-none outline-none font-black text-slate-800 placeholder-slate-300">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Footer Action -->
+                            <div class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-xl shadow-teal-900/5">
+                                <button id="generate-test-btn" class="cta-button w-full justify-center py-4">
+                                    Tạo đề & Hoàn tất <i class="fas fa-magic ml-2"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 `;
                 feather.replace();
@@ -383,70 +534,107 @@
             // =====================================================================
             function renderManualInputUI() {
                 pageContainer.innerHTML = `
-                    <div class="flex items-center mb-6">
-                        <a href="create-test-teacher.html" class="p-2 mr-2 hover:bg-slate-200 rounded-full nav-link"><i data-feather="arrow-left"></i></a>
-                        <div>
-                            <h1 class="text-3xl font-bold text-slate-800">Soạn nội dung đề thi</h1>
-                            <p id="test-name-subtitle" class="text-slate-600 mt-1">Soạn câu hỏi cho: ${testData.name}</p>
+                    <!-- Header & Steps -->
+                    <div class="flex flex-col gap-4 mb-10">
+                        <div class="flex items-center gap-2">
+                            <a href="create-test-teacher.html" class="p-2 -ml-2 rounded-lg hover:bg-white transition text-slate-400 nav-link"><i data-feather="arrow-left" class="w-4"></i></a>
+                            <span class="step-pill step-done flex items-center gap-1"><i class="fas fa-check-circle text-[10px]"></i> Bước 1: Thiết lập cơ bản</span>
+                            <div class="h-[2px] w-8 bg-green-200"></div>
+                            <span class="step-pill step-active">Bước 2: Soạn câu hỏi</span>
                         </div>
+                        <h1 class="text-3xl font-black text-slate-900 tracking-tight">Soạn thảo câu hỏi</h1>
+                        <p id="test-name-subtitle" class="text-slate-500 font-medium text-sm italic">Đang soạn cho: ${testData.name}</p>
                     </div>
                     
-                    <div id="questions-list-container" class="space-y-4 mb-8"></div>
-
-                    <div class="bg-white p-6 rounded-lg shadow-sm">
-                        <form id="add-question-form">
-                            <div class="flex justify-between items-center border-b pb-2 mb-4">
-                                <h2 id="form-title" class="text-lg font-semibold text-slate-800">Thêm câu hỏi mới</h2>
+                    <!-- List Area (Danh sách các câu đã soạn) -->
+                    <div class="space-y-4 mb-12">
+                        <div class="flex justify-between items-center px-1">
+                            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest">Các câu hỏi đã thêm</h3>
+                        </div>
+                        <div id="questions-list-container" class="space-y-3">
+                            <div class="bg-white p-10 rounded-[32px] border-2 border-dashed border-slate-100 text-center">
+                                <p class="text-slate-300 font-bold uppercase tracking-widest text-xs">Đang tải danh sách...</p>
                             </div>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Nội dung câu hỏi</label>
-                                    <div id="q-content" contenteditable="true" class="editable-div !mt-1"></div>
+                        </div>
+                    </div>
+
+                    <!-- Form Editor Card -->
+                    <div class="bento-card shadow-sm border-t-4 border-t-teal-500">
+                        <form id="add-question-form" class="space-y-8">
+                            <div class="flex justify-between items-center">
+                                <h2 id="form-title" class="text-xl font-black text-slate-800">Thêm câu hỏi mới</h2>
+                                <div class="w-10 h-10 bg-teal-50 text-teal-600 rounded-xl flex items-center justify-center shadow-sm shadow-teal-100">
+                                    <i data-feather="edit-3" class="w-5 h-5"></i>
                                 </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Hình ảnh</label>
-                                    <div id="image-drop-zone" class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                                         <div class="space-y-1 text-center">
-                                            <div id="image-preview-container" class="hidden">
-                                                <img id="q-image-preview" src="" alt="Image preview" class="mx-auto h-24 w-auto rounded-md">
-                                                <button type="button" id="q-image-remove-btn" class="mt-2 text-sm text-red-600 hover:text-red-800 font-semibold">Xóa ảnh</button>
+                            </div>
+
+                            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                                <!-- Cột trái: Nhập liệu text -->
+                                <div class="lg:col-span-7 space-y-6">
+                                    <div>
+                                        <label class="form-label">Nội dung câu hỏi</label>
+                                        <div id="q-content" contenteditable="true" class="editable-div !mt-1" placeholder="Nhập câu hỏi (Hỗ trợ Markdown & LaTeX)..."></div>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="form-label">Loại trắc nghiệm</label>
+                                            <div class="relative">
+                                                <select id="q-type" class="modern-select !py-3 !text-sm">
+                                                    <option value="multiple_choice">Trắc nghiệm 4 PA</option>
+                                                    <option value="true_false">Đúng / Sai</option>
+                                                    <option value="short_answer">Trả lời ngắn</option>
+                                                </select>
+                                                <i class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none text-xs"></i>
                                             </div>
-                                            <div id="image-placeholder">
-                                                <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
-                                                <div class="flex text-sm text-gray-600">
-                                                    <label for="q-image-input" class="relative cursor-pointer bg-white rounded-md font-medium text-teal-600 hover:text-teal-500"><span>Tải file</span><input id="q-image-input" type="file" class="sr-only" accept="image/*"></label>
-                                                    <p class="pl-1">hoặc kéo thả, dán</p>
-                                                </div>
-                                            </div>
+                                        </div>
+                                        <div class="flex items-end">
+                                            <button type="button" id="cancel-edit-btn" class="hidden px-5 py-3 bg-slate-100 text-slate-500 font-bold text-xs rounded-xl hover:bg-slate-200 transition w-full">HỦY SỬA</button>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label for="q-type" class="block text-sm font-medium text-gray-700">Loại câu hỏi</label>
-                                        <select id="q-type" class="form-input !mt-1">
-                                            <option value="multiple_choice">Trắc nghiệm</option>
-                                            <option value="true_false">Đúng/Sai</option>
-                                            <option value="short_answer">Trả lời ngắn</option>
-                                        </select>
+
+                                <!-- Cột phải: Xử lý hình ảnh -->
+                                <div class="lg:col-span-5">
+                                    <label class="form-label">Hình ảnh minh họa</label>
+                                    <div id="image-drop-zone" class="mt-1 border-2 border-dashed border-slate-200 rounded-3xl p-6 text-center hover:border-teal-500 transition-all flex flex-col items-center justify-center min-h-[230px] bg-slate-50/50">
+                                        <div id="image-placeholder" class="space-y-3">
+                                            <div class="w-12 h-12 bg-white text-slate-400 rounded-2xl flex items-center justify-center mx-auto shadow-sm"><i data-feather="image"></i></div>
+                                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-tighter leading-relaxed">
+                                                Kéo thả ảnh vào đây <br> hoặc <label for="q-image-input" class="text-teal-600 cursor-pointer hover:underline">Dán link / Tải lên</label>
+                                            </p>
+                                            <input id="q-image-input" type="file" class="hidden" accept="image/*">
+                                        </div>
+                                        <div id="image-preview-container" class="hidden w-full text-center">
+                                            <img id="q-image-preview" class="max-h-32 rounded-xl mx-auto border shadow-sm mb-4">
+                                            <button type="button" id="q-image-remove-btn" class="text-[10px] font-black text-red-500 uppercase tracking-widest hover:underline">Xóa ảnh này</button>
+                                        </div>
                                     </div>
                                 </div>
-                                <div id="answer-fields"></div>
                             </div>
-                            <div class="mt-4 flex justify-end space-x-2">
-                                <button type="button" id="cancel-edit-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-md hidden">Hủy sửa</button>
-                                <button type="submit" id="add-q-btn" class="cta-button text-white px-4 py-2 rounded-md">Thêm câu hỏi</button>
+
+                            <!-- Answer Area (Dynamic) -->
+                            <div id="answer-fields" class="pt-8 border-t border-slate-50">
+                                <!-- Được render bởi hàm renderAnswerFields() -->
+                            </div>
+
+                            <div class="flex justify-end pt-4">
+                                <button type="submit" id="add-q-btn" class="cta-button px-10">
+                                    Lưu câu hỏi <i data-feather="save" class="w-4 ml-2"></i>
+                                </button>
                             </div>
                         </form>
                     </div>
-                    <div class="mt-8 flex justify-end">
-                        <a href="tests.html" class="cta-button text-white font-bold py-3 px-6 rounded-lg flex items-center">
-                            <i data-feather="check-circle" class="w-5 h-5 mr-2"></i>Hoàn tất
+
+                    <!-- Footer Action -->
+                    <div class="mt-12 flex justify-center pb-20">
+                        <a href="tests.html" class="cta-button !bg-slate-900 shadow-none hover:!scale-105 !px-12 !py-5">
+                            Hoàn tất đề thi & Đăng kho <i class="fas fa-check-double ml-3"></i>
                         </a>
                     </div>
                 `;
                 feather.replace();
-                renderAnswerFields();
+                renderAnswerFields(); // Nạp lại các trường đáp án trắc nghiệm/đúng sai
             }
             
             function setupManualInputEventListeners() {
@@ -480,52 +668,65 @@
                 });
             }
 
-            function renderAnswerFields() {
+            window.renderAnswerFields = () => {
                 const qType = document.getElementById('q-type').value;
                 const answerFields = document.getElementById('answer-fields');
+                
                 if (qType === 'multiple_choice') {
                     answerFields.innerHTML = `
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Các lựa chọn</label>
-                        <div class="grid grid-cols-2 gap-x-4 gap-y-2">
-                            ${['A', 'B', 'C', 'D'].map(opt => `<div class="flex items-center"><span class="font-semibold mr-2 text-sm">${opt}</span><input type="text" id="q-option-${opt.toLowerCase()}" class="form-input !mt-0"></div>`).join('')}
+                        <label class="form-label mb-4">Các lựa chọn trắc nghiệm</label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            ${['A', 'B', 'C', 'D'].map(opt => `
+                                <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-100 focus-within:border-teal-500 transition">
+                                    <span class="w-8 h-8 bg-white rounded-lg flex items-center justify-center font-black text-teal-600 text-sm shadow-sm">${opt}</span>
+                                    <input type="text" id="q-option-${opt.toLowerCase()}" class="bg-transparent border-none outline-none w-full font-bold text-slate-700 placeholder-slate-300" placeholder="Nội dung phương án...">
+                                </div>`).join('')}
                         </div>
-                         <div class="mt-2"><label for="q-mc-answer" class="text-sm font-medium text-gray-700">Đáp án đúng:</label><select id="q-mc-answer" class="form-input w-auto !mt-0 ml-2"><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></div>
-                    `;
+                        <div class="mt-6 flex items-center gap-4 bg-teal-50/50 p-4 rounded-2xl border border-teal-100">
+                            <label class="text-sm font-black text-teal-700 uppercase tracking-tighter">Đáp án đúng:</label>
+                            <select id="q-mc-answer" class="bg-white border border-teal-200 rounded-lg px-4 py-1.5 font-black text-teal-600 outline-none">
+                                <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+                            </select>
+                        </div>`;
                 } else if (qType === 'true_false') {
-                    answerFields.innerHTML = `<label class="block text-sm font-medium text-gray-700 mb-1">Các mệnh đề</label><div class="space-y-3">
-                        ${[...Array(4)].map((_, i) => `
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 items-center">
-                                <div class="md:col-span-2"><textarea id="q-tf-statement-${i}" placeholder="Nội dung mệnh đề ${i + 1}" class="form-input !mt-0" rows="2"></textarea></div>
-                                <div class="flex items-center space-x-4 mt-2 md:mt-0">
-                                    <label class="flex items-center"><input type="radio" name="q-tf-answer-${i}" value="true" class="h-4 w-4 text-teal-600 border-gray-300"> <span class="ml-2">Đúng</span></label>
-                                    <label class="flex items-center"><input type="radio" name="q-tf-answer-${i}" value="false" class="h-4 w-4 text-teal-600 border-gray-300"> <span class="ml-2">Sai</span></label>
-                                </div>
-                            </div>`).join('')}
-                    </div>`;
+                    answerFields.innerHTML = `
+                        <label class="form-label mb-4">Các mệnh đề Đúng/Sai</label>
+                        <div class="space-y-3">
+                            ${[...Array(4)].map((_, i) => `
+                                <div class="flex flex-col md:flex-row gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                                    <input type="text" id="q-tf-statement-${i}" placeholder="Nội dung mệnh đề ${i + 1}..." class="flex-grow bg-transparent border-none outline-none font-bold text-slate-700">
+                                    <div class="flex items-center gap-4 shrink-0 bg-white px-4 py-2 rounded-xl border border-slate-100">
+                                        <label class="flex items-center gap-2 cursor-pointer font-bold text-xs"><input type="radio" name="q-tf-answer-${i}" value="true" class="accent-teal-600"> ĐÚNG</label>
+                                        <label class="flex items-center gap-2 cursor-pointer font-bold text-xs"><input type="radio" name="q-tf-answer-${i}" value="false" class="accent-red-500"> SAI</label>
+                                    </div>
+                                </div>`).join('')}
+                        </div>`;
                 } else if (qType === 'short_answer') {
-                    answerFields.innerHTML = `<div><label for="q-sa-answer" class="block text-sm font-medium text-gray-700">Đáp án đúng</label><input type="text" id="q-sa-answer" class="form-input"></div>`;
+                    answerFields.innerHTML = `
+                        <label class="form-label">Đáp án đúng (Viết ngắn)</label>
+                        <input type="text" id="q-sa-answer" class="form-input" placeholder="Nhập chính xác đáp án cần trả lời...">`;
                 }
             }
 
-            function renderQuestionsList() {
+            window.renderQuestionsList = () => {
                  const container = document.getElementById('questions-list-container');
-                 container.innerHTML = '';
                  if (!testData.questions || testData.questions.length === 0) {
-                     container.innerHTML = '<p class="text-center text-slate-500">Chưa có câu hỏi nào.</p>';
+                     container.innerHTML = '<div class="bg-white p-10 rounded-[32px] border-2 border-dashed border-slate-100 text-center"><p class="text-slate-300 font-bold uppercase tracking-widest text-xs">Chưa có câu hỏi nào</p></div>';
                      return;
                  }
-                 testData.questions.forEach((q, index) => {
-                     const div = document.createElement('div');
-                     div.className = 'question-block';
-                     div.innerHTML = `<div class="flex justify-between items-start">
-                             <div class="prose prose-sm max-w-none"><b>Câu ${index + 1}:</b> ${q.content}</div>
-                             <div class="flex space-x-1 flex-shrink-0 ml-4">
-                                <button data-action="edit" data-index="${index}" class="p-1 text-slate-500 hover:text-blue-600 rounded-md"><i data-feather="edit-2" class="w-4 h-4"></i></button>
-                                <button data-action="delete" data-index="${index}" class="p-1 text-slate-500 hover:text-red-600 rounded-md"><i data-feather="trash-2" class="w-4 h-4"></i></button>
-                             </div>
-                        </div>`;
-                     container.appendChild(div);
-                 });
+                 container.innerHTML = testData.questions.map((q, index) => `
+                    <div class="question-item">
+                        <div class="flex justify-between items-start">
+                            <div class="overflow-hidden">
+                                <span class="text-[10px] font-black text-teal-600 bg-teal-50 px-2 py-1 rounded mb-2 inline-block">CÂU ${index + 1}</span>
+                                <div class="prose prose-sm font-bold text-slate-700 leading-snug line-clamp-2">${q.content}</div>
+                            </div>
+                            <div class="flex gap-1 ml-4 shrink-0">
+                                <button data-action="edit" data-index="${index}" class="p-2 text-slate-400 hover:text-teal-600 transition"><i data-feather="edit-2" class="w-4"></i></button>
+                                <button data-action="delete" data-index="${index}" class="p-2 text-slate-400 hover:text-red-500 transition"><i data-feather="trash-2" class="w-4"></i></button>
+                            </div>
+                        </div>
+                    </div>`).join('');
                  feather.replace();
                  renderMathWithKaTeX(container);
             }
@@ -712,5 +913,45 @@
             }
         });
     </script>
+
+<script type="text/javascript">
+    // 1. Chặn Chuột phải (Để ẩn menu "Inspect/Kiểm tra" và "View Source/Xem nguồn")
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        // Không hiện thông báo gì cả để trải nghiệm mượt mà hơn
+    });
+
+    // 2. Chặn các phím tắt Developer Tools
+    document.addEventListener('keydown', function(e) {
+        // Chặn F12
+        if (e.key === 'F12' || e.keyCode === 123) {
+            e.preventDefault();
+            return false;
+        }
+
+        // Chặn các tổ hợp phím Ctrl + ...
+        if (e.ctrlKey) {
+            switch (e.key.toLowerCase()) {
+                case 'u': // Chặn Ctrl + U (Xem source code)
+                case 's': // Chặn Ctrl + S (Lưu trang web)
+                case 'p': // Chặn Ctrl + P (In trang web - thường hiện code)
+                // Lưu ý: KHÔNG chặn 'c' (Copy) và 'a' (Select All)
+                    e.preventDefault();
+                    return false;
+            }
+
+            // Chặn Ctrl + Shift + ... (Các phím mở DevTools)
+            if (e.shiftKey) {
+                switch (e.key.toLowerCase()) {
+                    case 'i': // Inspect Element
+                    case 'j': // Console
+                    case 'c': // Element Inspector
+                        e.preventDefault();
+                        return false;
+                }
+            }
+        }
+    });
+</script>
 </body>
 </html>

@@ -4,170 +4,230 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tạo Đề thi Mới - AIGEO</title>
+    <title>AIGEO - Tạo Đề thi Mới</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/feather-icons"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
         :root {
-            --primary-teal: #0D9488;
-            --primary-emerald: #10B981;
+            --primary: #0D9488;
+            --primary-light: #F0FDFA;
+            --secondary: #10B981;
+            --text-main: #1E293B;
+            --text-light: #64748B;
+            --bg-body: #F8FAFC;
+            --primary-gradient: linear-gradient(135deg, #0D9488 0%, #10B981 100%);
         }
-        body { 
-            font-family: 'Be Vietnam Pro', sans-serif; 
-            background-color: #f1f5f9; 
-        }
-        .sidebar-link { display: flex; align-items: center; padding: 0.75rem 1rem; border-radius: 0.5rem; transition: background-color 0.2s, color 0.2s; }
-        .sidebar-link:hover { background-color: #e2e8f0; color: #0f172a; }
-        .sidebar-link.active { 
-            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
-            color: white; 
-            font-weight: 600; 
-            box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2);
-        }
-        .sidebar-link.active:hover { background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald)); }
-        .sidebar-link.active svg { color: white; }
-        .sidebar-link svg { margin-right: 0.75rem; }
+
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body); color: var(--text-main); overflow: hidden; }
+
+        /* --- SIDEBAR STYLE (Đồng bộ) --- */
+        .sidebar { width: 280px; background: white; border-right: 1px solid #E2E8F0; height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; }
+        .nav-group-title { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #94A3B8; padding: 1.5rem 1.5rem 0.5rem; }
+        .sidebar-link { display: flex; align-items: center; padding: 0.8rem 1.5rem; color: var(--text-light); font-weight: 600; font-size: 0.9rem; transition: 0.3s; gap: 12px; }
+        .sidebar-link i { width: 18px; height: 18px; }
+        .sidebar-link:hover { color: var(--primary); background: var(--primary-light); }
+        .sidebar-link.active { background: var(--primary-gradient); color: white; border-radius: 12px; margin: 0 12px; box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.2); }
+
+        /* --- DASHBOARD CARDS --- */
+        .bento-card { background: white; border-radius: 32px; border: 1px solid #E2E8F0; padding: 32px; transition: 0.3s; }
         
-        .brand-gradient-text {
-            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .cta-button {
-            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.2);
-        }
-        .cta-button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(13, 148, 136, 0.3);
-        }
-        select:disabled { background-color: #f1f5f9; cursor: not-allowed; }
-        .source-option { border: 2px solid #e2e8f0; transition: all 0.2s; }
-        .source-option:has(input:checked) { border-color: var(--primary-teal); background-color: #f0fdfa; }
-        .skeleton { background-color: #e2e8f0; border-radius: 0.25rem; animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        /* --- STEP INDICATOR --- */
+        .step-pill { padding: 6px 16px; border-radius: 100px; font-weight: 800; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; background: var(--primary-light); color: var(--primary); }
+
+        /* --- FORM STYLES --- */
+        .form-label { display: block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #94A3B8; letter-spacing: 0.05em; margin-bottom: 8px; margin-left: 4px; }
+        .form-input { width: 100%; padding: 14px 20px; background: #F8FAFC; border: 2px solid #F1F5F9; border-radius: 16px; font-weight: 700; color: var(--text-main); outline: none; transition: 0.3s; }
+        .form-input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1); }
+        .form-input:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* --- CARD SELECTORS (Source & Monitoring) --- */
+        .source-option { border: 2px solid #F1F5F9; border-radius: 20px; padding: 20px; cursor: pointer; transition: 0.3s; position: relative; display: flex; align-items: flex-start; gap: 16px; }
+        .source-option:hover { border-color: var(--primary); background: #F8FAFC; }
+        .source-option:has(input:checked) { border-color: var(--primary); background: var(--primary-light); box-shadow: 0 10px 20px -5px rgba(13, 148, 136, 0.1); }
+        .source-option input { display: none; }
+        .source-icon { width: 44px; height: 44px; border-radius: 12px; background: white; border: 1px solid #F1F5F9; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #94A3B8; transition: 0.3s; flex-shrink: 0; }
+        .source-option:has(input:checked) .source-icon { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* --- BUTTONS --- */
+        .cta-button { background: var(--primary-gradient); color: white; padding: 16px 32px; border-radius: 18px; font-weight: 800; transition: 0.3s; display: inline-flex; align-items: center; gap: 10px; border: none; cursor: pointer; box-shadow: 0 10px 20px rgba(13, 148, 136, 0.15); }
+        .cta-button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(13, 148, 136, 0.25); }
+        .cta-button:disabled { background: #E2E8F0; color: #94A3B8; box-shadow: none; cursor: not-allowed; }
+
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #0D9488; border-radius: 10px; }
+        .skeleton { background: #E2E8F0; animation: pulse 2s infinite; border-radius: 8px; }
         @keyframes pulse { 50% { opacity: .5; } }
-        .form-input {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            margin-top: 0.5rem;
-            border: 1px solid #cbd5e1;
-            border-radius: 0.5rem;
-            background-color: #f8fafc;
-            transition: all 0.2s ease-in-out;
-        }
-        .form-input:focus {
-            outline: none;
-            background-color: white;
-            border-color: var(--primary-teal);
-            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
-        }
+        .toast { transition: 0.3s; transform: translateY(100%); opacity: 0; }
+        .toast.show { transform: translateY(0); opacity: 1; }
     </style>
 </head>
 <body class="flex h-screen">
 
-    <aside class="w-64 bg-white shadow-md flex-shrink-0 flex flex-col">
-        <div class="h-16 flex-shrink-0 flex items-center justify-center border-b px-4">
-            <a href="/index.html" class="flex items-center gap-2">
-                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" alt="AIGEO Logo" class="h-8 w-auto">
-                <span class="text-2xl font-bold brand-gradient-text">AIGEO</span>
+    <!-- Sidebar (Đồng bộ) -->
+    <aside class="sidebar">
+        <div class="p-8">
+            <a href="/index.html" class="flex items-center gap-3">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" class="h-9 w-auto">
+                <span class="text-xl font-black text-teal-600 tracking-tight">AIGEO</span>
             </a>
         </div>
-        <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
-            <a href="index.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="home"></i>Bảng điều khiển</a>
-            <a href="classrooms.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="users"></i>Quản lý Lớp học</a>
-            <a href="question-bank.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="database"></i>Ngân hàng câu hỏi</a>
-            <a href="tests.html" class="sidebar-link active"><i data-feather="file-text"></i>Quản lý đề thi</a>
-            <a href="account.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="user"></i>Tài khoản</a>
+        <nav class="flex-grow overflow-y-auto">
+            <a href="index.html" class="sidebar-link"><i data-feather="grid"></i> Tổng quan</a>
+            <div class="nav-group-title">Quản lý</div>
+            <a href="classrooms.html" class="sidebar-link"><i data-feather="users"></i> Quản lý Lớp học</a>
+            <a href="tests.html" class="sidebar-link active"><i data-feather="file-text"></i> Quản lý đề thi</a>
+            <a href="question-bank.html" class="sidebar-link"><i data-feather="database"></i> Ngân hàng câu hỏi</a>
+            <div class="nav-group-title">Cá nhân</div>
+            <a href="account.html" class="sidebar-link"><i data-feather="user"></i> Tài khoản</a>
         </nav>
-        <div class="p-4 border-t flex-shrink-0"><button id="logout-btn" class="w-full sidebar-link text-slate-600 text-left"><i data-feather="log-out"></i>Đăng xuất</button></div>
+        <div class="p-4 border-t">
+            <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 rounded-xl transition">
+                <i data-feather="log-out"></i> Đăng xuất
+            </button>
+        </div>
     </aside>
 
     <main class="flex-1 flex flex-col overflow-hidden">
-        <header class="bg-white shadow-sm h-16 flex items-center justify-end px-6">
-            <div class="flex items-center">
-                <span id="user-name" class="font-semibold text-gray-700 mr-4">Đang tải...</span>
-                <img id="user-avatar" class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/40x40/E2E8F0/475569?text=T" alt="Teacher Avatar">
+        <!-- Header -->
+        <header class="h-16 bg-white border-b flex items-center justify-between px-8 shrink-0">
+            <div class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">
+                <a href="index.html" class="hover:text-teal-600">Dashboard</a>
+                <span>/</span>
+                <a href="tests.html" class="hover:text-teal-600">Tests Management</a>
+                <span>/</span>
+                <span class="text-slate-800">Create test</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="text-right hidden sm:block">
+                    <p id="user-name" class="text-sm font-black text-slate-800 leading-none">Đang tải...</p>
+                    <span class="text-[10px] font-bold text-teal-600 uppercase tracking-tighter">Teacher Account</span>
+                </div>
+                <img id="user-avatar" class="h-10 w-10 rounded-xl border-2 border-slate-100 object-cover shadow-sm">
             </div>
         </header>
-        <div class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-100 p-8">
-            <div class="max-w-4xl mx-auto">
-                <a href="tests.html" class="flex items-center text-slate-500 hover:text-teal-600 font-semibold mb-4 nav-link">
-                    <i data-feather="arrow-left" class="mr-2 w-4 h-4"></i>Quay lại danh sách
-                </a>
-                <h1 class="text-3xl font-bold text-slate-800">Tạo Đề thi Mới (Bước 1)</h1>
-                <p class="mt-2 text-slate-600">Nhập các thông tin cơ bản để bắt đầu tạo đề thi.</p>
-                
-                <div class="mt-8 bg-white p-8 rounded-xl shadow-lg space-y-6">
-                    <div>
-                        <label for="test-name" class="block text-sm font-medium text-gray-700">Tên đề thi</label>
-                        <input type="text" id="test-name" placeholder="Ví dụ: Đề kiểm tra 15 phút - Chương 1" class="form-input">
-                    </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                             <label for="time-limit" class="block text-sm font-medium text-gray-700">Thời gian làm bài (phút)</label>
-                             <input type="number" id="time-limit" value="45" min="1" class="form-input">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Loại bài tập</label>
-                            <div id="monitoring-options" class="mt-2 flex items-center space-x-4">
-                               <label class="flex items-center p-3 border rounded-lg cursor-pointer flex-1 source-option">
-                                   <input type="radio" name="monitoring" value="true" class="h-4 w-4 text-teal-600 border-gray-300 focus:ring-teal-500" checked>
-                                   <span class="ml-3 text-sm font-medium">Kiểm tra (Có giám sát)</span>
-                               </label>
-                               <label class="flex items-center p-3 border rounded-lg cursor-pointer flex-1 source-option">
-                                   <input type="radio" name="monitoring" value="false" class="h-4 w-4 text-teal-600 border-gray-300 focus:ring-teal-500">
-                                   <span class="ml-3 text-sm font-medium">Bài tập về nhà</span>
-                               </label>
+        <!-- Main Content Area -->
+        <div class="flex-1 overflow-y-auto bg-slate-50/50 p-8">
+            <div class="max-w-4xl mx-auto space-y-8 pb-20">
+                
+                <!-- Step Indicator & Title -->
+                <div class="flex flex-col gap-4">
+                    <div class="flex items-center gap-2">
+                        <span class="step-pill">BƯỚC 1: THIẾT LẬP CƠ BẢN</span>
+                        <div class="h-[2px] w-8 bg-slate-200"></div>
+                        <span class="text-[10px] font-extrabold text-slate-300 uppercase tracking-widest">BƯỚC 2: SOẠN CÂU HỎI</span>
+                    </div>
+                    <h1 class="text-3xl font-black text-slate-900 tracking-tight">Tạo Đề thi Mới</h1>
+                    <p class="text-slate-500 font-medium text-sm">Vui lòng điền các thông tin nền tảng để hệ thống khởi tạo bài thi.</p>
+                </div>
+
+                <div id="toast-container" class="fixed bottom-10 right-10 z-50 flex flex-col gap-3"></div>
+
+                <!-- Bento Form Section -->
+                <div class="space-y-6">
+                    
+                    <!-- Basic Info Card -->
+                    <div class="bento-card shadow-sm">
+                        <div class="space-y-6">
+                            <div>
+                                <label class="form-label">Tên đề thi hiển thị</label>
+                                <input type="text" id="test-name" placeholder="Ví dụ: Đề kiểm tra học kỳ 1 - Lớp 12A1" class="form-input">
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="form-label">Thời gian làm bài (Phút)</label>
+                                    <input type="number" id="time-limit" value="45" min="1" class="form-input">
+                                </div>
+                                <div>
+                                    <label class="form-label">Phân loại bài tập</label>
+                                    <div id="monitoring-options" class="grid grid-cols-2 gap-3">
+                                        <label class="source-option !p-3">
+                                            <input type="radio" name="monitoring" value="true" checked>
+                                            <div class="source-icon !w-8 !h-8 !text-xs"><i class="fas fa-shield-alt"></i></div>
+                                            <span class="text-xs font-black uppercase text-slate-700">Đề kiểm tra</span>
+                                        </label>
+                                        <label class="source-option !p-3">
+                                            <input type="radio" name="monitoring" value="false">
+                                            <div class="source-icon !w-8 !h-8 !text-xs"><i class="fas fa-home"></i></div>
+                                            <span class="text-xs font-black uppercase text-slate-700">Bài tập về nhà</span>
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Nguồn câu hỏi</label>
-                         <div id="source-options" class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-                             <label class="source-option p-4 rounded-lg cursor-pointer flex items-start">
-                                 <input type="radio" name="question-source" value="manual_all" class="h-4 w-4 text-teal-600 border-gray-300 focus:ring-teal-500 mt-1" checked>
-                                 <div class="ml-3">
-                                     <span class="font-semibold text-slate-800">Chọn từ Ngân hàng</span>
-                                     <p class="text-sm text-slate-500">Lấy câu hỏi có sẵn từ hệ thống và do bạn tạo.</p>
-                                 </div>
-                             </label>
-                             <label class="source-option p-4 rounded-lg cursor-pointer flex items-start">
-                                 <input type="radio" name="question-source" value="manual_input" class="h-4 w-4 text-teal-600 border-gray-300 focus:ring-teal-500 mt-1">
-                                 <div class="ml-3">
-                                     <span class="font-semibold text-slate-800">Tự nhập câu hỏi (Nhập tay)</span>
-                                     <p class="text-sm text-slate-500">Tự soạn các câu hỏi cho riêng đề thi này.</p>
-                                 </div>
-                             </label>
-                         </div>
-                    </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Phạm vi kiến thức</label>
-                        <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <select id="filter-subject" class="form-input"></select>
-                            <select id="filter-grade" class="form-input" disabled></select>
+                    <!-- Question Source Card -->
+                    <div class="bento-card shadow-sm border-l-4 border-l-teal-500">
+                        <label class="form-label mb-4">Phương thức khởi tạo câu hỏi</label>
+                        <div id="source-options" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <label class="source-option">
+                                <input type="radio" name="question-source" value="manual_all" checked>
+                                <div class="source-icon"><i class="fas fa-database"></i></div>
+                                <div>
+                                    <span class="block font-black text-slate-800 text-sm">Chọn từ Ngân hàng</span>
+                                    <p class="text-[11px] font-medium text-slate-400 leading-snug mt-1">Sử dụng kho câu hỏi khổng lồ có sẵn của hệ thống và dữ liệu cá nhân của bạn.</p>
+                                </div>
+                            </label>
+                            <label class="source-option">
+                                <input type="radio" name="question-source" value="manual_input">
+                                <div class="source-icon"><i class="fas fa-keyboard"></i></div>
+                                <div>
+                                    <span class="block font-black text-slate-800 text-sm">Tự soạn câu hỏi</span>
+                                    <p class="text-[11px] font-medium text-slate-400 leading-snug mt-1">Tự nhập nội dung câu hỏi mới hoàn toàn dành riêng cho đề thi này.</p>
+                                </div>
+                            </label>
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Giao bài cho lớp (Tùy chọn)</label>
-                        <div id="classrooms-list" class="mt-2 space-y-2 max-h-40 overflow-y-auto p-3 border rounded-lg bg-slate-50">
-                             <div class="space-y-3">
-                                <div class="skeleton h-5 w-3/4"></div>
-                                <div class="skeleton h-5 w-1/2"></div>
+                    <!-- Scope & Assigning -->
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                        <!-- Scope -->
+                        <div class="md:col-span-5 bento-card shadow-sm">
+                            <label class="form-label">Phạm vi kiến thức</label>
+                            <div class="space-y-4 mt-4">
+                                <div class="relative">
+                                    <select id="filter-subject" class="form-input appearance-none"></select>
+                                    <i class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none"></i>
+                                </div>
+                                <div class="relative">
+                                    <select id="filter-grade" class="form-input appearance-none" disabled></select>
+                                    <i class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Classrooms -->
+                        <div class="md:col-span-7 bento-card shadow-sm">
+                            <label class="form-label">Giao bài cho lớp (Tùy chọn)</label>
+                            <div id="classrooms-list" class="mt-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 max-h-[140px] overflow-y-auto space-y-2">
+                                <div class="space-y-3">
+                                    <div class="skeleton h-5 w-3/4"></div>
+                                    <div class="skeleton h-5 w-1/2"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="mt-8 flex justify-end">
-                    <button id="next-step-btn" class="cta-button text-white font-bold px-8 py-4 rounded-lg disabled:bg-slate-400 disabled:cursor-not-allowed" disabled>
-                        Tiếp tục <i data-feather="arrow-right" class="inline-block ml-2 w-5 h-5"></i>
+                <!-- Footer Action -->
+                <div class="flex justify-between items-center bg-white p-6 rounded-[24px] border border-slate-100 shadow-xl shadow-teal-900/5">
+                    <div class="flex items-center gap-3 text-slate-400">
+                        <i data-feather="info" class="w-4"></i>
+                        <p class="text-[10px] font-bold uppercase tracking-wider">Mọi thay đổi sẽ được lưu dưới dạng bản nháp</p>
+                    </div>
+                    <button id="next-step-btn" class="cta-button" disabled>
+                        Tiếp tục bước 2 <i data-feather="arrow-right" class="w-4"></i>
                     </button>
                 </div>
+
             </div>
         </div>
     </main>
@@ -227,7 +287,7 @@
                     const userData = docSnap.data();
                     document.getElementById('user-name').textContent = userData.name || 'Giáo viên';
                     const nameInitial = (userData.name || 'T').charAt(0).toUpperCase();
-                    document.getElementById('user-avatar').src = `https://placehold.co/40x40/10B981/FFFFFF?text=${nameInitial}`;
+                    document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=0D9488&color=fff&bold=true`;
                     initCreateTestPage();
                 } else {
                     const userRole = docSnap.data()?.role;
@@ -360,5 +420,45 @@
         
         feather.replace();
     </script>
+
+<script type="text/javascript">
+    // 1. Chặn Chuột phải (Để ẩn menu "Inspect/Kiểm tra" và "View Source/Xem nguồn")
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        // Không hiện thông báo gì cả để trải nghiệm mượt mà hơn
+    });
+
+    // 2. Chặn các phím tắt Developer Tools
+    document.addEventListener('keydown', function(e) {
+        // Chặn F12
+        if (e.key === 'F12' || e.keyCode === 123) {
+            e.preventDefault();
+            return false;
+        }
+
+        // Chặn các tổ hợp phím Ctrl + ...
+        if (e.ctrlKey) {
+            switch (e.key.toLowerCase()) {
+                case 'u': // Chặn Ctrl + U (Xem source code)
+                case 's': // Chặn Ctrl + S (Lưu trang web)
+                case 'p': // Chặn Ctrl + P (In trang web - thường hiện code)
+                // Lưu ý: KHÔNG chặn 'c' (Copy) và 'a' (Select All)
+                    e.preventDefault();
+                    return false;
+            }
+
+            // Chặn Ctrl + Shift + ... (Các phím mở DevTools)
+            if (e.shiftKey) {
+                switch (e.key.toLowerCase()) {
+                    case 'i': // Inspect Element
+                    case 'j': // Console
+                    case 'c': // Element Inspector
+                        e.preventDefault();
+                        return false;
+                }
+            }
+        }
+    });
+</script>
 </body>
 </html>

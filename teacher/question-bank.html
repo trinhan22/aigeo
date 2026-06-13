@@ -4,176 +4,291 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ngân hàng Câu hỏi - AIGEO</title>
+    <title>AIGEO - Ngân hàng Câu hỏi</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/feather-icons"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Rendering Engines -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
     <style>
         :root {
-            --primary-teal: #0D9488;
-            --primary-emerald: #10B981;
+            --primary: #0D9488;
+            --primary-light: #F0FDFA;
+            --secondary: #10B981;
+            --text-main: #1E293B;
+            --text-light: #64748B;
+            --bg-body: #F8FAFC;
+            --primary-gradient: linear-gradient(135deg, #0D9488 0%, #10B981 100%);
         }
-        body { 
-            font-family: 'Be Vietnam Pro', sans-serif; 
-            background-color: #f1f5f9; 
-        }
-        .sidebar-link { display: flex; align-items: center; padding: 0.75rem 1rem; border-radius: 0.5rem; transition: background-color 0.2s, color 0.2s; }
-        .sidebar-link:hover { background-color: #e2e8f0; color: #0f172a; }
-        .sidebar-link.active { 
-            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
-            color: white; 
-            font-weight: 600; 
-            box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2);
-        }
-        .sidebar-link.active:hover { background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald)); }
-        .sidebar-link.active svg { color: white; }
-        .sidebar-link svg { margin-right: 0.75rem; }
+
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body); color: var(--text-main); overflow: hidden; }
+
+        /* --- SIDEBAR STYLE (Đồng bộ) --- */
+        .sidebar { width: 280px; background: white; border-right: 1px solid #E2E8F0; height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; }
+        .nav-group-title { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #94A3B8; padding: 1.5rem 1.5rem 0.5rem; }
+        .sidebar-link { display: flex; align-items: center; padding: 0.8rem 1.5rem; color: var(--text-light); font-weight: 600; font-size: 0.9rem; transition: 0.3s; gap: 12px; }
+        .sidebar-link i { width: 18px; height: 18px; }
+        .sidebar-link:hover { color: var(--primary); background: var(--primary-light); }
+        .sidebar-link.active { background: var(--primary-gradient); color: white; border-radius: 12px; margin: 0 12px; box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.2); }
+
+        /* --- BENTO COMPONENTS --- */
+        .bento-card { background: white; border-radius: 32px; border: 1px solid #E2E8F0; padding: 24px; transition: 0.3s; }
         
-        .brand-gradient-text {
-            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .cta-button {
-            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.2);
-        }
-        .cta-button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(13, 148, 136, 0.3);
-        }
-        .modal-backdrop { background-color: rgba(0, 0, 0, 0.5); transition: opacity 0.3s ease; }
-        .modal-content { transition: transform 0.3s ease, opacity 0.3s ease; transform: translateY(-20px); }
-        .toast { transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; transform: translateY(100%); opacity: 0; }
-        .toast.show { transform: translateY(0); opacity: 1; }
-        .prose { max-width: none; }
+        /* --- MODERN TABLE --- */
+        .modern-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .modern-table th { padding: 16px 24px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #94A3B8; letter-spacing: 0.05em; border-bottom: 1px solid #F1F5F9; }
+        .modern-table td { padding: 16px 24px; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+        .modern-table tr:hover td { background-color: #F8FAFC; }
+
+        /* --- INPUTS --- */
         .form-input {
-            width: 100%; padding: 0.75rem 1rem; margin-top: 0.5rem; border: 1px solid #cbd5e1;
-            border-radius: 0.5rem; background-color: #f8fafc; transition: all 0.2s ease-in-out;
+            width: 100%;
+            padding: 12px 16px;
+            background: #F8FAFC;
+            border: 2px solid #F1F5F9;
+            border-radius: 14px;
+            font-weight: 600;
+            outline: none;
+            transition: all 0.3s ease;
+            color: var(--text-main);
+            display: block;
         }
+
+        /* Xóa vạch đen và thêm mũi tên đẹp cho Select */
+        select.form-input {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+            padding-right: 40px;
+        }
+
         .form-input:focus {
-            outline: none; background-color: white; border-color: var(--primary-teal);
-            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1);
         }
+
+        textarea.form-input { border-radius: 20px; resize: none; }
+
+        /* --- PILLS & BADGES --- */
+        .badge-pill { padding: 4px 12px; border-radius: 100px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; display: inline-block; }
+        .status-approved { background: #DCFCE7; color: #166534; }
+        .status-pending { background: #FEF9C3; color: #854D0E; }
+        .status-rejected { background: #FEE2E2; color: #991B1B; }
+
+        .cta-button { background: var(--primary-gradient); color: white; padding: 12px 24px; border-radius: 14px; font-weight: 800; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; border: none; cursor: pointer; box-shadow: 0 10px 20px rgba(13, 148, 136, 0.15); }
+        .cta-button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(13, 148, 136, 0.25); }
+
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #0D9488; border-radius: 10px; }
+        .modal-backdrop { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); }
+        .skeleton { background: #E2E8F0; animation: pulse 2s infinite; border-radius: 12px; }
+        @keyframes pulse { 50% { opacity: .5; } }
     </style>
 </head>
 <body class="flex h-screen">
 
-    <aside class="w-64 bg-white shadow-md flex-shrink-0 flex flex-col">
-        <div class="h-16 flex-shrink-0 flex items-center justify-center border-b px-4">
-            <a href="/index.html" class="flex items-center gap-2">
-                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" alt="AIGEO Logo" class="h-8 w-auto">
-                <span class="text-2xl font-bold brand-gradient-text">AIGEO</span>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="p-8">
+            <a href="/index.html" class="flex items-center gap-3">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" class="h-9 w-auto">
+                <span class="text-xl font-black text-teal-600 tracking-tight">AIGEO</span>
             </a>
         </div>
-        <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
-            <a href="index.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="home"></i>Bảng điều khiển</a>
-            <a href="classrooms.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="users"></i>Quản lý Lớp học</a>
-            <a href="question-bank.html" class="sidebar-link active"><i data-feather="database"></i>Ngân hàng câu hỏi</a>
-            <a href="tests.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="file-text"></i>Quản lý đề thi</a>
-            <a href="account.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="user"></i>Tài khoản</a>
+        <nav class="flex-grow overflow-y-auto">
+            <a href="index.html" class="sidebar-link"><i data-feather="grid"></i> Tổng quan</a>
+            <div class="nav-group-title">Quản lý</div>
+            <a href="classrooms.html" class="sidebar-link"><i data-feather="users"></i> Quản lý Lớp học</a>
+            <a href="tests.html" class="sidebar-link"><i data-feather="file-text"></i> Quản lý đề thi</a>
+            <a href="question-bank.html" class="sidebar-link active"><i data-feather="database"></i> Ngân hàng câu hỏi</a>
+            <div class="nav-group-title">Cá nhân</div>
+            <a href="account.html" class="sidebar-link"><i data-feather="user"></i> Tài khoản</a>
         </nav>
-        <div class="p-4 border-t flex-shrink-0"><button id="logout-btn" class="w-full sidebar-link text-slate-600 text-left"><i data-feather="log-out"></i>Đăng xuất</button></div>
+        <div class="p-4 border-t">
+            <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 rounded-xl transition">
+                <i data-feather="log-out"></i> Đăng xuất
+            </button>
+        </div>
     </aside>
 
     <main class="flex-1 flex flex-col overflow-hidden">
-        <header class="bg-white shadow-sm h-16 flex items-center justify-end px-6">
-            <div class="flex items-center">
-                <span id="user-name" class="font-semibold text-gray-700 mr-4">Đang tải...</span>
-                <img id="user-avatar" class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/40x40/E2E8F0/475569?text=T" alt="Teacher Avatar">
+        <!-- Header -->
+        <header class="h-16 bg-white border-b flex items-center justify-between px-8 shrink-0">
+            <div class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">
+                <a href="index.html" class="hover:text-teal-600">Dashboard</a> / <span class="text-slate-800">Question Bank</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="text-right hidden sm:block">
+                    <p id="user-name" class="text-sm font-black text-slate-800 leading-none">Đang tải...</p>
+                    <span class="text-[10px] font-bold text-teal-600 uppercase tracking-tighter">Teacher Account</span>
+                </div>
+                <img id="user-avatar" class="h-10 w-10 rounded-xl border-2 border-slate-100 object-cover shadow-sm">
             </div>
         </header>
-        <div class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-100 p-8">
-            <div class="max-w-7xl mx-auto">
-                <h1 class="text-3xl font-bold text-slate-800">Ngân hàng Câu hỏi</h1>
-                <p class="mt-2 text-slate-600">Xem câu hỏi chung và quản lý các câu hỏi bạn đã tạo.</p>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 overflow-y-auto bg-slate-50/50 p-8">
+            <div class="max-w-7xl mx-auto space-y-8">
                 
-                <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <select id="filter-subject" class="p-2 border rounded-md bg-white"></select>
-                    <select id="filter-grade" class="p-2 border rounded-md bg-white" disabled></select>
-                    <select id="filter-lesson" class="p-2 border rounded-md bg-white" disabled></select>
+                <div>
+                    <h1 class="text-3xl font-black text-slate-900 tracking-tight">Ngân hàng Câu hỏi</h1>
+                    <p class="text-slate-500 font-medium mt-1">Kho tri thức chung và công cụ soạn thảo câu hỏi chuyên sâu.</p>
                 </div>
-                <div id="questions-area" class="mt-6">
-                    <div class="text-center text-slate-500 bg-white p-10 rounded-lg shadow-sm">
-                        <i data-feather="list" class="w-12 h-12 mx-auto"></i>
-                        <p class="mt-4">Vui lòng chọn một bài học để xem và thêm câu hỏi.</p>
+
+                <!-- Filters Bento -->
+                <div class="bento-card">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="space-y-1">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Môn học</label>
+                            <select id="filter-subject" class="form-input"></select>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Khối lớp</label>
+                            <select id="filter-grade" class="form-input" disabled></select>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Bài học chi tiết</label>
+                            <select id="filter-lesson" class="form-input" disabled></select>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Questions Area -->
+                <div id="questions-area">
+                    <div class="bento-card flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-slate-200">
+                        <div class="w-16 h-16 bg-slate-50 text-slate-300 rounded-2xl flex items-center justify-center mb-4"><i data-feather="layers"></i></div>
+                        <p class="text-slate-400 font-bold uppercase tracking-widest text-xs">Vui lòng chọn bài học để xem dữ liệu</p>
+                    </div>
+                </div>
+
             </div>
         </div>
     </main>
 
-    <!-- View Question Modal -->
-    <div id="view-question-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop">
-        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-3xl modal-content flex flex-col max-h-[90vh]">
-            <div class="flex justify-between items-center flex-shrink-0 mb-4 border-b pb-2">
-                <h2 class="text-xl font-bold text-slate-800">Chi tiết câu hỏi</h2>
-                <button id="view-question-close-btn" class="p-2 hover:bg-slate-100 rounded-full"><i data-feather="x"></i></button>
+    <!-- Modal View -->
+    <div id="view-question-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop p-4">
+        <div class="bg-white rounded-[32px] w-full max-w-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+            <div class="p-6 border-b flex justify-between items-center shrink-0">
+                <h2 class="text-xl font-black text-slate-800">Chi tiết câu hỏi</h2>
+                <button id="view-question-close-btn" class="w-10 h-10 flex items-center justify-center bg-slate-50 rounded-full text-slate-400 hover:text-red-500 transition"><i data-feather="x"></i></button>
             </div>
-            <div id="view-question-content" class="flex-grow overflow-y-auto pr-2">
-                <!-- Content populated by JS -->
+            <div id="view-question-content" class="flex-grow overflow-y-auto p-8 prose prose-teal"></div>
+        </div>
+    </div>
+
+    <!-- Modal Form -->
+    <div id="question-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop p-4">
+        <div class="bg-white rounded-[32px] w-full max-w-3xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
+            <!-- Header -->
+            <div class="p-6 border-b border-slate-50 flex justify-between items-center bg-white shrink-0">
+                <h2 id="question-modal-title" class="text-2xl font-black text-slate-800 tracking-tight">Đóng góp câu hỏi</h2>
+                <button type="button" onclick="hideQuestionModal()" class="w-10 h-10 flex items-center justify-center bg-slate-50 rounded-full text-slate-400 hover:text-red-500 transition"><i data-feather="x"></i></button>
+            </div>
+
+            <!-- Body -->
+            <div class="flex-grow overflow-y-auto p-8">
+                <form id="question-form" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-1">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Loại câu hỏi</label>
+                            <select id="q-type" class="form-input">
+                                <option value="multiple_choice">Trắc nghiệm nhiều lựa chọn</option>
+                                <option value="true_false_group">Trắc nghiệm Đúng/Sai</option>
+                                <option value="short_answer">Trả lời ngắn</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Mức độ nhận thức</label>
+                            <select id="q-difficulty" class="form-input">
+                                <option value="nhan_biet">Nhận biết</option>
+                                <option value="thong_hieu">Thông hiểu</option>
+                                <option value="van_dung">Vận dụng</option>
+                                <option value="van_dung_cao">Vận dụng cao</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nội dung câu hỏi</label>
+                        <textarea id="q-content" rows="4" class="form-input" required placeholder="Nhập câu hỏi..."></textarea>
+                    </div>
+                    
+                    <!-- Options Area -->
+                    <div id="mc-options-wrapper" class="p-6 bg-slate-50 rounded-3xl border border-slate-100 space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-white p-3 rounded-xl border border-slate-100 flex items-center gap-3"><span class="font-black text-teal-600 ml-2">A</span><input type="text" id="q-option-a" class="w-full border-none outline-none font-bold text-sm bg-transparent"></div>
+                            <div class="bg-white p-3 rounded-xl border border-slate-100 flex items-center gap-3"><span class="font-black text-teal-600 ml-2">B</span><input type="text" id="q-option-b" class="w-full border-none outline-none font-bold text-sm bg-transparent"></div>
+                            <div class="bg-white p-3 rounded-xl border border-slate-100 flex items-center gap-3"><span class="font-black text-teal-600 ml-2">C</span><input type="text" id="q-option-c" class="w-full border-none outline-none font-bold text-sm bg-transparent"></div>
+                            <div class="bg-white p-3 rounded-xl border border-slate-100 flex items-center gap-3"><span class="font-black text-teal-600 ml-2">D</span><input type="text" id="q-option-d" class="w-full border-none outline-none font-bold text-sm bg-transparent"></div>
+                        </div>
+                        <div class="flex items-center gap-4 mt-4 pt-4 border-t border-slate-200/60">
+                            <span class="text-[10px] font-black text-teal-700 uppercase tracking-widest">Đáp án đúng:</span>
+                            <select id="q-mc-answer" class="bg-white border-2 border-teal-200 rounded-xl px-6 py-2 font-black text-teal-600 outline-none">
+                                <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="true-false-group-wrapper" class="hidden p-6 bg-slate-50 rounded-3xl border border-slate-100 space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-white p-3 rounded-xl border"><textarea id="q-tf-statement-a" class="w-full outline-none bg-transparent text-sm font-bold" placeholder="Mệnh đề 1" rows="2"></textarea>
+                                <div class="flex gap-4 mt-2"><label class="text-xs font-bold cursor-pointer"><input type="radio" name="q-tf-answer-a" value="true" class="accent-teal-600"> ĐÚNG</label><label class="text-xs font-bold cursor-pointer"><input type="radio" name="q-tf-answer-a" value="false" class="accent-red-500"> SAI</label></div>
+                            </div>
+                            <div class="bg-white p-3 rounded-xl border"><textarea id="q-tf-statement-b" class="w-full outline-none bg-transparent text-sm font-bold" placeholder="Mệnh đề 2" rows="2"></textarea>
+                                <div class="flex gap-4 mt-2"><label class="text-xs font-bold cursor-pointer"><input type="radio" name="q-tf-answer-b" value="true" class="accent-teal-600"> ĐÚNG</label><label class="text-xs font-bold cursor-pointer"><input type="radio" name="q-tf-answer-b" value="false" class="accent-red-500"> SAI</label></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="short-answer-wrapper" class="hidden p-6 bg-slate-50 rounded-3xl border border-slate-100">
+                        <label class="block text-xs font-black text-slate-400 uppercase mb-2 ml-1">Đáp án chính xác</label>
+                        <input type="text" id="q-sa-answer" class="form-input" placeholder="Nhập đáp án...">
+                    </div>
+                    
+                    <div class="space-y-1">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Giải thích (Tùy chọn)</label>
+                        <textarea id="q-explanation" rows="3" class="form-input"></textarea>
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-6 border-t">
+                        <button type="button" onclick="hideQuestionModal()" class="px-8 py-3 font-bold text-slate-400">Hủy</button>
+                        <button type="submit" id="question-submit-btn" class="cta-button">Lưu câu hỏi</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
-    <div id="question-modal" class="fixed inset-0 z-40 items-center justify-center hidden modal-backdrop">
-        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-3xl modal-content overflow-y-auto max-h-[90vh]">
-            <h2 id="question-modal-title" class="text-xl font-bold mb-4">Thêm câu hỏi mới</h2>
-            <form id="question-form">
-                <div class="grid grid-cols-3 gap-4 mb-4">
-                    <div class="col-span-2"><label for="q-type" class="block text-sm font-medium text-gray-700">Loại câu hỏi</label><select id="q-type" class="form-input mt-1"><option value="multiple_choice">Trắc nghiệm nhiều lựa chọn</option><option value="true_false_group">Trắc nghiệm Đúng/Sai</option><option value="short_answer">Trả lời ngắn</option></select></div>
-                    <div><label for="q-difficulty" class="block text-sm font-medium text-gray-700">Độ khó</label><select id="q-difficulty" class="form-input mt-1"><option value="nhan_biet">Nhận biết</option><option value="thong_hieu">Thông hiểu</option><option value="van_dung">Vận dụng</option><option value="van_dung_cao">Vận dụng cao</option></select></div>
-                </div>
-                <div class="mb-4"><label for="q-content" class="block text-sm font-medium text-gray-700">Nội dung câu hỏi</label><textarea id="q-content" rows="3" class="form-input mt-1" required></textarea></div>
-                
-                <div id="mc-options-wrapper" class="mb-4">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div><label class="text-sm font-medium">A</label><input type="text" id="q-option-a" class="form-input"></div>
-                        <div><label class="text-sm font-medium">B</label><input type="text" id="q-option-b" class="form-input"></div>
-                        <div><label class="text-sm font-medium">C</label><input type="text" id="q-option-c" class="form-input"></div>
-                        <div><label class="text-sm font-medium">D</label><input type="text" id="q-option-d" class="form-input"></div>
-                    </div>
-                    <div class="mt-4"><label for="q-mc-answer" class="text-sm font-medium text-gray-700">Đáp án đúng:</label><select id="q-mc-answer" class="ml-2 rounded-md border-gray-300 shadow-sm"><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></div>
-                </div>
-
-                <div id="true-false-group-wrapper" class="hidden mb-4 space-y-4">
-                     <label class="block text-sm font-medium text-gray-700">Các mệnh đề và đáp án</label>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                        <div><textarea id="q-tf-statement-a" placeholder="Nội dung mệnh đề 1" class="form-input" rows="2"></textarea></div>
-                        <div class="flex items-center space-x-4">
-                            <label><input type="radio" name="q-tf-answer-a" value="true"> Đúng</label>
-                            <label><input type="radio" name="q-tf-answer-a" value="false"> Sai</label>
-                        </div>
-                         <div><textarea id="q-tf-statement-b" placeholder="Nội dung mệnh đề 2" class="form-input" rows="2"></textarea></div>
-                        <div class="flex items-center space-x-4">
-                            <label><input type="radio" name="q-tf-answer-b" value="true"> Đúng</label>
-                            <label><input type="radio" name="q-tf-answer-b" value="false"> Sai</label>
-                        </div>
-                    </div>
-                </div>
-                <div id="short-answer-wrapper" class="hidden mb-4"><label for="q-sa-answer" class="block text-sm font-medium text-gray-700">Đáp án đúng</label><input type="text" id="q-sa-answer" class="form-input mt-1"></div>
-                
-                <div class="mb-4"><label for="q-explanation" class="block text-sm font-medium text-gray-700">Giải thích (tùy chọn)</label><textarea id="q-explanation" rows="3" class="form-input mt-1"></textarea></div>
-                <div class="flex justify-end space-x-3 mt-6"><button type="button" id="question-cancel-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-md">Hủy</button><button type="submit" id="question-submit-btn" class="cta-button text-white px-4 py-2 rounded-md">Lưu</button></div>
-            </form>
-        </div>
-    </div>
-     <div id="delete-confirm-modal" class="fixed inset-0 z-40 items-center justify-center hidden modal-backdrop">
-        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm modal-content">
-            <h2 class="text-xl font-bold">Xác nhận xóa</h2>
-            <p id="delete-confirm-text" class="mt-2 text-gray-600">Bạn có chắc chắn muốn xóa câu hỏi này không?</p>
-            <div class="flex justify-end space-x-3 mt-6">
-                <button type="button" id="delete-cancel-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-md">Hủy</button>
-                <button type="button" id="delete-confirm-btn" class="bg-red-600 text-white px-4 py-2 rounded-md">Xóa</button>
+    <!-- Delete Confirm Modal -->
+    <div id="delete-confirm-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop p-4">
+        <div class="bg-white rounded-[32px] p-8 w-full max-w-sm text-center shadow-2xl">
+            <div class="w-16 h-16 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mx-auto mb-6"><i data-feather="trash-2"></i></div>
+            <h2 class="text-xl font-black text-slate-800 mb-2">Xác nhận xóa</h2>
+            <p id="delete-confirm-text" class="text-sm text-slate-500 mb-8"></p>
+            <div class="flex gap-3">
+                <button type="button" id="delete-cancel-btn" class="flex-1 py-3 font-bold text-slate-400">Hủy</button>
+                <button type="button" id="delete-confirm-btn" class="flex-1 bg-red-500 text-white py-3 rounded-xl font-bold shadow-lg shadow-red-200 hover:bg-red-600">Xóa câu hỏi</button>
             </div>
         </div>
     </div>
-    <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2"></div>
-    
+
+    <div id="toast-container" class="fixed bottom-10 right-10 z-[100] flex flex-col gap-3"></div>
+
+    <!-- Logic JS (GIỮ NGUYÊN HOÀN TOÀN) -->
     <script src="../firebase-config.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -255,7 +370,7 @@
                         const userData = docSnap.data();
                         userNameEl.textContent = userData.name || 'Giáo viên';
                         const nameInitial = (userData.name || 'T').charAt(0).toUpperCase();
-                        userAvatarEl.src = `https://placehold.co/40x40/10B981/FFFFFF?text=${nameInitial}`;
+                        userAvatarEl.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=0D9488&color=fff&bold=true`;
                         initPage();
                     } else {
                         const userRole = docSnap.data()?.role;
@@ -351,15 +466,19 @@
                 questionListener = mainUnsub;
             }
 
-            function renderQuestionsForLesson(lessonId) {
+            window.renderQuestionsForLesson = (lessonId) => {
                 const lesson = allData.lessons.find(l => l.id === lessonId);
                 questionsArea.innerHTML = `
-                    <div class="bg-white rounded-lg shadow-sm">
-                        <div class="p-4 border-b flex justify-between items-center">
-                             <h2 class="text-xl font-bold text-slate-800">Câu hỏi cho: ${cleanPrefix(lesson.name)}</h2>
-                             <button data-action="add-question" class="cta-button text-white px-3 py-2 text-sm rounded-lg flex items-center"><i data-feather="plus" class="mr-2 w-4 h-4"></i>Đóng góp câu hỏi</button>
+                    <div class="bento-card !p-0 overflow-hidden shadow-xl shadow-slate-200/50">
+                        <div class="p-8 border-b border-slate-50 flex flex-col md:flex-row justify-between items-center gap-4">
+                            <div>
+                                <h2 class="text-xl font-black text-slate-800">${cleanPrefix(lesson.name)}</h2>
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-tighter mt-1">${lessonQuestions.length} câu hỏi khả dụng</p>
+                            </div>
+                            <!-- Sửa: Nút thêm câu hỏi dùng data-action -->
+                            <button type="button" data-action="add-question" class="cta-button shadow-none text-xs px-6 py-3"><i class="fas fa-plus-circle mr-1"></i>Đóng góp câu hỏi</button>
                         </div>
-                        <div id="questions-table-container" class="overflow-x-auto">
+                        <div class="overflow-x-auto">
                             ${renderQuestionsTable(lessonQuestions)}
                         </div>
                     </div>`;
@@ -367,46 +486,43 @@
                 feather.replace();
             }
 
-            function renderQuestionsTable(questions) {
-                if (questions.length === 0) return `<p class="p-4 text-center text-slate-500">Bài học này chưa có câu hỏi nào.</p>`;
+            window.renderQuestionsTable = (questions) => {
+                if (questions.length === 0) return `<div class="p-20 text-center text-slate-300 font-bold uppercase tracking-widest text-xs">Chưa có dữ liệu</div>`;
                 
-                const getStatusBadge = (status) => {
-                    if (status === 'approved') return `<span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Đã duyệt</span>`;
-                    if (status === 'rejected') return `<span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Bị từ chối</span>`;
-                    return `<span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">Chờ duyệt</span>`;
-                };
-                
-                let tableHTML = `<table class="w-full text-sm text-left">
-                    <thead class="bg-slate-50"><tr>
-                        <th class="p-3 font-semibold">Nội dung</th>
-                        <th class="p-3 font-semibold text-center">Nguồn</th>
-                        <th class="p-3 font-semibold text-center">Trạng thái</th>
-                        <th class="p-3 font-semibold text-right"></th>
+                let html = `<table class="modern-table">
+                    <thead><tr>
+                        <th class="text-left">Nội dung câu hỏi</th>
+                        <th class="text-center">Nguồn</th>
+                        <th class="text-center">Trạng thái</th>
+                        <th class="text-right">Tác vụ</th>
                     </tr></thead><tbody>`;
+
                 questions.forEach(q => {
-                    const isOwnQuestion = q.authorId === currentUser.uid;
-                    const authorSource = isOwnQuestion ? 'Cá nhân' : 'Ngân hàng chung';
-                    
-                    tableHTML += `<tr class="border-t">
-                        <td class="p-3 max-w-2xl">
-                          ${q.imageUrl ? `<img src="${q.imageUrl}" class="max-w-xs rounded-md mb-2 border" onerror="this.onerror=null; this.src='https://placehold.co/300x150/f87171/ffffff?text=L%E1%BB%97i+T%E1%BA%A3i+%E1%BA%A2nh';">` : ''}
-                          <div class="prose prose-sm">${cleanPrefix(q.content)}</div>
+                    const isOwn = q.authorId === currentUser.uid;
+                    const statusClass = q.status === 'approved' ? 'status-approved' : (q.status === 'rejected' ? 'status-rejected' : 'status-pending');
+                    const statusText = q.status === 'approved' ? 'Đã duyệt' : (q.status === 'rejected' ? 'Từ chối' : 'Chờ duyệt');
+
+                    html += `<tr>
+                        <td>
+                            <div class="max-w-xl">
+                                <div class="font-bold text-slate-700 text-sm line-clamp-2">${cleanPrefix(q.content)}</div>
+                            </div>
                         </td>
-                        <td class="p-3 text-center"><span class="px-2 py-1 text-xs font-semibold rounded-full ${isOwnQuestion ? 'bg-sky-100 text-sky-800' : 'bg-indigo-100 text-indigo-800'}">${authorSource}</span></td>
-                        <td class="p-3 text-center">${isOwnQuestion ? getStatusBadge(q.status) : ''}</td>
-                        <td class="p-3 text-right">
-                           <div class="flex items-center justify-end space-x-1">
-                                <button data-action="view-question" data-id="${q.id}" class="p-1 text-slate-500 hover:text-teal-600" title="Xem chi tiết"><i data-feather="eye" class="w-4 h-4"></i></button>
-                                ${isOwnQuestion ? `
-                                <button data-action="edit-question" data-id="${q.id}" class="p-1 text-slate-500 hover:text-teal-600" title="Sửa"><i data-feather="edit-2" class="w-4 h-4"></i></button>
-                                <button data-action="delete-question" data-id="${q.id}" class="p-1 text-slate-500 hover:text-red-600" title="Xóa"><i data-feather="trash-2" class="w-4 h-4"></i></button>
+                        <td class="text-center font-black text-[10px] text-slate-400">${isOwn ? 'CÁ NHÂN' : 'HỆ THỐNG'}</td>
+                        <td class="text-center">${isOwn ? `<span class="badge-pill ${statusClass}">${statusText}</span>` : '<span class="text-slate-300 font-bold text-[10px]">CÔNG KHAI</span>'}</td>
+                        <td class="text-right">
+                            <div class="flex justify-end gap-1">
+                                <!-- Sửa: Nút mắt dùng data-action -->
+                                <button type="button" data-action="view-question" data-id="${q.id}" class="p-2 text-slate-400 hover:text-teal-600 transition"><i data-feather="eye" class="w-4"></i></button>
+                                ${isOwn ? `
+                                    <button type="button" data-action="edit-question" data-id="${q.id}" class="p-2 text-slate-400 hover:text-teal-600 transition"><i data-feather="edit-2" class="w-4"></i></button>
+                                    <button type="button" data-action="delete-question" data-id="${q.id}" class="p-2 text-slate-400 hover:text-red-500 transition"><i data-feather="trash-2" class="w-4"></i></button>
                                 ` : ''}
-                           </div>
+                            </div>
                         </td>
                     </tr>`;
                 });
-                tableHTML += `</tbody></table>`;
-                return tableHTML;
+                return html + `</tbody></table>`;
             }
             
             function renderInitialView() {
@@ -418,108 +534,70 @@
             }
             
             function setupEventListeners() {
+                // Hiệu ứng chuyển trang mượt mà
                 document.querySelectorAll('.nav-link').forEach(link => {
-                    link.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        document.body.style.opacity = '0';
-                        setTimeout(() => { window.location.href = this.href; }, 200);
-                    });
+                    link.onclick = (e) => { e.preventDefault(); document.body.style.opacity = '0'; setTimeout(() => window.location.href = link.href, 200); };
                 });
-                document.body.style.transition = 'opacity 0.2s ease-in-out';
 
-                document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
-                qForm.onsubmit = handleQuestionFormSubmit;
-                qCancelBtn.onclick = hideQuestionModal;
-                qType.onchange = toggleAnswerFields;
-                deleteConfirmBtn.onclick = handleDeleteQuestion;
-                deleteCancelBtn.onclick = hideDeleteConfirmModal;
-                viewQuestionCloseBtn.onclick = () => {
-                    viewQuestionModal.classList.add('hidden');
-                    viewQuestionModal.classList.remove('flex');
-                };
+                document.getElementById('logout-btn').onclick = () => signOut(auth);
+                document.getElementById('view-question-close-btn').onclick = () => document.getElementById('view-question-modal').classList.replace('flex', 'hidden');
 
+                // Xử lý click cho toàn bộ vùng câu hỏi (Event Delegation)
                 questionsArea.addEventListener('click', (e) => {
-                    const button = e.target.closest('button[data-action]');
-                    if(!button) return;
-                    const action = button.dataset.action;
-                    const id = button.dataset.id;
+                    const btn = e.target.closest('button');
+                    if (!btn) return;
+
+                    const action = btn.dataset.action;
+                    const id = btn.dataset.id;
+
                     if (action === 'add-question') {
-                        showQuestionModal('add', { lessonId: currentLessonId });
+                        window.showQuestionModal('add', { lessonId: currentLessonId });
+                    } else if (action === 'view-question') {
+                        window.showQuestionViewModal(id);
                     } else if (action === 'edit-question') {
-                         const questionData = lessonQuestions.find(q => q.id === id);
-                         if(questionData) showQuestionModal('edit', questionData);
+                        const data = lessonQuestions.find(q => q.id === id);
+                        if (data) window.showQuestionModal('edit', data);
                     } else if (action === 'delete-question') {
                         showDeleteConfirmModal(id);
-                    } else if (action === 'view-question') {
-                        showQuestionViewModal(id);
                     }
                 });
             }
             
-            function showQuestionViewModal(questionId) {
+            window.showQuestionViewModal = (questionId) => {
                 const question = lessonQuestions.find(q => q.id === questionId);
-                if (!question) {
-                    showToast("Không tìm thấy câu hỏi.", "error");
-                    return;
-                }
+                if (!question) return;
 
                 const viewContent = document.getElementById('view-question-content');
-                let detailsHTML = `
-                    <div class="prose prose-lg mb-6">${question.content}</div>
-                    <div class="space-y-4 text-sm">
-                `;
+                let detailsHTML = `<div class="prose prose-lg mb-6">${question.content}</div><div class="space-y-4">`;
 
                 if (question.type === 'multiple_choice') {
                     detailsHTML += (question.options || []).map((opt, i) => {
                         const letter = String.fromCharCode(65 + i);
                         const isCorrect = letter === question.correctAnswer;
-                        return `
-                            <div class="flex items-start p-3 rounded-md ${isCorrect ? 'bg-green-100 border border-green-200' : 'bg-slate-50'}">
-                                <span class="font-bold mr-2">${letter}.</span>
-                                <div class="prose prose-sm">${opt}</div>
-                                ${isCorrect ? '<i data-feather="check" class="w-5 h-5 text-green-600 ml-auto flex-shrink-0"></i>' : ''}
-                            </div>
-                        `;
+                        return `<div class="p-4 rounded-2xl flex items-center gap-3 border ${isCorrect ? 'bg-teal-50 border-teal-200 text-teal-700' : 'bg-slate-50 border-slate-100 text-slate-600'}">
+                            <span class="font-black">${letter}.</span><div class="font-bold">${opt}</div>
+                        </div>`;
                     }).join('');
                 } else if (question.type === 'true_false_group') {
-                    const statements = question.statements || {};
-                    detailsHTML += Object.keys(statements).map(key => {
-                         if(!statements[key]) return '';
-                         const isCorrect = question.answers[key] === true;
-                         return `
-                            <div class="flex items-start p-3 rounded-md ${isCorrect ? 'bg-green-100 border border-green-200' : 'bg-red-100 border border-red-200'}">
-                                <span class="font-bold mr-2">${key})</span>
-                                <div class="prose prose-sm">${statements[key]}</div>
-                                <span class="ml-auto font-semibold ${isCorrect ? 'text-green-700' : 'text-red-700'}">${isCorrect ? 'Đúng' : 'Sai'}</span>
-                            </div>
-                         `;
+                    const stmts = question.statements || {};
+                    detailsHTML += Object.keys(stmts).map(key => {
+                        const isTrue = question.answers[key] === true;
+                        return `<div class="p-4 rounded-2xl flex justify-between bg-slate-50 border border-slate-100">
+                            <div class="font-bold text-slate-700">${key}) ${stmts[key]}</div>
+                            <span class="font-black text-xs ${isTrue ? 'text-teal-600' : 'text-red-500'}">${isTrue ? 'ĐÚNG' : 'SAI'}</span>
+                        </div>`;
                     }).join('');
-                } else if (question.type === 'short_answer') {
-                    detailsHTML += `
-                        <div class="p-3 rounded-md bg-green-100 border border-green-200">
-                            <strong>Đáp án đúng:</strong> <span class="font-mono">${question.correctAnswer}</span>
-                        </div>
-                    `;
                 }
 
                 if (question.explanation) {
-                    detailsHTML += `
-                        <div class="mt-6 pt-4 border-t">
-                            <h4 class="font-bold text-slate-700">Giải thích:</h4>
-                            <div class="prose prose-sm mt-2 text-slate-600">${question.explanation}</div>
-                        </div>
-                    `;
+                    detailsHTML += `<div class="mt-8 pt-6 border-t border-slate-100"><p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Giải thích chi tiết</p><div class="text-sm font-medium text-slate-600">${question.explanation}</div></div>`;
                 }
 
-                detailsHTML += `</div>`;
-                viewContent.innerHTML = detailsHTML;
-                
+                viewContent.innerHTML = detailsHTML + `</div>`;
                 renderMathWithKaTeX(viewContent);
+                document.getElementById('view-question-modal').classList.replace('hidden', 'flex');
                 feather.replace();
-                
-                viewQuestionModal.classList.remove('hidden');
-                viewQuestionModal.classList.add('flex');
-            }
+            };
 
             async function handleQuestionFormSubmit(e) {
                 e.preventDefault();
@@ -606,18 +684,24 @@
                 });
             }
             
-            function showQuestionModal(mode, data = {}) {
+            window.showQuestionModal = (mode, data = {}) => {
+                // Cập nhật lại tham chiếu DOM mỗi khi mở modal
+                const qModal = document.getElementById('question-modal');
+                const qForm = document.getElementById('question-form');
+                const qType = document.getElementById('q-type');
+                const qSubmitBtn = document.getElementById('question-submit-btn');
+
                 currentQuestionContext = { mode, data };
                 qForm.reset();
                 
-                qModalTitle.textContent = mode === 'add' ? 'Đóng góp câu hỏi mới' : 'Chỉnh sửa câu hỏi';
-                 qSubmitBtn.textContent = mode === 'add' ? 'Gửi đi' : 'Lưu thay đổi';
+                document.getElementById('question-modal-title').textContent = mode === 'add' ? 'Đóng góp câu hỏi mới' : 'Chỉnh sửa câu hỏi';
+                qSubmitBtn.textContent = mode === 'add' ? 'Gửi đi' : 'Lưu thay đổi';
 
                 if (mode === 'edit') {
-                    qContent.value = cleanPrefix(data.content) || '';
+                    document.getElementById('q-content').value = cleanPrefix(data.content) || '';
                     qType.value = data.type || 'multiple_choice';
-                    qDifficulty.value = data.difficulty || 'nhan_biet';
-                    qExplanation.value = data.explanation || '';
+                    document.getElementById('q-difficulty').value = data.difficulty || 'nhan_biet';
+                    document.getElementById('q-explanation').value = data.explanation || '';
                     if(data.type === 'multiple_choice') {
                         (data.options || []).forEach((opt, i) => {
                             const char = String.fromCharCode(97 + i);
@@ -639,24 +723,31 @@
                         document.getElementById('q-sa-answer').value = data.correctAnswer;
                     }
                 }
-                toggleAnswerFields();
-                qModal.classList.remove('hidden');
-                qModal.classList.add('flex');
-            }
+    
+                toggleAnswerFields(); // Cập nhật hiển thị wrapper tương ứng
+                qType.onchange = toggleAnswerFields; // Gán lại sự kiện onchange
 
-            function hideQuestionModal() {
-                 qModal.classList.add('hidden');
-                 qModal.classList.remove('flex');
-            }
+                qModal.classList.replace('hidden', 'flex');
+                feather.replace();
+            };
+
+            window.hideQuestionModal = () => {
+                document.getElementById('question-modal').classList.replace('flex', 'hidden');
+            };
 
              function toggleAnswerFields() {
-                 mcWrapper.classList.add('hidden');
-                 tfGroupWrapper.classList.add('hidden');
-                 saWrapper.classList.add('hidden');
-                const type = qType.value;
-                if (type === 'multiple_choice') mcWrapper.classList.remove('hidden');
-                else if (type === 'true_false_group') tfGroupWrapper.classList.remove('hidden');
-                else if (type === 'short_answer') saWrapper.classList.remove('hidden');
+                const qTypeVal = document.getElementById('q-type').value;
+                const mcWrapper = document.getElementById('mc-options-wrapper');
+                const tfGroupWrapper = document.getElementById('true-false-group-wrapper');
+                const saWrapper = document.getElementById('short-answer-wrapper');
+
+                mcWrapper.classList.add('hidden');
+                tfGroupWrapper.classList.add('hidden');
+                saWrapper.classList.add('hidden');
+
+                if (qTypeVal === 'multiple_choice') mcWrapper.classList.remove('hidden');
+                else if (qTypeVal === 'true_false_group') tfGroupWrapper.classList.remove('hidden');
+                else if (qTypeVal === 'short_answer') saWrapper.classList.remove('hidden');
             }
              function showDeleteConfirmModal(id) {
                 itemToDeleteId = id;
@@ -686,5 +777,45 @@
             feather.replace();
         });
     </script>
+
+<script type="text/javascript">
+    // 1. Chặn Chuột phải (Để ẩn menu "Inspect/Kiểm tra" và "View Source/Xem nguồn")
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        // Không hiện thông báo gì cả để trải nghiệm mượt mà hơn
+    });
+
+    // 2. Chặn các phím tắt Developer Tools
+    document.addEventListener('keydown', function(e) {
+        // Chặn F12
+        if (e.key === 'F12' || e.keyCode === 123) {
+            e.preventDefault();
+            return false;
+        }
+
+        // Chặn các tổ hợp phím Ctrl + ...
+        if (e.ctrlKey) {
+            switch (e.key.toLowerCase()) {
+                case 'u': // Chặn Ctrl + U (Xem source code)
+                case 's': // Chặn Ctrl + S (Lưu trang web)
+                case 'p': // Chặn Ctrl + P (In trang web - thường hiện code)
+                // Lưu ý: KHÔNG chặn 'c' (Copy) và 'a' (Select All)
+                    e.preventDefault();
+                    return false;
+            }
+
+            // Chặn Ctrl + Shift + ... (Các phím mở DevTools)
+            if (e.shiftKey) {
+                switch (e.key.toLowerCase()) {
+                    case 'i': // Inspect Element
+                    case 'j': // Console
+                    case 'c': // Element Inspector
+                        e.preventDefault();
+                        return false;
+                }
+            }
+        }
+    });
+</script>
 </body>
 </html>

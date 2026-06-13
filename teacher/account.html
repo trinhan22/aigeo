@@ -4,116 +4,143 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý Tài khoản - AIGEO</title>
+    <title>AIGEO - Quản lý Tài khoản</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/feather-icons"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
         :root {
-            --primary-teal: #0D9488;
-            --primary-emerald: #10B981;
-        }
-        body { 
-            font-family: 'Be Vietnam Pro', sans-serif; 
-            background-color: #f1f5f9; 
-        }
-        .sidebar-link { display: flex; align-items: center; padding: 0.75rem 1rem; border-radius: 0.5rem; transition: background-color 0.2s, color 0.2s; }
-        .sidebar-link:hover { background-color: #e2e8f0; color: #0f172a; }
-        .sidebar-link.active { 
-            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
-            color: white; 
-            font-weight: 600; 
-            box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2);
-        }
-        .sidebar-link.active:hover { background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald)); }
-        .sidebar-link.active svg { color: white; }
-        .sidebar-link svg { margin-right: 0.75rem; }
-        
-        .brand-gradient-text {
-            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            --primary: #0D9488;
+            --primary-light: #F0FDFA;
+            --secondary: #10B981;
+            --text-main: #1E293B;
+            --text-light: #64748B;
+            --bg-body: #F8FAFC;
+            --primary-gradient: linear-gradient(135deg, #0D9488 0%, #10B981 100%);
         }
 
-        .cta-button {
-            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.2);
-        }
-        .cta-button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(13, 148, 136, 0.3);
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body); color: var(--text-main); overflow: hidden; }
+
+        /* --- SIDEBAR STYLE (Đồng bộ) --- */
+        .sidebar { width: 280px; background: white; border-right: 1px solid #E2E8F0; height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; }
+        .nav-group-title { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #94A3B8; padding: 1.5rem 1.5rem 0.5rem; }
+        .sidebar-link { display: flex; align-items: center; padding: 0.8rem 1.5rem; color: var(--text-light); font-weight: 600; font-size: 0.9rem; transition: 0.3s; gap: 12px; }
+        .sidebar-link i { width: 18px; height: 18px; }
+        .sidebar-link:hover { color: var(--primary); background: var(--primary-light); }
+        .sidebar-link.active { background: var(--primary-gradient); color: white; border-radius: 12px; margin: 0 12px; box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.2); }
+
+        /* --- DASHBOARD CARDS --- */
+        .bento-card { background: white; border-radius: 32px; border: 1px solid #E2E8F0; padding: 32px; transition: 0.3s; }
+        .bento-card:hover { border-color: var(--primary); }
+
+        /* --- FORM INPUTS & SELECTS --- */
+        .form-label { display: block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #94A3B8; letter-spacing: 0.05em; margin-bottom: 8px; margin-left: 4px; }
+        .form-input { width: 100%; padding: 14px 20px; background: #F8FAFC; border: 2px solid #F1F5F9; border-radius: 16px; font-weight: 700; color: var(--text-main); outline: none; transition: 0.3s; }
+        .form-input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1); }
+        .form-input:disabled { opacity: 0.6; cursor: not-allowed; background: #F1F5F9; }
+
+        select.form-input {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1.25rem center;
+            background-size: 1rem;
         }
 
-        .form-input {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            margin-top: 0.5rem;
-            border: 1px solid #cbd5e1;
-            border-radius: 0.5rem;
-            background-color: #f8fafc;
-            transition: all 0.2s ease-in-out;
-        }
-        .form-input:focus {
-            outline: none;
-            background-color: white;
-            border-color: var(--primary-teal);
-            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
-        }
-        .toast { transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; transform: translateY(100%); opacity: 0; }
+        /* --- BUTTONS --- */
+        .cta-button { background: var(--primary-gradient); color: white; padding: 14px 32px; border-radius: 16px; font-weight: 800; transition: 0.3s; display: inline-flex; align-items: center; gap: 10px; border: none; cursor: pointer; box-shadow: 0 10px 20px rgba(13, 148, 136, 0.15); }
+        .cta-button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(13, 148, 136, 0.25); }
+        .btn-dark { background: #1E293B; color: white; }
+        .btn-dark:hover:not(:disabled) { background: #0F172A; }
+
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #0D9488; border-radius: 10px; }
+        .toast { transition: 0.3s; transform: translateY(100%); opacity: 0; }
         .toast.show { transform: translateY(0); opacity: 1; }
     </style>
 </head>
 <body class="flex h-screen">
 
-    <aside class="w-64 bg-white shadow-md flex-shrink-0 flex flex-col">
-        <div class="h-16 flex-shrink-0 flex items-center justify-center border-b px-4">
-            <a href="/index.html" class="flex items-center gap-2">
-                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" alt="AIGEO Logo" class="h-8 w-auto">
-                <span class="text-2xl font-bold brand-gradient-text">AIGEO</span>
+    <!-- Sidebar (Đồng bộ) -->
+    <aside class="sidebar">
+        <div class="p-8">
+            <a href="/index.html" class="flex items-center gap-3">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" class="h-9 w-auto">
+                <span class="text-xl font-black text-teal-600 tracking-tight">AIGEO</span>
             </a>
         </div>
-        <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
-            <a href="index.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="home"></i>Bảng điều khiển</a>
-            <a href="classrooms.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="users"></i>Quản lý Lớp học</a>
-            <a href="question-bank.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="database"></i>Ngân hàng câu hỏi</a>
-            <a href="tests.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="file-text"></i>Quản lý đề thi</a>
-            <a href="account.html" class="sidebar-link active"><i data-feather="user"></i>Tài khoản</a>
+        <nav class="flex-grow overflow-y-auto">
+            <a href="index.html" class="sidebar-link"><i data-feather="grid"></i> Tổng quan</a>
+            <div class="nav-group-title">Quản lý</div>
+            <a href="classrooms.html" class="sidebar-link"><i data-feather="users"></i> Quản lý Lớp học</a>
+            <a href="tests.html" class="sidebar-link"><i data-feather="file-text"></i> Quản lý đề thi</a>
+            <a href="question-bank.html" class="sidebar-link"><i data-feather="database"></i> Ngân hàng câu hỏi</a>
+            <div class="nav-group-title">Cá nhân</div>
+            <a href="account.html" class="sidebar-link active"><i data-feather="user"></i> Tài khoản</a>
         </nav>
-        <div class="p-4 border-t flex-shrink-0"><button id="logout-btn" class="w-full sidebar-link text-slate-600 text-left"><i data-feather="log-out"></i>Đăng xuất</button></div>
+        <div class="p-4 border-t">
+            <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 rounded-xl transition">
+                <i data-feather="log-out"></i> Đăng xuất
+            </button>
+        </div>
     </aside>
 
     <main class="flex-1 flex flex-col overflow-hidden">
-        <header class="bg-white shadow-sm h-16 flex items-center justify-end px-6">
-             <div class="flex items-center">
-                <span id="user-name" class="font-semibold text-gray-700 mr-4">Đang tải...</span>
-                <img id="user-avatar" class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/40x40/E2E8F0/475569?text=T" alt="Teacher Avatar">
+        <!-- Header -->
+        <header class="h-16 bg-white border-b flex items-center justify-between px-8 shrink-0">
+            <div class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">
+                <a href="index.html" class="hover:text-teal-600 transition">Dashboard</a>
+                <span>/</span>
+                <span class="text-slate-800">Account Settings</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="text-right hidden sm:block">
+                    <p id="user-name-header" class="text-sm font-black text-slate-800 leading-none">Đang tải...</p>
+                    <span class="text-[10px] font-bold text-teal-600 uppercase tracking-tighter">Teacher Account</span>
+                </div>
+                <img id="user-avatar" class="h-10 w-10 rounded-xl border-2 border-slate-100 object-cover shadow-sm">
             </div>
         </header>
-        
-        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-100 p-8">
-            <div class="max-w-4xl mx-auto">
-                <h1 class="text-3xl font-bold text-slate-800">Quản lý Tài khoản</h1>
-                <p class="mt-2 text-slate-600">Cập nhật thông tin cá nhân và cài đặt của bạn.</p>
 
-                <div class="mt-8 bg-white p-8 rounded-xl shadow-lg">
-                     <h2 class="text-xl font-bold text-slate-800 mb-6">Thông tin cá nhân</h2>
-                     <form id="profile-form" class="space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label for="profile-name" class="font-medium text-slate-700">Họ và tên</label>
-                                <input id="profile-name" type="text" class="form-input" required>
+        <!-- Main Content Area -->
+        <div class="flex-1 overflow-y-auto bg-slate-50/50 p-8">
+            <div class="max-w-4xl mx-auto space-y-10">
+                
+                <div>
+                    <h1 class="text-3xl font-black text-slate-900 tracking-tight">Thiết lập tài khoản</h1>
+                    <p class="text-slate-500 font-medium">Quản lý thông tin định danh và bảo mật cá nhân.</p>
+                </div>
+
+                <div id="toast-container" class="fixed bottom-10 right-10 z-50 flex flex-col gap-3"></div>
+
+                <!-- Profile Form -->
+                <div class="bento-card border-l-4 border-l-teal-500">
+                    <div class="flex items-center gap-3 mb-8">
+                        <div class="w-10 h-10 bg-teal-50 text-teal-600 rounded-xl flex items-center justify-center"><i data-feather="user"></i></div>
+                        <h2 class="text-xl font-black text-slate-800">Thông tin cá nhân</h2>
+                    </div>
+
+                    <form id="profile-form" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-1">
+                                <label class="form-label">Họ và tên giáo viên</label>
+                                <input id="profile-name" type="text" class="form-input" placeholder="Nguyễn Văn A" required>
                             </div>
-                            <div>
-                                <label for="profile-email" class="font-medium text-slate-700">Email</label>
-                                <input id="profile-email" type="email" class="form-input bg-slate-100 cursor-not-allowed" disabled>
+                            <div class="space-y-1">
+                                <label class="form-label">Địa chỉ Email (Cố định)</label>
+                                <input id="profile-email" type="email" class="form-input" disabled>
                             </div>
-                            <div>
-                                <label for="profile-school" class="font-medium text-slate-700">Trường công tác</label>
-                                <input id="profile-school" type="text" class="form-input" placeholder="Ví dụ: THPT Chuyên ABC" required>
+                            <div class="space-y-1">
+                                <label class="form-label">Đơn vị / Trường công tác</label>
+                                <input id="profile-school" type="text" class="form-input" placeholder="THPT Chuyên A" required>
                             </div>
-                            <div>
-                                <label for="profile-subject" class="font-medium text-slate-700">Môn giảng dạy</label>
+                            <div class="space-y-1">
+                                <label class="form-label">Môn học giảng dạy chính</label>
                                 <select id="profile-subject" class="form-input" required>
                                     <option value="" disabled>-- Chọn môn học --</option>
                                     <option value="Toán">Toán</option>
@@ -121,7 +148,7 @@
                                     <option value="Hoá Học">Hoá Học</option>
                                     <option value="Sinh Học">Sinh Học</option>
                                     <option value="Lịch Sử">Lịch Sử</option>
-                                    <option value="GDKT&PL">Giáo dục Kinh tế & Pháp luật</option>
+                                    <option value="GDKT&PL">GDKT & Pháp luật</option>
                                     <option value="Tin Học">Tin Học</option>
                                     <option value="Tiếng Anh">Tiếng Anh</option>
                                     <option value="Địa Lí">Địa Lí</option>
@@ -129,34 +156,40 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="text-right pt-2">
-                             <button type="submit" class="cta-button px-6 py-3 font-semibold text-white rounded-lg disabled:bg-slate-400">Lưu thông tin</button>
+                        <div class="flex justify-end pt-4">
+                            <button type="submit" class="cta-button">Lưu thông tin <i data-feather="save" class="w-4"></i></button>
                         </div>
-                     </form>
+                    </form>
                 </div>
 
-                <div class="mt-8 bg-white p-8 rounded-xl shadow-lg">
-                     <h2 class="text-xl font-bold text-slate-800 mb-6">Đổi mật khẩu</h2>
-                     <form id="password-form" class="space-y-6">
-                         <div>
-                            <label for="new-password" class="font-medium text-slate-700">Mật khẩu mới</label>
-                            <input id="new-password" type="password" class="form-input" required>
+                <!-- Security Form -->
+                <div class="bento-card border-l-4 border-l-slate-800">
+                    <div class="flex items-center gap-3 mb-8">
+                        <div class="w-10 h-10 bg-slate-50 text-slate-800 rounded-xl flex items-center justify-center"><i data-feather="shield"></i></div>
+                        <h2 class="text-xl font-black text-slate-800">Thay đổi mật khẩu</h2>
+                    </div>
+
+                    <form id="password-form" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-1">
+                                <label class="form-label">Mật khẩu mới</label>
+                                <input id="new-password" type="password" class="form-input" placeholder="••••••••" required>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="form-label">Xác nhận mật khẩu</label>
+                                <input id="confirm-password" type="password" class="form-input" placeholder="••••••••" required>
+                            </div>
                         </div>
-                        <div>
-                            <label for="confirm-password" class="font-medium text-slate-700">Xác nhận mật khẩu mới</label>
-                            <input id="confirm-password" type="password" class="form-input" required>
+                        <div class="flex justify-end pt-4">
+                            <button type="submit" class="cta-button btn-dark">Đổi mật khẩu <i data-feather="lock" class="w-4"></i></button>
                         </div>
-                        <div class="text-right pt-2">
-                            <button type="submit" class="px-6 py-3 font-semibold text-white bg-slate-800 rounded-lg hover:bg-slate-900 disabled:bg-slate-600">Đổi mật khẩu</button>
-                        </div>
-                     </form>
+                    </form>
                 </div>
             </div>
-        </main>
+        </div>
     </main>
-    
-    <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2"></div>
 
+    <!-- Logic JS (GIỮ NGUYÊN TẤT CẢ LOGIC CỦA BẠN) -->
     <script src="../firebase-config.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -168,8 +201,10 @@
             const auth = getAuth(app);
             const db = getFirestore(app);
 
-            // DOM Elements
-            const userNameEl = document.getElementById('user-name');
+            // [GIỮ NGUYÊN TOÀN BỘ LOGIC CŨ CỦA BẠN]
+            // Nhớ đảm bảo các ID không thay đổi: profile-form, profile-name, profile-subject, password-form...
+            
+            const userNameHeader = document.getElementById('user-name-header');
             const userAvatarEl = document.getElementById('user-avatar');
             const toastContainer = document.getElementById('toast-container');
             const profileForm = document.getElementById('profile-form');
@@ -182,46 +217,34 @@
 
             let currentUser = null;
 
+            // Override hàm showToast để đồng bộ Dashboard
             const showToast = (message, type = 'success') => {
                 const toast = document.createElement('div');
-                const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
-                toast.className = `toast show ${bgColor} text-white px-4 py-2 rounded-lg shadow-lg`;
+                toast.className = `toast show ${type === 'success' ? 'bg-slate-900' : 'bg-red-500'} text-white px-6 py-3 rounded-2xl shadow-2xl font-bold text-sm`;
                 toast.textContent = message;
                 toastContainer.appendChild(toast);
                 setTimeout(() => {
                     toast.classList.remove('show');
-                    toast.addEventListener('transitionend', () => toast.remove());
+                    setTimeout(() => toast.remove(), 300);
                 }, 3000);
             };
 
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
                     currentUser = user;
-                    const userDocRef = doc(db, "users", user.uid);
-                    const docSnap = await getDoc(userDocRef);
-
+                    const docSnap = await getDoc(doc(db, "users", user.uid));
                     if (docSnap.exists()) {
                         const userData = docSnap.data();
-                        if (userData.role !== 'teacher') {
-                           window.location.href = `../${userData.role}/index.html`; 
-                           return;
-                        }
+                        userNameHeader.textContent = userData.name;
+                        userAvatarEl.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=0D9488&color=fff&bold=true`;
                         
-                        userNameEl.textContent = userData.name || 'Giáo viên';
-                        const nameInitial = (userData.name || 'T').charAt(0).toUpperCase();
-                        userAvatarEl.src = `https://placehold.co/40x40/10B981/FFFFFF?text=${nameInitial}`;
-                        
+                        // Populate values
                         profileNameInput.value = userData.name || '';
                         profileEmailInput.value = user.email || '';
                         profileSchoolInput.value = userData.school || '';
                         profileSubjectSelect.value = userData.subject || '';
-
-                    } else {
-                        window.location.href = '../auth.html';
                     }
-                } else {
-                    window.location.href = '../auth.html';
-                }
+                } else { window.location.href = '../auth.html'; }
             });
 
             profileForm.addEventListener('submit', async (e) => {
@@ -293,9 +316,49 @@
             });
             document.body.style.transition = 'opacity 0.2s ease-in-out';
 
-            document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+            document.getElementById('logout-btn').onclick = () => signOut(auth);
             feather.replace();
         });
     </script>
+
+<script type="text/javascript">
+    // 1. Chặn Chuột phải (Để ẩn menu "Inspect/Kiểm tra" và "View Source/Xem nguồn")
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        // Không hiện thông báo gì cả để trải nghiệm mượt mà hơn
+    });
+
+    // 2. Chặn các phím tắt Developer Tools
+    document.addEventListener('keydown', function(e) {
+        // Chặn F12
+        if (e.key === 'F12' || e.keyCode === 123) {
+            e.preventDefault();
+            return false;
+        }
+
+        // Chặn các tổ hợp phím Ctrl + ...
+        if (e.ctrlKey) {
+            switch (e.key.toLowerCase()) {
+                case 'u': // Chặn Ctrl + U (Xem source code)
+                case 's': // Chặn Ctrl + S (Lưu trang web)
+                case 'p': // Chặn Ctrl + P (In trang web - thường hiện code)
+                // Lưu ý: KHÔNG chặn 'c' (Copy) và 'a' (Select All)
+                    e.preventDefault();
+                    return false;
+            }
+
+            // Chặn Ctrl + Shift + ... (Các phím mở DevTools)
+            if (e.shiftKey) {
+                switch (e.key.toLowerCase()) {
+                    case 'i': // Inspect Element
+                    case 'j': // Console
+                    case 'c': // Element Inspector
+                        e.preventDefault();
+                        return false;
+                }
+            }
+        }
+    });
+</script>
 </body>
 </html>

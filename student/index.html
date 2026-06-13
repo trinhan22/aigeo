@@ -140,10 +140,19 @@
                     </div>
 
                     <div class="lg:col-span-4 bento-card p-8">
-                        <h3 class="font-black text-slate-800 mb-6 flex items-center gap-2"><i data-feather="clock" class="w-4 text-teal-600"></i> Đề thi mới nhất</h3>
+                        <!-- Header của Section: Tiêu đề + Nút Xem tất cả -->
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-black text-slate-800 flex items-center gap-2">
+                                <i data-feather="clock" class="w-4 text-teal-600"></i> Đề thi mới nhất
+                            </h3>
+                            <a href="classrooms.html" class="text-[10px] font-black text-teal-600 hover:tracking-widest transition-all uppercase">Xem tất cả</a>
+                        </div>
+
                         <div id="assignments-container" class="space-y-4">
-                            <div class="skeleton h-12 w-full"></div>
-                            <div class="skeleton h-12 w-full"></div>
+                            <!-- JS sẽ nạp 3 bài thi vào đây -->
+                            <div class="skeleton h-12 w-full rounded-xl"></div>
+                            <div class="skeleton h-12 w-full rounded-xl"></div>
+                            <div class="skeleton h-12 w-full rounded-xl"></div>
                         </div>
                     </div>
                 </div>
@@ -257,14 +266,14 @@
                     const snap = await getDocs(q);
                     const classrooms = snap.docs.map(d => ({id: d.id, ...d.data()}));
                     
-                    // 1. Render Classrooms (Lớp học)
+                    // 1. Render Classrooms (Lớp học của tôi)
                     classroomsContainer.innerHTML = classrooms.map(c => `
                         <div class="bento-card p-6 flex flex-col justify-between min-h-[140px]">
                             <div>
                                 <h4 class="font-black text-slate-800 truncate">${c.className || 'Lớp học không tên'}</h4>
                                 <p class="text-[10px] font-bold text-slate-400 uppercase mt-1">GV: ${c.teacherName || 'Hệ thống'}</p>
                             </div>
-                            <a href="classroom-view.html?classId=${c.id}" class="mt-4 text-xs font-black text-teal-600 hover:tracking-widest transition-all">VÀO LỚP →</a>
+                            <a href="classroom-view.html?classId=${c.id}" class="mt-4 text-xs font-black text-teal-600 hover:tracking-widest transition-all uppercase">Vào lớp →</a>
                         </div>
                     `).join('');
 
@@ -279,24 +288,22 @@
                     });
 
                     if (allAss.length === 0) {
-                        assignmentsContainer.innerHTML = '<div class="py-10 text-center font-bold text-slate-300 text-xs uppercase tracking-widest">Không có bài tập mới</div>';
+                        assignmentsContainer.innerHTML = '<div class="py-10 text-center font-bold text-slate-300 text-xs uppercase tracking-widest text-center">Không có bài tập mới</div>';
                         return;
                     }
 
+                    // Sắp xếp bài mới nhất lên đầu (nếu có trường assignedAt)
+                    allAss.sort((a, b) => (b.assignedAt?.seconds || 0) - (a.assignedAt?.seconds || 0));
+
                     // Lấy danh sách testId để truy vấn tên đề
                     const testIds = [...new Set(allAss.map(a => a.testId))];
-                    
-                    // Truy vấn thông tin chi tiết của các đề thi để lấy tên (Tránh lỗi undefined)
                     const testsSnap = await getDocs(query(collection(db, "tests"), where("__name__", "in", testIds)));
                     const testsData = {};
-                    testsSnap.forEach(doc => {
-                        testsData[doc.id] = doc.data().name; // Lưu tên đề vào object với key là id
-                    });
+                    testsSnap.forEach(doc => { testsData[doc.id] = doc.data().name; });
 
-                    // 3. Render Assignments (Đề thi mới)
-                    assignmentsContainer.innerHTML = allAss.slice(0, 4).map(a => {
+                    // 3. Render Assignments (Đã giới hạn .slice(0, 3))
+                    assignmentsContainer.innerHTML = allAss.slice(0, 3).map(a => {
                         const isDone = subs.some(s => s.testId === a.testId);
-                        // Lấy tên đề từ testsData, nếu không có thì lấy a.testName, cuối cùng là fallback
                         const finalTestName = testsData[a.testId] || a.testName || "Đề thi chưa đặt tên";
                         
                         return `
@@ -308,7 +315,7 @@
                                         <p class="text-[10px] font-bold text-slate-400 truncate uppercase">${a.cName}</p>
                                     </div>
                                 </div>
-                                <a href="test.html?testId=${a.testId}&classId=${a.cId}" class="shrink-0 ml-2 px-4 py-2 text-[10px] font-black rounded-lg ${isDone ? 'bg-slate-200 text-slate-500' : 'bg-teal-600 text-white shadow-lg shadow-teal-600/20'}">
+                                <a href="test.html?testId=${a.testId}&classId=${a.cId}" class="shrink-0 ml-2 px-4 py-2 text-[10px] font-black rounded-lg ${isDone ? 'bg-slate-200 text-slate-600' : 'bg-teal-600 text-white shadow-lg shadow-teal-600/20'}">
                                     ${isDone ? 'LÀM LẠI' : 'VÀO THI'}
                                 </a>
                             </div>
@@ -318,7 +325,7 @@
                     feather.replace();
 
                 } catch (e) { 
-                    console.error("Lỗi tải dữ liệu:", e);
+                    console.error("Lỗi:", e);
                     assignmentsContainer.innerHTML = '<p class="text-red-500 text-xs text-center">Lỗi tải đề thi</p>';
                 }
             }
