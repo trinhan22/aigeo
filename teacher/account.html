@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Tài khoản - AIGEO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        :root {
+            --primary-teal: #0D9488;
+            --primary-emerald: #10B981;
+        }
+        body { 
+            font-family: 'Be Vietnam Pro', sans-serif; 
+            background-color: #f1f5f9; 
+        }
+        .sidebar-link { display: flex; align-items: center; padding: 0.75rem 1rem; border-radius: 0.5rem; transition: background-color 0.2s, color 0.2s; }
+        .sidebar-link:hover { background-color: #e2e8f0; color: #0f172a; }
+        .sidebar-link.active { 
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            color: white; 
+            font-weight: 600; 
+            box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2);
+        }
+        .sidebar-link.active:hover { background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald)); }
+        .sidebar-link.active svg { color: white; }
+        .sidebar-link svg { margin-right: 0.75rem; }
+        
+        .brand-gradient-text {
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cta-button {
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.2);
+        }
+        .cta-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(13, 148, 136, 0.3);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            margin-top: 0.5rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.5rem;
+            background-color: #f8fafc;
+            transition: all 0.2s ease-in-out;
+        }
+        .form-input:focus {
+            outline: none;
+            background-color: white;
+            border-color: var(--primary-teal);
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+        }
+        .toast { transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; transform: translateY(100%); opacity: 0; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+    </style>
+</head>
+<body class="flex h-screen">
+
+    <aside class="w-64 bg-white shadow-md flex-shrink-0 flex flex-col">
+        <div class="h-16 flex-shrink-0 flex items-center justify-center border-b px-4">
+            <a href="/index.html" class="flex items-center gap-2">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" alt="AIGEO Logo" class="h-8 w-auto">
+                <span class="text-2xl font-bold brand-gradient-text">AIGEO</span>
+            </a>
+        </div>
+        <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
+            <a href="index.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="home"></i>Bảng điều khiển</a>
+            <a href="classrooms.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="users"></i>Quản lý Lớp học</a>
+            <a href="question-bank.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="database"></i>Ngân hàng câu hỏi</a>
+            <a href="tests.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="file-text"></i>Quản lý đề thi</a>
+            <a href="account.html" class="sidebar-link active"><i data-feather="user"></i>Tài khoản</a>
+        </nav>
+        <div class="p-4 border-t flex-shrink-0"><button id="logout-btn" class="w-full sidebar-link text-slate-600 text-left"><i data-feather="log-out"></i>Đăng xuất</button></div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <header class="bg-white shadow-sm h-16 flex items-center justify-end px-6">
+             <div class="flex items-center">
+                <span id="user-name" class="font-semibold text-gray-700 mr-4">Đang tải...</span>
+                <img id="user-avatar" class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/40x40/E2E8F0/475569?text=T" alt="Teacher Avatar">
+            </div>
+        </header>
+        
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-100 p-8">
+            <div class="max-w-4xl mx-auto">
+                <h1 class="text-3xl font-bold text-slate-800">Quản lý Tài khoản</h1>
+                <p class="mt-2 text-slate-600">Cập nhật thông tin cá nhân và cài đặt của bạn.</p>
+
+                <div class="mt-8 bg-white p-8 rounded-xl shadow-lg">
+                     <h2 class="text-xl font-bold text-slate-800 mb-6">Thông tin cá nhân</h2>
+                     <form id="profile-form" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="profile-name" class="font-medium text-slate-700">Họ và tên</label>
+                                <input id="profile-name" type="text" class="form-input" required>
+                            </div>
+                            <div>
+                                <label for="profile-email" class="font-medium text-slate-700">Email</label>
+                                <input id="profile-email" type="email" class="form-input bg-slate-100 cursor-not-allowed" disabled>
+                            </div>
+                            <div>
+                                <label for="profile-school" class="font-medium text-slate-700">Trường công tác</label>
+                                <input id="profile-school" type="text" class="form-input" placeholder="Ví dụ: THPT Chuyên ABC" required>
+                            </div>
+                            <div>
+                                <label for="profile-subject" class="font-medium text-slate-700">Môn giảng dạy</label>
+                                <select id="profile-subject" class="form-input" required>
+                                    <option value="" disabled>-- Chọn môn học --</option>
+                                    <option value="Toán">Toán</option>
+                                    <option value="Vật Lí">Vật Lí</option>
+                                    <option value="Hoá Học">Hoá Học</option>
+                                    <option value="Sinh Học">Sinh Học</option>
+                                    <option value="Lịch Sử">Lịch Sử</option>
+                                    <option value="GDKT&PL">Giáo dục Kinh tế & Pháp luật</option>
+                                    <option value="Tin Học">Tin Học</option>
+                                    <option value="Tiếng Anh">Tiếng Anh</option>
+                                    <option value="Địa Lí">Địa Lí</option>
+                                    <option value="Ngữ Văn">Ngữ Văn</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="text-right pt-2">
+                             <button type="submit" class="cta-button px-6 py-3 font-semibold text-white rounded-lg disabled:bg-slate-400">Lưu thông tin</button>
+                        </div>
+                     </form>
+                </div>
+
+                <div class="mt-8 bg-white p-8 rounded-xl shadow-lg">
+                     <h2 class="text-xl font-bold text-slate-800 mb-6">Đổi mật khẩu</h2>
+                     <form id="password-form" class="space-y-6">
+                         <div>
+                            <label for="new-password" class="font-medium text-slate-700">Mật khẩu mới</label>
+                            <input id="new-password" type="password" class="form-input" required>
+                        </div>
+                        <div>
+                            <label for="confirm-password" class="font-medium text-slate-700">Xác nhận mật khẩu mới</label>
+                            <input id="confirm-password" type="password" class="form-input" required>
+                        </div>
+                        <div class="text-right pt-2">
+                            <button type="submit" class="px-6 py-3 font-semibold text-white bg-slate-800 rounded-lg hover:bg-slate-900 disabled:bg-slate-600">Đổi mật khẩu</button>
+                        </div>
+                     </form>
+                </div>
+            </div>
+        </main>
+    </main>
+    
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2"></div>
+
+    <script src="../firebase-config.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut, updatePassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+
+            // DOM Elements
+            const userNameEl = document.getElementById('user-name');
+            const userAvatarEl = document.getElementById('user-avatar');
+            const toastContainer = document.getElementById('toast-container');
+            const profileForm = document.getElementById('profile-form');
+            const passwordForm = document.getElementById('password-form');
+            
+            const profileNameInput = document.getElementById('profile-name');
+            const profileEmailInput = document.getElementById('profile-email');
+            const profileSchoolInput = document.getElementById('profile-school');
+            const profileSubjectSelect = document.getElementById('profile-subject');
+
+            let currentUser = null;
+
+            const showToast = (message, type = 'success') => {
+                const toast = document.createElement('div');
+                const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+                toast.className = `toast show ${bgColor} text-white px-4 py-2 rounded-lg shadow-lg`;
+                toast.textContent = message;
+                toastContainer.appendChild(toast);
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    toast.addEventListener('transitionend', () => toast.remove());
+                }, 3000);
+            };
+
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    currentUser = user;
+                    const userDocRef = doc(db, "users", user.uid);
+                    const docSnap = await getDoc(userDocRef);
+
+                    if (docSnap.exists()) {
+                        const userData = docSnap.data();
+                        if (userData.role !== 'teacher') {
+                           window.location.href = `../${userData.role}/index.html`; 
+                           return;
+                        }
+                        
+                        userNameEl.textContent = userData.name || 'Giáo viên';
+                        const nameInitial = (userData.name || 'T').charAt(0).toUpperCase();
+                        userAvatarEl.src = `https://placehold.co/40x40/10B981/FFFFFF?text=${nameInitial}`;
+                        
+                        profileNameInput.value = userData.name || '';
+                        profileEmailInput.value = user.email || '';
+                        profileSchoolInput.value = userData.school || '';
+                        profileSubjectSelect.value = userData.subject || '';
+
+                    } else {
+                        window.location.href = '../auth.html';
+                    }
+                } else {
+                    window.location.href = '../auth.html';
+                }
+            });
+
+            profileForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const newName = profileNameInput.value.trim();
+                const newSchool = profileSchoolInput.value.trim();
+                const newSubject = profileSubjectSelect.value;
+                
+                if (!newName || !newSchool || !newSubject) {
+                    showToast('Vui lòng điền đầy đủ thông tin cá nhân.', 'error');
+                    return;
+                }
+                const submitButton = profileForm.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.textContent = 'Đang lưu...';
+                try {
+                    const userDocRef = doc(db, "users", currentUser.uid);
+                    await updateDoc(userDocRef, { 
+                        name: newName,
+                        school: newSchool,
+                        subject: newSubject
+                    });
+                    showToast('Cập nhật thông tin thành công!', 'success');
+                    userNameEl.textContent = newName;
+                } catch (error) {
+                    showToast('Đã xảy ra lỗi khi cập nhật.', 'error');
+                } finally {
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Lưu thông tin';
+                }
+            });
+
+            passwordForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const newPassword = document.getElementById('new-password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+
+                if (newPassword.length < 6) {
+                    showToast('Mật khẩu mới phải có ít nhất 6 ký tự.', 'error');
+                    return;
+                }
+                if (newPassword !== confirmPassword) {
+                    showToast('Mật khẩu xác nhận không khớp.', 'error');
+                    return;
+                }
+                
+                const submitButton = passwordForm.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.textContent = 'Đang đổi...';
+
+                try {
+                    await updatePassword(currentUser, newPassword);
+                    showToast('Đổi mật khẩu thành công!');
+                    passwordForm.reset();
+                } catch (error) {
+                    showToast('Đã xảy ra lỗi. Vui lòng đăng xuất và đăng nhập lại rồi thử lại.', 'error');
+                } finally {
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Đổi mật khẩu';
+                }
+            });
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.body.style.opacity = '0';
+                    setTimeout(() => { window.location.href = this.href; }, 200);
+                });
+            });
+            document.body.style.transition = 'opacity 0.2s ease-in-out';
+
+            document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+            feather.replace();
+        });
+    </script>
+</body>
+</html>

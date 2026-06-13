@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tổng quan Tình hình Nghiên cứu - AIGEO</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    
+    <style>
+        :root {
+            --primary-teal: #0D9488;
+            --primary-emerald: #10B981;
+            --text-dark: #1E293B;
+            --text-light: #475569;
+        }
+        body { 
+            font-family: 'Be Vietnam Pro', sans-serif; 
+            background-color: #f8fafc;
+        }
+        
+        /* Menu Ngang (Header) */
+        .glass-header { 
+            background-color: rgba(255, 255, 255, 0.65); 
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px); 
+            border-bottom: 1px solid rgba(0,0,0,0.05); 
+        }
+        .cta-button {
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.3);
+        }
+        .cta-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(13, 148, 136, 0.4);
+        }
+
+        /* Định dạng văn bản */
+        .gradient-text {
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .prose h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e2e8f0;
+            margin-top: 3.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+        .prose h2 svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.75rem;
+            color: var(--primary-teal);
+        }
+        .prose h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #334155;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        .prose p {
+            line-height: 1.75;
+            color: #475569;
+            text-align: justify;
+        }
+        .prose a {
+            color: var(--primary-teal);
+            font-weight: 500;
+            text-decoration: none;
+        }
+        .prose a:hover { text-decoration: underline; }
+        .prose code {
+            background-color: #e2e8f0;
+            color: #475569;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+        }
+        .prose ol, .prose ul {
+            padding-left: 1.5rem;
+            color: #475569;
+        }
+        .prose li {
+            margin-bottom: 0.75rem;
+            line-height: 1.75;
+            text-align: justify;
+        }
+        
+        /* Menu Dọc (Sidebar) */
+        .sidebar-link {
+            display: block;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            color: #475569;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        .sidebar-link:hover {
+            background-color: #f1f5f9;
+            color: #1e293b;
+        }
+        .sidebar-link.active {
+            background-color: #f0fdfa;
+            color: var(--primary-teal);
+            font-weight: 600;
+            border-left-color: var(--primary-teal);
+        }
+        .sidebar-heading {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            padding: 0 1rem;
+        }
+        #sidebar-nav::-webkit-scrollbar { width: 6px; }
+        #sidebar-nav::-webkit-scrollbar-track { background: transparent; }
+        #sidebar-nav::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        /* Animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="glass-header sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-2">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" alt="AIGEO Logo" class="h-8 w-auto">
+                <span class="text-2xl font-bold gradient-text">AIGEO</span>
+            </a>
+            
+            <div class="hidden md:flex items-center space-x-8 text-sm font-semibold">
+                <a href="index.html" class="text-slate-600 hover:text-teal-600 transition">Trang chủ</a>
+                <a href="huong-dan-su-dung.html" class="text-slate-600 hover:text-teal-600 transition">Hướng dẫn</a>
+                <a href="client/index.html" class="text-slate-600 hover:text-teal-600 transition">Dùng thử</a>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <a href="auth.html" class="hidden md:block cta-button text-white px-5 py-2.5 rounded-lg text-sm font-semibold">
+                    Đăng nhập
+                </a>
+                <button id="mobile-menu-button" class="md:hidden text-slate-800 p-2">
+                    <i data-feather="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </nav>
+
+        <div id="mobile-menu" class="hidden md:hidden px-6 pt-2 pb-4 space-y-2">
+            <a href="index.html" class="block py-2 text-slate-600 hover:text-teal-600 font-medium">Trang chủ</a>
+            <a href="huong-dan-su-dung.html" class="block py-2 text-slate-600 hover:text-teal-600 font-medium">Hướng dẫn</a>
+            <a href="client/index.html" class="block py-2 text-slate-600 hover:text-teal-600 font-medium">Dùng thử</a>
+            <a href="auth.html" class="block cta-button text-white text-center mt-2 px-5 py-2.5 rounded-lg font-semibold">Đăng nhập</a>
+        </div>
+    </header>
+
+    <div class="flex">
+        <aside class="w-80 h-[calc(100vh-65px)] sticky top-[65px] bg-white border-r p-4 hidden md:flex flex-col">
+            <nav id="sidebar-nav" class="mt-8 space-y-2 flex-grow overflow-y-auto">
+                <div>
+                    <h3 class="sidebar-heading">Mục lục</h3>
+                    <a href="#section-2-1" class="sidebar-link active">
+                        2.1. Nghiên cứu nước ngoài
+                    </a>
+                </div>
+                <div>
+                     <a href="#section-2-2" class="sidebar-link">
+                        2.2. Nghiên cứu trong nước
+                    </a>
+                </div>
+                <div>
+                    <a href="#section-summary" class="sidebar-link">
+                        2.3. Tổng kết và Lỗ hổng nghiên cứu
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="flex-1 p-6 md:p-12">
+            <article class="prose max-w-4xl mx-auto">
+                
+                <section id="title-section" class="reveal">
+                    <h1 class="gradient-text !mb-4">TỔNG QUAN TÌNH HÌNH NGHIÊN CỨU</h1>
+                </section>
+
+                <section id="section-2-1" class="reveal">
+                    <h2><i data-feather="globe"></i>2.1. Nghiên cứu nước ngoài</h2>
+                    
+                    <p>Trong hơn hai thập niên qua, sự phát
+triển nhanh chóng của công nghệ thông tin và truyền thông đã tạo nên những thay
+đổi căn bản trong giáo dục toàn cầu. E-learning và các hệ thống quản lý học tập
+(Learning Management Systems – LMS) trở thành nền tảng trọng tâm giúp chuyển
+dịch từ mô hình dạy học truyền thống sang học tập số hóa, linh hoạt và mở rộng
+không gian học tập cho người học. Theo <strong>Noesgaard và Orngreen (2015)</strong>, E-learning không chỉ là hình thức “học qua
+mạng” mà là một hệ sinh thái học tập, trong đó công nghệ đóng vai trò hỗ trợ
+người học tiếp cận tri thức một cách cá nhân hóa, đồng thời thúc đẩy sự tương
+tác đa chiều giữa người học, giáo viên và nội dung học tập.</p>
+
+                    <p><strong>Martínez-García, García-Holgado và
+García-Peñalvo (2023)</strong> thực hiện một phân tích thư mục hơn 3.000 công trình quốc
+tế về E-learning giai đoạn 2012–2022, cho thấy lĩnh vực này đang dịch chuyển từ
+dạy học trực tuyến cơ bản sang hướng học tập thông minh (smart learning).
+Nghiên cứu chỉ ra ba xu hướng nổi bật:
+</p>
+                    <ol>
+                        <li>Phát triển môi trường học tập tích
+hợp dữ liệu lớn và trí tuệ nhân tạo;</li>
+                        <li>Thiết kế nội dung học tập dựa trên
+phân tích hành vi người học;</li>
+                        <li>Nâng cao hiệu quả đánh giá thông qua tự
+động hóa và phản hồi tức thời.</li>
+                    </ol>
+                    <p>Những nghiên cứu này đã khẳng định rằng
+E-learning không chỉ mở rộng phạm vi học tập mà còn góp phần hình thành tư duy
+tự học, kỹ năng số và năng lực thích ứng – các năng lực cốt lõi trong giáo dục
+hiện đại.</p>
+
+                    <p>Cùng với sự phát triển của
+E-learning, LMS được xem là công cụ hạ tầng quan trọng trong quản lý và tổ chức
+quá trình học tập trực tuyến. Theo <strong>Alshammari và Al-Emran (2023)</strong>, các LMS hiện
+nay không còn giới hạn trong việc lưu trữ học liệu và quản lý điểm số, mà đã
+trở thành không gian tương tác, phân tích dữ liệu học tập, và hỗ trợ ra quyết
+định cho cả người học lẫn giáo viên. Nhiều nghiên cứu chỉ ra rằng việc ứng dụng
+LMS giúp nhà trường dễ dàng theo dõi tiến độ học tập của học sinh, đánh giá
+hiệu quả của hoạt động giảng dạy và cải thiện phương pháp dạy học (<strong>Chen &
+Li, 2024</strong>). Hệ thống LMS hiện đại còn được tích hợp trí tuệ nhân tạo (AI) nhằm
+cá nhân hóa nội dung học tập, đưa ra gợi ý phù hợp với trình độ của từng học
+sinh, đồng thời dự báo rủi ro học tập hoặc hành vi bỏ học (<strong>Kim & Park,
+2023</strong>).</p>
+
+                    <p>Trí tuệ nhân tạo trong giáo dục
+(AIED) hiện là một trong những lĩnh vực được quan tâm nhiều nhất trên thế giới.
+Theo báo cáo của <strong>Bộ Giáo dục Hoa Kỳ (U.S. Department of Education, 2023)</strong>, AI có
+tiềm năng cải thiện đáng kể cả ba khâu của quá trình giáo dục: dạy học, đánh
+giá và quản lý. Trong dạy học, AI được ứng dụng trong các hệ thống intelligent
+tutoring systems – hệ thống gia sư ảo có khả năng điều chỉnh nội dung và
+tốc độ học tập theo năng lực của người học (<strong>Brusilovsky & Millán, 2007</strong>).
+Trong đánh giá, AI hỗ trợ chấm điểm tự động, phát hiện gian lận, và phân tích
+dữ liệu kết quả học tập để gợi ý biện pháp hỗ trợ. Trong quản lý, AI giúp nhà
+trường phân tích xu hướng học tập, tối ưu hóa kế hoạch đào tạo và phân bổ nguồn
+lực (<strong>Wang & Zhao, 2024</strong>).</p>
+
+                    <p>Ngoài ra, AI còn góp phần làm thay
+đổi cách tiếp cận đối với thiết kế ngân hàng câu hỏi – một thành phần quan
+trọng của hoạt động kiểm tra, đánh giá. Nghiên cứu của <strong>Martínez và Rodríguez
+(2022)</strong> khẳng định rằng việc tích hợp công nghệ AI và phân tích học tập
+(learning analytics) vào quá trình thiết kế câu hỏi trắc nghiệm giúp tăng độ
+chính xác của đánh giá, phát hiện sai lệch trong cấu trúc câu hỏi, và điều
+chỉnh độ khó – độ phân biệt dựa trên dữ liệu thực tế. <strong>Bloom (1956)</strong> và sau đó là
+<strong>Anderson & Krathwohl (2001)</strong> đã đặt nền tảng cho việc xây dựng hệ thống câu
+hỏi dựa trên các bậc nhận thức, từ ghi nhớ, hiểu, vận dụng đến tư duy phản
+biện. Khi kết hợp với AI, mô hình Bloom không chỉ dừng ở phân loại câu hỏi mà
+còn cho phép hệ thống tự động xác định cấp độ tư duy mà học sinh đạt được thông
+qua phân tích kết quả làm bài.</p>
+
+                    <p>Nghiên cứu quốc tế cũng cho thấy mối
+liên hệ chặt chẽ giữa việc ứng dụng E-learning, LMS và AI trong đổi mới kiểm
+tra, đánh giá theo hướng phát triển năng lực. Theo <strong>Kim và Park (2023)</strong>, công
+nghệ AI trong môi trường E-learning có thể hỗ trợ đánh giá quá trình học tập
+liên tục thay vì chỉ dựa vào kết quả cuối kỳ. Các hệ thống phân tích dữ liệu
+học tập (learning analytics systems) có khả năng theo dõi hành vi học tập, đo
+lường mức độ tham gia và tự động gợi ý phản hồi cho giáo viên. Đây là cơ sở
+quan trọng để thiết kế các công cụ đánh giá phù hợp với từng đối tượng học
+sinh, đồng thời giúp giáo viên điều chỉnh nội dung giảng dạy kịp thời.</p>
+
+                    <p>Trong lĩnh vực giáo dục Địa lí và
+các môn khoa học xã hội, việc ứng dụng công nghệ số và AI vào dạy học cũng ngày
+càng được chú trọng. Các nghiên cứu tại châu Âu và Canada (<strong>Létourneau, Poirier
+& Bélanger, 2024</strong>) cho thấy việc sử dụng bản đồ số, dữ liệu không gian, và
+mô phỏng địa lí ảo trong E-learning giúp học sinh phát triển năng lực tư duy
+không gian và giải quyết vấn đề thực tiễn. Ở Mỹ, các hệ thống học tập địa lí
+trực tuyến kết hợp AI có thể gợi ý câu hỏi, tình huống và phản hồi dựa trên dữ
+liệu bản đồ, giúp người học vừa khám phá vừa kiểm chứng kiến thức (<strong>Qiu &
+Xu, 2022</strong>). Những kết quả này mở ra tiềm năng lớn trong việc tích hợp công nghệ
+thông minh vào dạy học và đánh giá môn Địa lí ở bậc phổ thông.</p>
+
+                    <p>Tổng hợp các công trình nghiên cứu
+quốc tế có thể thấy rằng, E-learning, LMS và AI trong giáo dục không còn là
+những lĩnh vực tách rời, mà đang hình thành một hệ sinh thái học tập thông
+minh, nơi dữ liệu và công nghệ hỗ trợ toàn bộ quá trình dạy – học – đánh giá.
+Tuy nhiên, phần lớn các nghiên cứu quốc tế vẫn tập trung ở bậc đại học hoặc
+giáo dục nghề nghiệp, trong khi ứng dụng ở giáo dục phổ thông – đặc biệt là các
+môn khoa học xã hội như Địa lí – vẫn còn hạn chế. Chính khoảng trống này mở ra
+cơ hội để các nghiên cứu tại Việt Nam phát triển mô hình học tập tích hợp AI và
+ngân hàng câu hỏi số phù hợp với điều kiện thực tiễn trong nước.</p>
+                </section>
+
+                <section id="section-2-2" class="reveal">
+                    <h2><i data-feather="home"></i>2.2. Nghiên cứu trong nước</h2>
+                    <p>Tại Việt Nam, trong bối cảnh chuyển
+đổi số giáo dục quốc gia, việc ứng dụng công nghệ thông tin, E-learning và các
+hệ thống quản lý học tập (LMS) đang trở thành xu thế tất yếu ở tất cả các bậc
+học. Nhiều nghiên cứu trong nước đã đề cập đến vai trò, hiệu quả cũng như những
+thách thức trong việc triển khai dạy học trực tuyến, sử dụng LMS và tích hợp
+trí tuệ nhân tạo (AI) vào quá trình dạy học và đánh giá.</p>
+
+                    <p>Ở giai đoạn đầu, khi E-learning còn
+là khái niệm mới mẻ, các công trình chủ yếu tập trung vào việc giới thiệu mô
+hình, thử nghiệm một số phần mềm hoặc đề xuất giải pháp ứng dụng công nghệ
+thông tin trong giảng dạy. <strong>Huỳnh Phẩm Dũng Phát (2016, 2017)</strong> là một trong những
+tác giả đầu tiên nghiên cứu ứng dụng công nghệ thông tin trong dạy học Địa lí ở
+trường trung học phổ thông. Tác giả cho rằng việc sử dụng học liệu số, video,
+bản đồ điện tử và phần mềm mô phỏng giúp tăng tính trực quan và hứng thú học
+tập, đồng thời phát triển năng lực tự học và tư duy không gian cho học sinh.
+Nghiên cứu cũng khẳng định việc kết hợp E-learning với hình thức học trực tiếp
+là hướng đi phù hợp trong điều kiện cơ sở vật chất và kỹ năng công nghệ của
+giáo viên Việt Nam còn hạn chế.</p>
+
+                    <p>Bước sang giai đoạn 2019–2023, khi
+xu hướng học tập trực tuyến bùng nổ do tác động của đại dịch COVID-19, các
+nghiên cứu trong nước về E-learning phát triển mạnh mẽ cả về số lượng và chất
+lượng. Nghiên cứu của <strong>Bùi Diên Thị, Nhân Thúy Thị, Đặng Huệ Thị Thu và Phùng
+Trang Thị Thu (2022)</strong> đã khảo sát trải nghiệm học trực tuyến của hàng nghìn học
+sinh phổ thông trên cả nước. Kết quả chỉ ra rằng phần lớn học sinh đánh giá cao
+sự linh hoạt và tính thuận tiện của học trực tuyến, tuy nhiên vẫn gặp khó khăn
+trong việc tự quản lý thời gian học, tương tác và duy trì động lực. Các tác giả
+nhấn mạnh rằng để E-learning đạt hiệu quả, cần thiết kế hoạt động học tập mang
+tính tương tác cao và có sự hỗ trợ kịp thời từ giáo viên.</p>
+
+                    <p>Ở cấp đại học, <strong>Liên Cao (2021)</strong>
+nghiên cứu việc sử dụng hệ thống học tập trực tuyến tại Trường Đại học Ngoại
+ngữ – Đại học Huế và khẳng định LMS giúp cải thiện hiệu quả giảng dạy, quản lý
+tiến trình học tập và lưu trữ học liệu. <strong>Trương Thị Thanh Hà và cộng sự (2021)</strong>
+cũng chỉ ra rằng yếu tố quyết định thành công của LMS là năng lực số của giảng
+viên và thái độ học tập của sinh viên. Hai nghiên cứu này góp phần khẳng định
+LMS là công cụ quan trọng trong quá trình chuyển đổi số của các cơ sở giáo dục
+Việt Nam.</p>
+
+                    <p>Tuy nhiên, theo <strong>Mai Quốc Khanh và
+Phan Trung Kiên (2025)</strong>, năng lực khai thác học liệu và tính chủ động học tập
+của sinh viên, học sinh Việt Nam trên hệ thống LMS vẫn còn hạn chế. Tác giả chỉ
+ra rằng phần lớn người học chưa tận dụng được hết chức năng của hệ thống, như
+thảo luận trực tuyến, tự đánh giá hoặc theo dõi tiến độ học tập. Điều này phản
+ánh thực tế rằng việc ứng dụng LMS ở Việt Nam mới chỉ tập trung vào khâu quản
+lý nội dung và điểm số, trong khi chức năng hỗ trợ học tập thông minh vẫn chưa
+được khai thác hiệu quả.</p>
+
+                    <p>Cùng với sự phát triển của
+E-learning và LMS, những năm gần đây, trí tuệ nhân tạo (AI) trong giáo dục đã
+bắt đầu thu hút sự quan tâm của nhiều nhà nghiên cứu Việt Nam. <strong>Nguyễn Đăng Khoa
+và Nguyễn Quốc Hưng (2023)</strong> cho rằng việc áp dụng AI trong giáo dục đại học mở
+ra nhiều cơ hội đổi mới phương pháp dạy học, quản lý và đánh giá, song cũng đặt
+ra thách thức về hạ tầng dữ liệu, năng lực kỹ thuật và vấn đề đạo đức học
+thuật. Tác giả khuyến nghị cần xây dựng cơ sở dữ liệu dùng chung và khung chính
+sách bảo vệ thông tin học sinh, sinh viên để phát triển bền vững các ứng dụng
+AI trong giáo dục.</p>
+
+                    <p>Ở phạm vi thực hành, <strong>Ngô Thị Ngọc
+Diệu, Mai Thị Hảo và Nguyễn Thanh Tùng (2025)</strong> đã tổng hợp các ứng dụng AI trong
+giáo dục Việt Nam, bao gồm chấm điểm tự động, phân tích kết quả học tập, gợi ý
+nội dung học tập và trợ lý ảo cho học sinh. Tuy nhiên, phần lớn các ứng dụng
+mới dừng ở lĩnh vực ngoại ngữ và đại học, trong khi giáo dục phổ thông, đặc
+biệt là các môn xã hội, vẫn chưa có nhiều mô hình thực tế. <strong>Phạm Thị Ngọc và
+Đặng Thị Xuân (2025)</strong> cũng nhận định rằng việc tích hợp AI vào dạy học ngoại ngữ
+mang lại hiệu quả rõ rệt trong việc phát triển kỹ năng cá nhân hóa, nhưng để áp
+dụng thành công trong các môn học khác cần thêm nghiên cứu về đặc thù nội dung
+và phương pháp dạy học.</p>
+
+                    <p>Liên quan đến thiết kế ngân hàng câu
+hỏi và hoạt động kiểm tra, đánh giá, <strong>Nguyễn Công Khanh và Đào Thị Oanh (2016)</strong>
+đã xây dựng cơ sở lý luận về đánh giá theo định hướng năng lực, nhấn mạnh vai
+trò của ngân hàng câu hỏi chuẩn hóa trong việc đảm bảo tính khách quan, công
+bằng và độ tin cậy của kết quả học tập. <strong>Phạm Văn Hùng (2019)</strong> tiếp cận vấn đề từ
+góc độ thực tiễn, cho rằng việc xây dựng ngân hàng câu hỏi cần gắn với các cấp
+độ nhận thức trong thang Bloom để có thể đo lường được năng lực tư duy của học sinh.
+Tuy nhiên, các công trình này vẫn chủ yếu sử dụng phương pháp thủ công trong
+xây dựng câu hỏi, chưa có sự hỗ trợ của các công cụ số hay trí tuệ nhân tạo
+trong phân tích và hiệu chỉnh độ khó – độ phân biệt của câu hỏi.</p>
+
+                    <p>Trong các nghiên cứu liên quan đến
+đổi mới chương trình và kiểm tra đánh giá môn Địa lí, <strong>Hoàng Thị Mai Anh (2020)</strong>
+khẳng định việc ứng dụng công nghệ số trong dạy học giúp học sinh phát triển kỹ
+năng khai thác bản đồ, xử lý dữ liệu không gian và vận dụng kiến thức vào thực
+tiễn. Song, công tác đánh giá trong môn học này vẫn chủ yếu dựa vào hình thức
+tự luận và trắc nghiệm truyền thống. Tương tự, <strong>Trần Thị Hường (2021)</strong> cho rằng
+cần phát triển hệ thống LMS hoặc nền tảng trực tuyến để tổ chức kiểm tra, đánh giá,
+giúp giáo viên tiết kiệm thời gian chấm điểm và theo dõi tiến độ học sinh. Tuy
+nhiên, các hệ thống hiện nay mới dừng ở mức nhập dữ liệu thủ công, chưa tích
+hợp công nghệ AI để tự động phân tích kết quả hay đưa ra phản hồi thông minh.</p>
+
+                    <p>Bên cạnh đó, các nghiên cứu của <strong>Đỗ
+Thị Quỳnh Như (2023)</strong> và <strong>Cao Thị Xuân Liên (2023)</strong> đã mở rộng hướng nghiên cứu
+sang việc đánh giá mức độ chấp nhận E-learning của người học trong bối cảnh đại
+dịch, sử dụng mô hình phân tích hỗn hợp ANN-SEM. Kết quả cho thấy yếu tố công
+nghệ, thái độ và sự hỗ trợ của giảng viên ảnh hưởng đáng kể đến việc chấp nhận
+học trực tuyến. Tuy nhiên, các nghiên cứu này vẫn thiên về lĩnh vực đại học,
+chưa có nhiều minh chứng cụ thể cho khối trung học phổ thông.</p>
+                </section>
+                
+                <section id="section-summary" class="reveal">
+                    <h2><i data-feather="compass"></i>2.3. Tổng kết và Lỗ hổng nghiên cứu</h2>
+                    <p>Qua tổng hợp các công trình nghiên cứu trong và ngoài
+nước có thể thấy rằng, việc ứng dụng công nghệ số, đặc biệt là E-learning, hệ
+thống quản lý học tập (LMS) và trí tuệ nhân tạo (AI) trong giáo dục đã và đang
+trở thành xu hướng tất yếu trên toàn cầu. Các nghiên cứu quốc tế khẳng định
+tiềm năng to lớn của E-learning và AI trong việc đổi mới phương pháp dạy học,
+quản lý và đánh giá, hình thành nên một hệ sinh thái học tập thông minh, nơi dữ
+liệu và công nghệ được khai thác để cá nhân hóa quá trình học tập, hỗ trợ người
+học phát triển năng lực toàn diện (<strong>Noesgaard & Orngreen, 2015; Wang &
+Zhao, 2024</strong>). Tuy nhiên, phần lớn các công trình này chủ yếu tập trung ở bậc đại
+học hoặc môi trường đào tạo chuyên nghiệp, trong khi ứng dụng ở bậc phổ thông -
+đặc biệt với các môn khoa học xã hội như Địa lí - vẫn còn hạn chế.</p>
+
+                    <p>Tại Việt Nam, các nghiên cứu về E-learning, LMS và AI
+đã được triển khai mạnh mẽ trong bối cảnh chuyển đổi số của ngành giáo dục.
+Nhiều công trình đã bước đầu làm rõ cơ sở lý luận, khảo sát thực trạng và đề
+xuất giải pháp ứng dụng công nghệ vào dạy học và kiểm tra, đánh giá (<strong>Huỳnh Phẩm
+Dũng Phát, 2017; Liên Cao, 2021; Ngô Thị Ngọc Diệu, Mai Thị Hảo & Nguyễn
+Thanh Tùng, 2025</strong>). Tuy vậy, phần lớn những nghiên cứu này mới dừng ở mức mô tả,
+thử nghiệm cục bộ hoặc tập trung vào lĩnh vực ngoại ngữ và giáo dục đại học.
+Việc kết hợp đồng bộ giữa E-learning, LMS và trí tuệ nhân tạo trong xây dựng ngân
+hàng câu hỏi điện tử phục vụ kiểm tra - đánh giá theo định hướng năng lực
+hầu như chưa được nghiên cứu sâu. Đặc biệt, trong dạy học môn Địa lí ở bậc
+trung học phổ thông, các công trình mới chỉ dừng ở việc ứng dụng công nghệ để
+trình bày bài giảng, còn mảng thiết kế và khai thác ngân hàng câu hỏi trực
+ tuyến vẫn là khoảng trống lớn.</p>
+
+                    <p>Như vậy, có thể nhận định rằng lỗ hổng nghiên
+cứu hiện nay nằm ở việc thiếu các mô hình tích hợp giữa E-learning,
+LMS và AI nhằm hỗ trợ công tác kiểm tra, đánh giá trong các môn khoa học xã hội
+ở bậc phổ thông. Chưa có một công trình nào nghiên cứu một cách hệ thống và
+toàn diện về việc thiết kế một website ngân hàng câu hỏi số bám sát nội dung
+chương trình Địa lí lớp 12 có tích hợp AI hướng đến việc cá nhân hóa học tập.
+Chính khoảng trống này là cơ sở để hình thành đề tài “<strong>XÂY DỰNG VÀ SỬ DỤNG HỆ THỐNG NGÂN HÀNG CÂU HỎI SỐ HỖ TRỢ VIỆC LUYỆN TẬP, LUYỆN THI THEO HƯỚNG CÁ NHÂN HÓA NGƯỜI HỌC (THÍ ĐIỂM CHƯƠNG TRÌNH ĐỊA LÍ 12)
+</strong>”. Đề tài không chỉ kế thừa những thành tựu
+nghiên cứu trước đây mà còn hướng đến việc phát triển một giải pháp có tính
+thực tiễn cao:</p>
+                    
+                    <ul>
+                        <li>(1) Cung cấp học liệu số hệ thống, giúp giáo viên có công cụ
+giảng dạy và kiểm tra thuận tiện;</li>
+                        <li>(2) Tạo môi trường tự học cá nhân hóa cho học
+sinh, gắn liền với yêu cầu phát triển năng lực đặc thù môn Địa lí trong Chương
+trình GDPT 2018.</li>
+                        <li>(3) Khẳng định hướng đi mới trong nghiên cứu giáo dục, khi kết
+hợp giữa ngân hàng câu hỏi, công nghệ số và lý thuyết học tập thích ứng.</li>
+                    </ul>
+                </section>
+
+            </article>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            feather.replace();
+
+            // --- Menu Mobile ---
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenuButton) {
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                    const icon = mobileMenuButton.querySelector('i');
+                    icon.setAttribute('data-feather', mobileMenu.classList.contains('hidden') ? 'menu' : 'x');
+                    feather.replace();
+                });
+            }
+
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('#sidebar-nav a');
+
+            // Scroll reveal animation
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.05 }); // Kích hoạt sớm hơn một chút
+            
+            document.querySelectorAll('.reveal').forEach(el => {
+                revealObserver.observe(el);
+            });
+
+            // Active sidebar link on scroll
+            const activeLinkObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        const activeLink = document.querySelector(`#sidebar-nav a[href="#${id}"]`);
+                        
+                        navLinks.forEach(link => link.classList.remove('active'));
+                        if(activeLink) {
+                            activeLink.classList.add('active');
+                        }
+                    }
+                });
+            }, { rootMargin: "-40% 0px -60% 0px" }); // Kích hoạt khi mục ở giữa màn hình
+
+            sections.forEach(section => {
+                activeLinkObserver.observe(section);
+            });
+            
+            // Kích hoạt link đầu tiên khi tải trang
+            if(navLinks.length > 0) {
+                // Xóa active cũ (nếu có) và đặt active cho link đầu tiên
+                navLinks.forEach(link => link.classList.remove('active'));
+                navLinks[0].classList.add('active');
+            }
+        });
+    </script>
+</body>
+
+</html>

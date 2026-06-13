@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sổ tay Hướng dẫn sử dụng AIGEO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        :root {
+            --primary-teal: #0D9488;
+            --primary-emerald: #10B981;
+        }
+        body { 
+             font-family: 'Be Vietnam Pro', sans-serif; 
+             background-color: #f8fafc; /* Lighter background for better contrast */
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .prose h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-teal); /* Đã thay đổi */
+            margin-top: 3.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .prose h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #334155;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        .prose p {
+            line-height: 1.75;
+            color: #475569;
+        }
+        .prose a {
+            color: var(--primary-teal);
+            font-weight: 500;
+            text-decoration: none;
+        }
+        .prose a:hover {
+            text-decoration: underline;
+        }
+        .prose code {
+            background-color: #e2e8f0;
+            color: #475569;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        .prose ol {
+            list-style-type: decimal;
+            padding-left: 1.5rem;
+        }
+        .prose li {
+            margin-bottom: 0.75rem;
+        }
+        /* Đã xoá các kiểu .prose img và .prose img:hover */
+        .sidebar-link {
+            display: block;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            color: #475569;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        .sidebar-link:hover {
+            background-color: #f1f5f9;
+            color: #1e293b;
+        }
+        .sidebar-link.active {
+            background-color: #f0fdfa;
+            color: var(--primary-teal);
+            font-weight: 600;
+            border-left-color: var(--primary-teal);
+        }
+        .sidebar-heading {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            padding: 0 1rem;
+        }
+        /* Custom Scrollbar for Sidebar */
+        #sidebar-nav::-webkit-scrollbar {
+            width: 6px;
+        }
+        #sidebar-nav::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #sidebar-nav::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        #sidebar-nav::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        /* Reveal on scroll animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- GLOBAL SCROLLBAR STYLE --- */
+
+        /* 1. Thiết lập độ rộng/cao của thanh trượt */
+        ::-webkit-scrollbar {
+            width: 10px;  /* Độ rộng cho thanh dọc */
+            height: 10px; /* Độ cao cho thanh ngang */
+        }
+
+        /* 2. Thiết lập rãnh trượt (Track) - Nền chìm */
+        ::-webkit-scrollbar-track {
+            background: rgba(80, 255, 197, 0.05);
+            border-radius: 10px;
+        }
+
+        /* 3. Thiết lập tay nắm (Thumb) - Phần di chuyển */
+        ::-webkit-scrollbar-thumb {
+            background-color: #0D9488;
+            border-radius: 10px; /* Bo tròn mềm mại */
+            
+            /* Mẹo: Tạo viền trong suốt để thanh trượt trông nhỏ hơn và "lơ lửng" */
+            border: 2px solid transparent;
+            background-clip: content-box;
+            transition: background-color 0.3s ease;
+        }
+
+        /* 4. Hiệu ứng khi di chuột vào (Hover) */
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #0F766E;
+            border: 1px solid transparent;
+        }
+
+        /* 5. (Tùy chọn) Ẩn nút mũi tên 2 đầu (nếu trình duyệt hiển thị) */
+        ::-webkit-scrollbar-button {
+            display: none;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="flex">
+        <aside class="w-72 h-screen sticky top-0 bg-white border-r border-slate-200 shadow-md p-4 hidden md:flex flex-col">
+            <a href="index.html" class="text-2xl font-bold gradient-text block px-4 flex-shrink-0">AIGEO</a>
+            <p class="text-sm text-slate-500 px-4 mt-1 flex-shrink-0">Sổ tay Hướng dẫn</p>
+            <nav id="sidebar-nav" class="mt-8 space-y-2 flex-grow overflow-y-auto">
+                <div>
+                    <a href="#introduction" class="sidebar-link">Giới thiệu</a>
+                </div>
+                <div>
+                    <h3 class="sidebar-heading">Giáo viên</h3>
+                    <a href="#teacher-classrooms" class="sidebar-link">Quản lý Lớp học</a>
+                    <a href="#teacher-questions" class="sidebar-link">Đóng góp Câu hỏi</a>
+                    <a href="#teacher-tests" class="sidebar-link">Tạo & Quản lý Đề thi</a>
+                    <a href="#teacher-monitoring" class="sidebar-link">Giám sát Thi cử</a>
+                </div>
+                <div>
+                    <h3 class="sidebar-heading">Học sinh</h3>
+                    <a href="#student-start" class="sidebar-link">Bắt đầu & Tham gia lớp</a>
+                    <a href="#student-practice" class="sidebar-link">Luyện tập & Thi cử</a>
+                    <a href="#student-stats" class="sidebar-link">Xem Thống kê & Kết quả</a>
+                    <a href="#student-chatbot" class="sidebar-link">Sử dụng Chatbot AI</a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="flex-1 p-6 md:p-12">
+            <article class="prose max-w-4xl mx-auto">
+                <section id="introduction" class="reveal">
+                    <h1 class="gradient-text !mb-2">Chào mừng đến với Sổ tay Hướng dẫn AIGEO</h1>
+                    <p class="!text-lg !mt-0 text-slate-500">Tài liệu này sẽ hướng dẫn bạn cách sử dụng các chức năng chính của hệ thống AIGEO, dành cho vai trò Giáo viên và Học sinh.</p>
+                </section>
+
+                <section id="teacher-guide" class="reveal">
+                    <h2><i data-feather="briefcase" class="inline-block -mt-1 mr-2"></i>Hướng dẫn cho Giáo viên</h2>
+
+                    <h3 id="teacher-classrooms">Quản lý Lớp học</h3>
+                    <p>Tạo và quản lý các lớp học của riêng bạn để tương tác với học sinh.</p>
+                    <ol>
+                        <li>Vào trang <strong>Quản lý Lớp học</strong> và nhấn nút "Tạo Lớp học mới".</li>
+                        <li>Điền thông tin và lưu lại. Hệ thống sẽ tạo một <strong>Mã lớp</strong> duy nhất.</li>
+                        <li>Gửi mã lớp này hoặc sao chép link mời cho học sinh của bạn để họ tham gia.</li>
+                        <li>Nhấn vào "Xem tiến độ" để theo dõi kết quả làm bài của từng học sinh trong lớp.</li>
+                    </ol>
+                    <h3 id="teacher-questions">Đóng góp Câu hỏi</h3>
+                    <p>Bạn có thể đóng góp câu hỏi do mình soạn vào ngân hàng câu hỏi của hệ thống.</p>
+                    <ol>
+                        <li>Vào trang <strong>Ngân hàng câu hỏi</strong>.</li>
+                        <li>Dùng bộ lọc để chọn chính xác Bài học bạn muốn đóng góp câu hỏi.</li>
+                        <li>Nhấn nút "Đóng góp câu hỏi" và điền đầy đủ thông tin.</li>
+                        <li>Câu hỏi của bạn sẽ được gửi đến Quản trị viên để chờ duyệt. Bạn có thể xem trạng thái (Chờ duyệt, Đã duyệt, Bị từ chối) ngay tại danh sách câu hỏi.</li>
+                    </ol>
+
+                    <h3 id="teacher-tests">Tạo & Quản lý Đề thi</h3>
+                    <p>Tạo các bài kiểm tra và giao cho các lớp học của bạn một cách linh hoạt.</p>
+                    <ol>
+                        <li>Vào trang <strong>Quản lý đề thi</strong>, nhấn "Tạo Đề Thi Mới".</li>
+                        <li>Chọn phương thức tạo đề phù hợp:
+                            <ul>
+                                <li><strong>Ngân hàng chung & Cá nhân:</strong> Tự chọn câu hỏi từ hệ thống và câu hỏi do bạn tạo.</li>
+                                <li><strong>Chỉ câu hỏi cá nhân:</strong> Chỉ dùng các câu hỏi do bạn tạo.</li>
+                                <li><strong>Tạo từ File (AI):</strong> Tải lên file Word/PDF, AI sẽ tự động phân tích và tạo câu hỏi.</li>
+                            </ul>
+                        </li>
+                        <li>Sau khi tạo đề, bạn có thể vào "Xem trước" và nhấn "Giao bài" để chọn các lớp học sẽ nhận bài kiểm tra này.</li>
+                    </ol>
+
+                    <h3 id="teacher-monitoring">Giám sát Thi cử</h3>
+                    <p>Theo dõi học sinh làm bài trong thời gian thực để đảm bảo tính công bằng và hỗ trợ kịp thời.</p>
+                    <ol>
+                        <li>Vào trang <strong>Quản lý đề thi</strong>.</li>
+                        <li>Với các đề đã giao, nhấn vào nút "Giám sát".</li>
+                        <li>Chọn lớp học bạn muốn giám sát.</li>
+                        <li>Màn hình sẽ hiển thị trạng thái của từng học sinh: Đang thi, Offline, Bị khóa (do vi phạm), Đã nộp bài.</li>
+                        <li>Nếu học sinh bị khóa do thoát chế độ toàn màn hình, bạn có thể quyết định "Cho phép thi tiếp" hoặc "Buộc nộp bài".</li>
+                    </ol>
+                    </section>
+
+                <section id="student-guide" class="reveal">
+                    <h2><i data-feather="user" class="inline-block -mt-1 mr-2"></i>Hướng dẫn cho Học sinh</h2>
+                                        
+                    <h3 id="student-start">Bắt đầu & Tham gia lớp</h3>
+                    <ol>
+                        <li>Đăng ký tài khoản và đăng nhập vào hệ thống.</li>
+                        <li>Lần đầu đăng nhập, bạn sẽ được yêu cầu cập nhật thông tin cá nhân (trường, khối lớp) tại trang <strong>Tài khoản</strong>. Việc này là cần thiết để hệ thống gợi ý đúng nội dung học tập.</li>
+                        <li>Để tham gia lớp, vào mục <strong>Lớp học của tôi</strong>, chọn "Tham gia lớp mới".</li>
+                        <li>Nhập <strong>Mã lớp</strong> do giáo viên cung cấp và nhấn "Tham gia".</li>
+                    </ol>
+
+                    <h3 id="student-practice">Luyện tập & Thi cử</h3>
+                    <p>AIGEO cung cấp nhiều hình thức luyện tập để bạn củng cố kiến thức một cách hiệu quả.</p>
+                    <ul>
+                        <li><strong>Bài tập được giao:</strong> Các bài kiểm tra do giáo viên giao sẽ xuất hiện ở Bảng điều khiển và trong chi tiết từng lớp học. Nhấn "Vào thi" để bắt đầu làm bài.</li>
+                        <li><strong>Trung tâm Luyện tập:</strong> Vào mục <strong>Luyện tập</strong>, bạn có thể chọn các hình thức:
+                            <ul>
+                                <li><strong>Đề theo Năng lực (AI):</strong> AI tự động tạo đề dựa trên các lỗi sai của bạn trong các bài làm trước.</li>
+                                <li><strong>Luyện Đề:</strong> Làm các đề thi chung từ ngân hàng đề của hệ thống.</li>
+                                <li><strong>Theo Bài / Tổng hợp:</strong> Tự chọn môn, bài học và số lượng câu hỏi để tạo đề ôn tập theo ý muốn.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <h3 id="student-stats">Xem Thống kê & Kết quả</h3>
+                    <ul>
+                        <li>Sau mỗi bài làm, bạn sẽ được chuyển đến trang kết quả chi tiết, bao gồm điểm số, nhận xét từ AI và đáp án chi tiết từng câu.</li>
+                        <li>Vào mục <strong>Thống kê</strong> để xem biểu đồ tiến độ, điểm trung bình, và lịch sử tất cả các bài đã làm.</li>
+                    </ul>
+
+                    <h3 id="student-chatbot">Sử dụng Chatbot AI</h3>
+                    <p>Khi có bất kỳ thắc mắc nào về kiến thức, hãy vào mục <strong>Chatbot AI</strong>. Trợ lý ảo sẽ giúp bạn giải đáp các câu hỏi liên quan đến môn học một cách nhanh chóng.</p>
+                </section>
+            </article>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            feather.replace();
+
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('#sidebar-nav a');
+
+            // Scroll reveal animation
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            document.querySelectorAll('.reveal').forEach(el => {
+                revealObserver.observe(el);
+            });
+
+            // Active sidebar link on scroll
+            const activeLinkObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            const isChildOfHeading = link.previousElementSibling && link.previousElementSibling.classList.contains('sidebar-heading');
+                            let targetId = link.getAttribute('href').substring(1);
+                            
+                            // Special case for headings
+                            if (entry.target.id.startsWith('teacher') && link.getAttribute('href') === '#teacher-classrooms') {
+                                targetId = 'teacher-guide';
+                            } else if (entry.target.id.startsWith('student') && link.getAttribute('href') === '#student-start') {
+                                targetId = 'student-guide';
+                            }
+
+                            link.classList.toggle('active', targetId === entry.target.id);
+                        });
+                    }
+                });
+            }, { rootMargin: "-40% 0px -60% 0px" });
+
+            sections.forEach(section => {
+                activeLinkObserver.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>

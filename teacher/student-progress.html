@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiến độ Lớp học - AIGEO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        :root {
+            --primary-teal: #0D9488;
+            --primary-emerald: #10B981;
+        }
+        body { 
+            font-family: 'Be Vietnam Pro', sans-serif; 
+            background-color: #f1f5f9; 
+        }
+        .sidebar-link { display: flex; align-items: center; padding: 0.75rem 1rem; border-radius: 0.5rem; transition: background-color 0.2s, color 0.2s; }
+        .sidebar-link:hover { background-color: #e2e8f0; color: #0f172a; }
+        .sidebar-link.active { 
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            color: white; 
+            font-weight: 600; 
+            box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2);
+        }
+        .sidebar-link.active:hover { background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald)); }
+        .sidebar-link.active svg { color: white; }
+        .sidebar-link svg { margin-right: 0.75rem; }
+        .brand-gradient-text {
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="flex h-screen">
+    <aside class="w-64 bg-white shadow-md flex-shrink-0 flex flex-col">
+        <div class="h-16 flex-shrink-0 flex items-center justify-center border-b px-4">
+            <a href="/index.html" class="flex items-center gap-2">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" alt="AIGEO Logo" class="h-8 w-auto">
+                <span class="text-2xl font-bold brand-gradient-text">AIGEO</span>
+            </a>
+        </div>
+        <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
+            <a href="index.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="home"></i>Bảng điều khiển</a>
+            <a href="classrooms.html" class="sidebar-link active"><i data-feather="users"></i>Quản lý Lớp học</a>
+            <a href="question-bank.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="database"></i>Ngân hàng câu hỏi</a>
+            <a href="tests.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="file-text"></i>Quản lý đề thi</a>
+            <a href="account.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="user"></i>Tài khoản</a>
+        </nav>
+        <div class="p-4 border-t flex-shrink-0"><button id="logout-btn" class="w-full sidebar-link text-slate-600 text-left"><i data-feather="log-out"></i>Đăng xuất</button></div>
+    </aside>
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <header class="bg-white shadow-sm h-16 flex items-center justify-end px-6">
+            <div class="flex items-center">
+                <span id="user-name" class="font-semibold text-gray-700 mr-4">Đang tải...</span>
+                <img id="user-avatar" class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/40x40/E2E8F0/475569?text=T" alt="Teacher Avatar">
+            </div>
+        </header>
+        <div class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-100 p-8">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex items-center mb-6">
+                    <a href="classrooms.html" class="p-2 rounded-md hover:bg-slate-200 mr-4 nav-link"><i data-feather="arrow-left" class="w-6 h-6 text-slate-600"></i></a>
+                    <div>
+                        <h1 id="class-name-header" class="text-3xl font-bold text-slate-800">Tiến độ Lớp học</h1>
+                        <p id="class-subject-header" class="mt-1 text-slate-500"></p>
+                    </div>
+                </div>
+                <div id="progress-area" class="mt-8">
+                </div>
+            </div>
+        </div>
+    </main>
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50"></div>
+    <script src="../firebase-config.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+            // --- State ---
+            let currentUser = null;
+            let currentClassId = null;
+            // --- Elements ---
+            const progressArea = document.getElementById('progress-area');
+            const classNameHeader = document.getElementById('class-name-header');
+            const classSubjectHeader = document.getElementById('class-subject-header');
+            
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    currentUser = user;
+                    const docSnap = await getDoc(doc(db, "users", user.uid));
+                    if (docSnap.exists() && docSnap.data().role === 'teacher') {
+                         const userData = docSnap.data();
+                        document.getElementById('user-name').textContent = userData.name || 'Giáo viên';
+                        document.getElementById('user-avatar').src = userData.avatar || `https://placehold.co/40x40/10B981/FFFFFF?text=${(userData.name || 'T').charAt(0)}`;
+                        initPage();
+                    } else {
+                        const userRole = docSnap.data()?.role;
+                        window.location.href = userRole ? `../${userRole}/index.html` : '../auth.html';
+                    }
+                } else {
+                    window.location.href = '../auth.html';
+                }
+            });
+
+            async function initPage() {
+                const urlParams = new URLSearchParams(window.location.search);
+                currentClassId = urlParams.get('classId');
+                if (!currentClassId) {
+                    progressArea.innerHTML = `<p class="p-8 text-center text-red-600">Thông tin không hợp lệ. Vui lòng quay lại.</p>`;
+                    return;
+                }
+                progressArea.innerHTML = `<p class="p-8 text-center text-slate-500">Đang tải dữ liệu tiến độ...</p>`;
+                try {
+                    const classDocRef = doc(db, "classrooms", currentClassId);
+                    const classDocSnap = await getDoc(classDocRef);
+                    if (!classDocSnap.exists() || classDocSnap.data().teacherId !== currentUser.uid) {
+                        throw new Error("Không tìm thấy lớp học hoặc bạn không có quyền truy cập.");
+                    }
+                    const classroomData = { id: classDocSnap.id, ...classDocSnap.data() };
+                    
+                    const subjectDocSnap = await getDoc(doc(db, "subjects", classroomData.subjectId));
+                    const subjectName = subjectDocSnap.exists() ? subjectDocSnap.data().name : "Không rõ";
+                    
+                    classNameHeader.textContent = `Danh sách học sinh lớp: ${classroomData.className}`;
+                    classSubjectHeader.textContent = `${subjectName} - Lớp ${classroomData.grade}`;
+                    
+                    const studentIds = classroomData.students || [];
+                    if (studentIds.length === 0) {
+                         progressArea.innerHTML = `<p class="p-8 text-center text-slate-500">Lớp học này chưa có học sinh nào.</p>`;
+                         return;
+                    }
+                    
+                    const studentDocs = await fetchDocsInChunks(collection(db, "users"), "__name__", studentIds);
+                    renderStudentList(studentDocs);
+
+                } catch (error) {
+                    console.error("Error loading student progress:", error);
+                    progressArea.innerHTML = `<p class="p-8 text-center text-red-600">${error.message}</p>`;
+                }
+            }
+            
+            async function fetchDocsInChunks(collectionRef, field, ids) {
+                if (!ids || ids.length === 0) return [];
+                const allDocsData = [];
+                for (let i = 0; i < ids.length; i += 30) {
+                    const chunk = ids.slice(i, i + 30);
+                    if (chunk.length > 0) {
+                        const q = query(collectionRef, where(field, "in", chunk));
+                        const snapshot = await getDocs(q);
+                        snapshot.forEach(doc => allDocsData.push({id: doc.id, ...doc.data()}));
+                    }
+                }
+                return allDocsData;
+            }
+
+            function renderStudentList(students) {
+                progressArea.innerHTML = '';
+                progressArea.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6';
+
+                students.sort((a, b) => (a.name || '').localeCompare(b.name || '')).forEach((student) => {
+                    const nameInitial = (student.name || 'S').charAt(0).toUpperCase();
+                    const studentCard = document.createElement('a');
+                    // *** SỬA LỖI: Thêm classId vào href ***
+                    studentCard.href = `student.html?studentId=${student.id}&studentName=${encodeURIComponent(student.name)}&classId=${currentClassId}`;
+                    studentCard.className = "nav-link bg-white p-5 rounded-xl shadow-sm flex items-center space-x-4 transition-transform transform hover:-translate-y-1 hover:shadow-lg";
+                    
+                    studentCard.innerHTML = `
+                        <div class="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600 flex-shrink-0">
+                            ${nameInitial}
+                        </div>
+                        <div class="overflow-hidden">
+                            <p class="font-bold text-slate-800 truncate">${student.name}</p>
+                            <p class="text-sm text-slate-500 truncate">${student.email || 'N/A'}</p>
+                        </div>
+                    `;
+                    progressArea.appendChild(studentCard);
+                });
+            }
+            
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.body.style.opacity = '0';
+                    setTimeout(() => { window.location.href = this.href; }, 200);
+                });
+            });
+            document.body.style.transition = 'opacity 0.2s ease-in-out';
+            
+            document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+            feather.replace();
+        });
+    </script>
+</body>
+</html>
+

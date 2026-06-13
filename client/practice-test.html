@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIGEO - Đang làm bài</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #0D9488;
+            --secondary: #10B981;
+            --text-main: #1E293B;
+            --text-light: #64748B;
+            --primary-gradient: linear-gradient(135deg, #0D9488 0%, #10B981 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { color: var(--text-main); background-color: #F8FAFC; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+
+        /* --- DASHBOARD HEADER --- */
+        header { 
+            background: white; 
+            border-bottom: 1px solid #E2E8F0; 
+            height: 72px; 
+            display: flex; 
+            align-items: center; 
+            padding: 0 24px; 
+            z-index: 50; 
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            position: relative;
+        }
+
+        .timer-pill {
+            background: #F1F5F9;
+            padding: 8px 18px;
+            border-radius: 100px;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid #E2E8F0;
+        }
+
+        .progress-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; background: #F1F5F9; }
+        #progress-bar { height: 100%; background: var(--primary-gradient); transition: width 0.4s ease; }
+
+        /* --- LAYOUT --- */
+        .main-layout { flex: 1; display: flex; overflow: hidden; }
+        .content-scroll { flex: 1; overflow-y: auto; padding: 40px 24px; scroll-behavior: smooth; }
+        
+        /* --- QUESTION CARDS --- */
+        .question-section-title { font-size: 0.75rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; color: var(--primary); margin-bottom: 24px; display: block; border-bottom: 2px solid #F1F5F9; padding-bottom: 8px; }
+        
+        .question-card { 
+            background: white; 
+            border-radius: 24px; 
+            padding: 32px; 
+            margin-bottom: 32px; 
+            border: 1px solid #E2E8F0; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            transition: 0.3s;
+        }
+        .question-card:hover { border-color: var(--primary); }
+
+        /* --- OPTIONS STYLE --- */
+        .answer-option {
+            display: flex; align-items: center; gap: 16px; padding: 16px 20px;
+            border-radius: 16px; border: 2px solid #F1F5F9; cursor: pointer;
+            transition: 0.2s; margin-bottom: 12px;
+        }
+        .answer-option:hover { background: #F0FDFA; border-color: #CCFBF1; }
+        .answer-option.selected { background: #F0FDFA; border-color: var(--primary); box-shadow: 0 4px 12px rgba(13, 148, 136, 0.1); }
+        
+        .option-letter {
+            width: 36px; height: 36px; border-radius: 10px; background: #F1F5F9;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; color: #64748B;
+        }
+        .answer-option.selected .option-letter { background: var(--primary); color: white; }
+
+        /* --- TRUE/FALSE --- */
+        .tf-btn { flex: 1; padding: 12px; border-radius: 12px; font-weight: 700; border: 2px solid #F1F5F9; transition: 0.3s; color: #64748B; background: white; }
+        .tf-btn.selected[data-value="true"] { background: #10B981; color: white; border-color: #10B981; }
+        .tf-btn.selected[data-value="false"] { background: #EF4444; color: white; border-color: #EF4444; }
+
+        /* --- SIDEBAR --- */
+        aside { width: 320px; background: white; border-left: 1px solid #E2E8F0; padding: 24px; display: flex; flex-direction: column; flex-shrink: 0; }
+        .question-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; overflow-y: auto; }
+        .q-map-btn {
+            aspect-ratio: 1; border-radius: 12px; border: 2px solid #F1F5F9;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; color: #94A3B8; text-decoration: none; transition: 0.3s;
+        }
+        .q-map-btn.answered { background: #F0FDFA; border-color: #10B981; color: #10B981; }
+        .q-map-btn:hover { border-color: var(--primary); }
+
+        .btn-submit {
+            background: var(--primary-gradient); color: white; width: 100%; padding: 16px; 
+            border-radius: 16px; font-weight: 800; border: none; cursor: pointer; transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(13, 148, 136, 0.2); margin-top: auto;
+        }
+        .btn-submit:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(13, 148, 136, 0.3); }
+
+        /* Animations */
+        #question-map-toggle:checked + #question-map { transform: translateX(0); }
+        @media (max-width: 768px) {
+            #question-map { position: fixed; right: 0; top: 72px; bottom: 0; transform: translateX(100%); z-index: 100; transition: 0.4s; }
+        }
+
+        /* --- GLOBAL SCROLLBAR STYLE --- */
+
+        /* 1. Thiết lập độ rộng/cao của thanh trượt */
+        ::-webkit-scrollbar {
+            width: 10px;  /* Độ rộng cho thanh dọc */
+            height: 10px; /* Độ cao cho thanh ngang */
+        }
+
+        /* 2. Thiết lập rãnh trượt (Track) - Nền chìm */
+        ::-webkit-scrollbar-track {
+            background: rgba(80, 255, 197, 0.05);
+            border-radius: 10px;
+        }
+
+        /* 3. Thiết lập tay nắm (Thumb) - Phần di chuyển */
+        ::-webkit-scrollbar-thumb {
+            background-color: #0D9488;
+            border-radius: 10px; /* Bo tròn mềm mại */
+            
+            /* Mẹo: Tạo viền trong suốt để thanh trượt trông nhỏ hơn và "lơ lửng" */
+            border: 2px solid transparent;
+            background-clip: content-box;
+            transition: background-color 0.3s ease;
+        }
+
+        /* 4. Hiệu ứng khi di chuột vào (Hover) */
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #0F766E;
+            border: 1px solid transparent;
+        }
+
+        /* 5. (Tùy chọn) Ẩn nút mũi tên 2 đầu (nếu trình duyệt hiển thị) */
+        ::-webkit-scrollbar-button {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="flex items-center gap-4 flex-1">
+            <img id="user-avatar" class="h-10 w-10 rounded-xl" src="https://ui-avatars.com/api/?name=Guest&background=0D9488&color=fff" alt="Avatar">
+            <div>
+                <h1 id="test-name-header" class="font-black text-slate-800 leading-tight">Đang tải...</h1>
+                <p id="user-name" class="text-xs font-bold text-slate-400">Chế độ Khách</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="timer-pill">
+                <i class="far fa-clock text-teal-600"></i>
+                <span id="timer">00:00</span>
+            </div>
+            <label for="question-map-toggle" class="md:hidden p-2 bg-slate-100 rounded-lg cursor-pointer">
+                <i data-feather="grid"></i>
+            </label>
+        </div>
+        <div class="progress-container">
+            <div id="progress-bar" style="width: 0%"></div>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <main class="content-scroll">
+            <div class="max-w-3xl mx-auto" id="main-content-area">
+                <div class="text-center py-20">
+                    <div class="animate-spin rounded-full h-12 w-12 border-4 border-teal-500 border-t-transparent mx-auto"></div>
+                    <p class="mt-4 text-slate-400 font-bold">Đang chuẩn bị câu hỏi...</p>
+                </div>
+            </div>
+        </main>
+
+        <input type="checkbox" id="question-map-toggle" class="hidden">
+        <aside id="question-map">
+            <h2 class="font-black text-slate-800 mb-6 flex justify-between items-center">
+                Danh sách câu hỏi
+                <span id="progress-text" class="text-xs bg-teal-50 text-teal-600 px-2 py-1 rounded-md">0/0</span>
+            </h2>
+            <div id="question-grid" class="question-grid"></div>
+            <button id="submit-btn" class="btn-submit">Nộp bài ngay</button>
+        </aside>
+    </div>
+
+    <script src="../firebase-config.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, getDocs, collection, query, where, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+
+            const mainContentArea = document.getElementById('main-content-area');
+            const progressBar = document.getElementById('progress-bar');
+            const questionGridEl = document.getElementById('question-grid');
+            const submitBtn = document.getElementById('submit-btn');
+            const timerEl = document.getElementById('timer');
+            const testNameHeader = document.getElementById('test-name-header');
+
+            let questions = [];
+            let renderedQuestionsOrder = [];
+            let userAnswers = {};
+            let timerInterval = null;
+            let timeElapsed = 0;
+            let testData = {};
+            let practiceContext = {}; 
+            let clientSession = {};
+
+            // Helper clean prefix
+            const cleanPrefix = (t) => t ? t.replace(/^(Câu|Bài|Phần|Mục)\s*\d+\s*[:.]?\s*/i, '').trim() : '';
+            
+            // Lấy session khách
+            const getClientSession = () => {
+                let s = localStorage.getItem('aigeo_client_session');
+                if (s) return JSON.parse(s);
+                const n = { clientId: `guest_${Date.now()}`, chatCount: 0, createdAt: new Date().toISOString() };
+                localStorage.setItem('aigeo_client_session', JSON.stringify(n));
+                return n;
+            };
+
+            // --- 1. Hàm khởi tạo đề bài ---
+            async function initTest() {
+                try {
+                    clientSession = getClientSession();
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const testIdUrl = urlParams.get('testId');
+                    const qIdsStr = sessionStorage.getItem('practiceTestQuestions');
+                    const ctxStr = sessionStorage.getItem('practiceContext');
+                    
+                    let questionIds = [];
+                    let embeddedQuestions = [];
+
+                    if (testIdUrl) {
+                        const snap = await getDoc(doc(db, "tests", testIdUrl));
+                        if (!snap.exists()) throw new Error("Không tìm thấy đề.");
+                        testData = { id: snap.id, ...snap.data() };
+                        testNameHeader.textContent = testData.name;
+                        if (testData.questions) embeddedQuestions = testData.questions.map((q, i) => ({...q, id: `embedded_${i}`}));
+                        if (testData.questionIds) questionIds = testData.questionIds;
+                        practiceContext = { testId: testData.id, subjectId: testData.subjectId };
+                    } else if (qIdsStr && ctxStr) {
+                        questionIds = JSON.parse(qIdsStr);
+                        practiceContext = JSON.parse(ctxStr);
+                        testNameHeader.textContent = practiceContext.testName || "Luyện tập";
+                    } else {
+                        throw new Error("Dữ liệu không hợp lệ.");
+                    }
+
+                    // Tải câu hỏi từ Firebase
+                    let fetched = [];
+                    if (questionIds.length > 0) {
+                        const q = query(collection(db, "questions"), where("__name__", "in", questionIds));
+                        const snap = await getDocs(q);
+                        snap.forEach(d => fetched.push({ id: d.id, ...d.data() }));
+                    }
+
+                    // Trộn và gán câu hỏi
+                    const combined = [...embeddedQuestions, ...fetched];
+                    const finalOrder = [...embeddedQuestions.map(q=>q.id), ...questionIds];
+                    questions = combined.sort((a,b) => finalOrder.indexOf(a.id) - finalOrder.indexOf(b.id));
+
+                    // Xử lý xáo trộn phương án cho Multiple Choice
+                    questions.forEach(q => {
+                        if (q.type === 'multiple_choice' && q.options) {
+                            let opts = ['A','B','C','D'].map((l, i) => ({ original: l, content: q.options[i] })).filter(o => o.content);
+                            q.shuffledOptions = opts.sort(() => Math.random() - 0.5);
+                        }
+                    });
+
+                    renderFullTest();
+                    renderQuestionMap();
+                    setupEventListeners();
+                    startTimer();
+                } catch (e) {
+                    mainContentArea.innerHTML = `<div class='text-center p-10 font-bold text-red-500'>${e.message}</div>`;
+                }
+            }
+
+            // --- 2. Hàm render giao diện câu hỏi ---
+            function getQuestionHTML(q, num) {
+                let html = '';
+                const saved = userAnswers[q.id];
+
+                if (q.type === 'multiple_choice') {
+                    html = (q.shuffledOptions || []).map((opt, i) => {
+                        const letter = String.fromCharCode(65 + i);
+                        const sel = saved === letter ? 'selected' : '';
+                        return `<div class="answer-option ${sel}" data-answer="${letter}">
+                                    <span class="option-letter">${letter}</span>
+                                    <span class="font-bold text-slate-700">${opt.content}</span>
+                                </div>`;
+                    }).join('');
+                } else if (q.type === 'true_false' || q.type === 'true_false_group') {
+                    const stmts = q.statements || [];
+                    const savedSub = saved || {};
+                    let stmHtml = '<div class="space-y-3">';
+                    const stArray = Array.isArray(stmts) ? stmts : Object.entries(stmts).map(([k,v]) => ({key:k, statement:v}));
+                    
+                    stArray.forEach((s, i) => {
+                        const key = s.key || i;
+                        if(s.statement) {
+                            const isT = savedSub[key] === true ? 'selected' : '';
+                            const isF = savedSub[key] === false ? 'selected' : '';
+                            stmHtml += `<div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                                            <p class="text-sm font-bold text-slate-800 mb-3">${s.statement}</p>
+                                            <div class="flex gap-2" data-statement-key="${key}">
+                                                <button data-value="true" class="tf-btn ${isT}">Đúng</button>
+                                                <button data-value="false" class="tf-btn ${isF}">Sai</button>
+                                            </div>
+                                        </div>`;
+                        }
+                    });
+                    html = stmHtml + '</div>';
+                } else if (q.type === 'short_answer') {
+                    html = `<input type="text" class="w-full p-4 border-2 border-slate-100 rounded-xl focus:border-teal-500 transition font-bold" value="${saved || ''}" placeholder="Nhập câu trả lời...">`;
+                }
+
+                return `<div id="question-${q.id}" class="question-card">
+                            <span class="question-section-title">Câu hỏi ${num}</span>
+                            <div class="prose font-bold text-lg text-slate-900 mb-6">${cleanPrefix(q.content)}</div>
+                            ${q.imageUrl ? `<img src="${q.imageUrl}" class="rounded-xl mb-6 border mx-auto">` : ''}
+                            <div class="space-y-3">${html}</div>
+                        </div>`;
+            }
+
+            function renderFullTest() {
+                let html = '';
+                renderedQuestionsOrder = [];
+                questions.forEach((q, i) => {
+                    renderedQuestionsOrder.push(q.id);
+                    html += getQuestionHTML(q, i + 1);
+                });
+                mainContentArea.innerHTML = html;
+                renderMathInElement(mainContentArea, { delimiters: [{left: "$$", right: "$$", display: true}, {left: "$", right: "$", display: false}] });
+            }
+
+            // --- 3. Hàm xử lý logic bổ trợ ---
+            function renderQuestionMap() {
+                questionGridEl.innerHTML = renderedQuestionsOrder.map((id, i) => 
+                    `<a href="#question-${id}" class="q-map-btn" data-question-id="${id}">${i+1}</a>`
+                ).join('');
+                document.getElementById('progress-text').textContent = `0/${questions.length}`;
+            }
+
+            function updateUI() {
+                const answered = Object.keys(userAnswers).length;
+                const progress = (answered / questions.length) * 100;
+                progressBar.style.width = `${progress}%`;
+                document.getElementById('progress-text').textContent = `${answered}/${questions.length}`;
+                
+                document.querySelectorAll('.q-map-btn').forEach(btn => {
+                    if (userAnswers[btn.dataset.questionId]) btn.classList.add('answered');
+                });
+            }
+
+            function setupEventListeners() {
+                mainContentArea.addEventListener('click', (e) => {
+                    const card = e.target.closest('[id^="question-"]');
+                    if (!card) return;
+                    const qId = card.id.replace('question-', '');
+
+                    const opt = e.target.closest('.answer-option');
+                    if (opt) {
+                        userAnswers[qId] = opt.dataset.answer;
+                        card.querySelectorAll('.answer-option').forEach(o => o.classList.remove('selected'));
+                        opt.classList.add('selected');
+                    }
+
+                    const tf = e.target.closest('.tf-btn');
+                    if (tf) {
+                        const key = tf.parentElement.dataset.statementKey;
+                        if (!userAnswers[qId]) userAnswers[qId] = {};
+                        userAnswers[qId][key] = tf.dataset.value === 'true';
+                        tf.parentElement.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('selected'));
+                        tf.classList.add('selected');
+                    }
+                    updateUI();
+                });
+
+                mainContentArea.addEventListener('input', (e) => {
+                    if (e.target.matches('input[type="text"]')) {
+                        const qId = e.target.closest('[id^="question-"]').id.replace('question-', '');
+                        userAnswers[qId] = e.target.value.trim();
+                        updateUI();
+                    }
+                });
+
+                submitBtn.onclick = handleSubmit;
+            }
+
+            function startTimer() {
+                timerInterval = setInterval(() => {
+                    timeElapsed++;
+                    const m = Math.floor(timeElapsed / 60).toString().padStart(2, '0');
+                    const s = (timeElapsed % 60).toString().padStart(2, '0');
+                    timerEl.textContent = `${m}:${s}`;
+                }, 1000);
+            }
+
+            async function handleSubmit() {
+                if (!confirm("Xác nhận nộp bài?")) return;
+                clearInterval(timerInterval);
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                
+                let score = 0;
+                let incorrectQuestions = [];
+
+                questions.forEach(q => {
+                    const ans = userAnswers[q.id];
+                    let isCorrect = false;
+
+                    if (q.type === 'multiple_choice' && ans) {
+                        // Thêm dấu ?. để nếu shuffledOptions không tồn tại sẽ không báo lỗi
+                        const selectedOpt = q.shuffledOptions?.find((o, i) => String.fromCharCode(65 + i) === ans);
+                        if (selectedOpt && selectedOpt.original === q.correctAnswer) isCorrect = true;
+                    } 
+                    else if (q.type === 'short_answer') {
+                        if (String(ans || "").toLowerCase().trim() === String(q.correctAnswer || "").toLowerCase().trim()) isCorrect = true;
+                    } 
+                    else if (q.type === 'true_false' || q.type === 'true_false_group') {
+                        const stmts = q.statements || [];
+                        const answers = q.answers || {};
+                        isCorrect = Array.isArray(stmts) 
+                            ? stmts.every((s, i) => (ans ? ans[i] : null) === s.answer)
+                            : Object.keys(stmts).every(k => ans && ans[k] === (answers[k] ?? q.statements[k]?.answer));
+                    }
+
+                    if (isCorrect) score++;
+                    else incorrectQuestions.push({ questionId: q.id, lessonId: q.lessonId || null, content: q.content });
+                });
+
+                const resId = `guest_res_${Date.now()}`;
+                try {
+                    await setDoc(doc(db, 'guest_submissions', resId), {
+                        guestId: clientSession.clientId,
+                        testName: testNameHeader.textContent,
+                        score: score,
+                        totalQuestions: questions.length,
+                        timeTaken: timeElapsed,
+                        // QUAN TRỌNG: Lưu cả shuffledOptions vào bài làm để trang kết quả hiển thị đúng thứ tự bạn đã thấy
+                        questionsData: questions, 
+                        userAnswers: userAnswers,
+                        incorrectQuestions: incorrectQuestions,
+                        completedAt: serverTimestamp()
+                    });
+
+                    sessionStorage.setItem('latestGuestResultId', resId);
+                    window.location.href = 'client-result.html';
+                } catch (e) {
+                    console.error("Lỗi:", e);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = "Nộp bài ngay";
+                }
+            }
+
+            initTest();
+            feather.replace();
+        });
+    </script>
+</body>
+</html>

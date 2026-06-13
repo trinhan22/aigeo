@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIGEO - Khám phá tri thức Địa lý</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #0D9488;
+            --primary-dark: #0F766E;
+            --secondary: #10B981;
+            --text-main: #1E293B;
+            --text-light: #64748B;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.8);
+            --primary-gradient: linear-gradient(135deg, #0D9488 0%, #10B981 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { color: var(--text-main); background-color: #F8FAFC; overflow-x: hidden; line-height: 1.6; transition: background 0.3s; }
+
+        /* --- BACKGROUND BLOBS (Phong cách HopVan) --- */
+        .background-blobs { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.3; animation: floatBlob 10s infinite alternate; }
+        .blob-1 { width: 500px; height: 500px; background: #99F6E4; top: -100px; left: -100px; }
+        .blob-2 { width: 400px; height: 400px; background: #BBF7D0; bottom: -50px; right: -50px; animation-delay: -5s; }
+        @keyframes floatBlob { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(30px, 50px) scale(1.1); } }
+
+        /* --- GLASSMORPHISM --- */
+        .glass { background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--glass-border); box-shadow: 0 8px 32px 0 rgba(13, 148, 136, 0.05); }
+
+        /* --- HEADER (Pill style) --- */
+        header { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 1200px; padding: 12px 30px; border-radius: 100px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
+        .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .logo img { height: 40px; width: 40px; background: white; border-radius: 10px; padding: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .logo span { font-size: 1.5rem; font-weight: 900; color: var(--primary); letter-spacing: -0.5px; }
+        
+        /* --- HERO AREA --- */
+        .hero { min-height: 100vh; display: grid; grid-template-columns: 1.2fr 0.8fr; align-items: center; gap: 40px; padding-top: 80px; position: relative; }
+        .hero-text h1 { font-size: 3.5rem; line-height: 1.1; font-weight: 800; margin-bottom: 20px; color: var(--text-main); }
+        .highlight { color: var(--primary); position: relative; display: inline-block; }
+        .highlight::after { content: ''; position: absolute; bottom: 8px; left: 0; width: 100%; height: 12px; background: rgba(16, 185, 129, 0.2); z-index: -1; }
+
+        /* Background Carousel for Hero (Giữ logic cũ) */
+        #background-carousel { position: absolute; inset: 0; z-index: -2; opacity: 0; transition: opacity 1.5s ease-in-out; background-size: cover; background-position: center; filter: saturate(0.5) brightness(1.1); opacity: 0.1 !important; }
+
+        .main-card { background: white; border-radius: 40px; padding: 15px; box-shadow: 0 30px 60px rgba(0,0,0,0.08); position: relative; }
+        .main-card img { width: 100%; border-radius: 30px; display: block; object-fit: cover; aspect-ratio: 4/3; }
+        
+        .floating-badge { position: absolute; padding: 12px 20px; border-radius: 20px; display: flex; align-items: center; gap: 12px; animation: float 4s infinite ease-in-out; z-index: 10; }
+        .badge-1 { top: -20px; right: -20px; }
+        .badge-2 { bottom: 30px; left: -30px; animation-delay: 2s; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+
+        /* --- BENTO GRID V2 --- */
+        .bento-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 24px; }
+        .bento-card { border-radius: 32px; padding: 35px; position: relative; overflow: hidden; display: flex; flex-direction: column; transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; text-decoration: none; }
+        .bento-card:hover { transform: translateY(-8px) scale(1.01); box-shadow: 0 20px 40px rgba(13, 148, 136, 0.15); }
+        .theme-glass { background: rgba(255, 255, 255, 0.7); border: 1px solid white; }
+        .theme-gradient { background: var(--primary-gradient); color: white; }
+        .bc-icon-wrap { width: 54px; height: 54px; border-radius: 16px; margin-bottom: 25px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .bc-watermark { position: absolute; right: -20px; bottom: -20px; font-size: 8rem; opacity: 0.05; transform: rotate(-15deg); pointer-events: none; }
+
+        /* --- STEPS / ROADMAP --- */
+        .step-card { background: white; border-radius: 30px; padding: 40px; border: 1px solid #E2E8F0; transition: 0.4s; position: relative; }
+        .step-card:hover { border-color: var(--primary); transform: translateY(-5px); }
+        .step-num { width: 50px; height: 50px; border-radius: 50%; background: var(--primary-gradient); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(13, 148, 136, 0.3); }
+
+        /* --- ABOUT TABS (Phong cách HopVan) --- */
+        .about-compact-card { display: flex; background: white; border-radius: 32px; border: 1px solid #E2E8F0; overflow: hidden; min-height: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .about-menu { width: 300px; background: #F8FAFC; padding: 30px 20px; display: flex; flex-direction: column; gap: 10px; border-right: 1px solid #E2E8F0; }
+        .about-tab-btn { display: flex; align-items: center; gap: 12px; padding: 15px; border-radius: 15px; border: none; background: transparent; cursor: pointer; transition: 0.3s; text-align: left; }
+        .about-tab-btn.active { background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #E2E8F0; }
+        .about-tab-btn i { color: var(--primary); font-size: 1.2rem; }
+        .about-content-area { flex: 1; padding: 40px; position: relative; }
+        .about-pane { display: none; animation: fadeIn 0.5s ease forwards; }
+        .about-pane.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- DARK MODE --- */
+        html.dark { --text-main: #F8FAFC; --text-light: #94A3B8; --glass-bg: rgba(15, 23, 42, 0.8); }
+        html.dark body { background-color: #0B1120; }
+        html.dark .about-compact-card, html.dark .step-card, html.dark .main-card, html.dark .theme-glass { background: #1E293B; border-color: #334155; }
+        html.dark h1, html.dark h2, html.dark h3 { color: white; }
+
+        /* Mobile Adjustments */
+        @media (max-width: 992px) {
+            .hero { grid-template-columns: 1fr; text-align: center; padding-top: 140px; }
+            .hero-text h1 { font-size: 2.5rem; }
+            .hero-text p { margin-inline: auto; }
+            .bento-grid { grid-template-columns: 1fr; }
+            .floating-badge { display: none; }
+            .about-compact-card { flex-direction: column; }
+            .about-menu { width: 100%; border-right: none; border-bottom: 1px solid #E2E8F0; }
+        }
+
+        /* Style chung cho tất cả các Button */
+        .btn-modern {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px; /* Khoảng cách giữa icon và chữ */
+            padding: 12px 28px;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        /* Nút chính (Gradient Teal) */
+        .btn-primary-ai {
+            background: linear-gradient(135deg, #0D9488 0%, #10B981 100%);
+            color: white !important;
+            box-shadow: 0 10px 20px -5px rgba(13, 148, 136, 0.4);
+            border: none;
+        }
+        .btn-primary-ai:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 30px -5px rgba(13, 148, 136, 0.6);
+        }
+
+        /* Nút phụ (Ghost/Text) */
+        .btn-ghost-ai {
+            background: transparent;
+            color: #0D9488 !important;
+            border: 2px solid rgba(13, 148, 136, 0.2);
+        }
+        .btn-ghost-ai:hover {
+            background: rgba(13, 148, 136, 0.05);
+            border-color: #0D9488;
+            transform: translateY(-2px);
+        }
+
+        /* Fix Icon trong nút */
+        .btn-modern i, .btn-modern svg {
+            width: 18px;
+            height: 18px;
+            transition: transform 0.3s ease;
+        }
+        .btn-modern:hover i {
+            transform: translateX(3px); /* Hiệu ứng mũi tên bay về phía trước */
+        }
+        
+        /* --- GLOBAL SCROLLBAR STYLE --- */
+
+        /* 1. Thiết lập độ rộng/cao của thanh trượt */
+        ::-webkit-scrollbar {
+            width: 10px;  /* Độ rộng cho thanh dọc */
+            height: 10px; /* Độ cao cho thanh ngang */
+        }
+
+        /* 2. Thiết lập rãnh trượt (Track) - Nền chìm */
+        ::-webkit-scrollbar-track {
+            background: rgba(80, 255, 197, 0.05);
+            border-radius: 10px;
+        }
+
+        /* 3. Thiết lập tay nắm (Thumb) - Phần di chuyển */
+        ::-webkit-scrollbar-thumb {
+            background-color: #0D9488;
+            border-radius: 10px; /* Bo tròn mềm mại */
+            
+            /* Mẹo: Tạo viền trong suốt để thanh trượt trông nhỏ hơn và "lơ lửng" */
+            border: 2px solid transparent;
+            background-clip: content-box;
+            transition: background-color 0.3s ease;
+        }
+
+        /* 4. Hiệu ứng khi di chuột vào (Hover) */
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #0F766E;
+            border: 1px solid transparent;
+        }
+
+        /* 5. (Tùy chọn) Ẩn nút mũi tên 2 đầu (nếu trình duyệt hiển thị) */
+        ::-webkit-scrollbar-button {
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="background-blobs">
+        <div id="background-carousel"></div>
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="glass">
+        <a href="#" class="logo">
+            <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" alt="AIGEO Logo">
+            <span>AIGEO</span>
+        </a>
+        <nav class="hidden md:flex gap-8">
+            <a href="#features" class="font-semibold hover:text-teal-600 transition">Tính năng</a>
+            <a href="#how-it-works" class="font-semibold hover:text-teal-600 transition">Cách hoạt động</a>
+            <a href="#testimonials" class="font-semibold hover:text-teal-600 transition">Đánh giá</a>
+            <a href="#about" class="font-semibold hover:text-teal-600 transition">Về chúng tôi</a>
+        </nav>
+        <div class="flex items-center gap-6">
+            <!-- Nút Dark Mode -->
+            <button id="dark-toggle" class="w-10 h-10 flex items-center justify-center rounded-full text-slate-500 hover:bg-slate-100 transition-colors">
+                <i class="fas fa-moon"></i>
+            </button>
+            
+            <!-- Nút CTA -->
+            <a href="auth.html" class="btn-modern btn-primary-ai">
+                Khám phá ngay
+            </a>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-6">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-text">
+                <h1>Khám phá <span class="highlight">Thế giới</span><br>qua từng câu hỏi với AIGEO</h1>
+                <p class="text-lg text-slate-600 mb-8 max-w-xl">Nền tảng học tập Địa lý cá nhân hóa bởi trí tuệ nhân tạo. Giúp bạn chinh phục kiến thức chuẩn GDPT 2018 một cách thông minh nhất.</p>
+                
+                <div class="flex flex-wrap gap-4">
+                    <a href="auth.html" class="btn-modern btn-primary-ai">
+                        Bắt đầu miễn phí <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <a href="client/index.html" class="btn-modern btn-ghost-ai">
+                        Dùng thử với tư cách khách
+                    </a>
+                </div>
+
+                <div class="mt-10 flex items-center gap-4">
+                    <div class="flex -space-x-3">
+                        <img src="https://hopvan.info.vn/IMG/thungan.png" class="w-10 h-10 rounded-full border-2 border-white">
+                        <img src="https://hopvan.info.vn/IMG/vinhan.png" class="w-10 h-10 rounded-full border-2 border-white">
+                        <img src="https://hopvan.info.vn/IMG/minhnguyet.png" class="w-10 h-10 rounded-full border-2 border-white">
+                    </div>
+                    <p class="text-sm font-semibold text-slate-500">Hơn 500+ học sinh đang tham gia</p>
+                </div>
+            </div>
+
+            <div class="hero-image relative">
+                <div class="main-card">
+                    <img src="https://images.unsplash.com/photo-1521295121783-8a321d551ad2?auto=format&fit=crop&w=800&q=80" alt="Geography Learning">
+                </div>
+                <!-- Badges -->
+                <div class="floating-badge badge-1 glass shadow-xl">
+                    <div class="bg-teal-100 p-2 rounded-lg text-teal-600"><i class="fas fa-globe"></i></div>
+                    <div><div class="font-bold text-sm">Lộ trình AI</div><div class="text-xs text-slate-500">Cá nhân hóa 100%</div></div>
+                </div>
+                <div class="floating-badge badge-2 glass shadow-xl">
+                    <div class="bg-emerald-100 p-2 rounded-lg text-emerald-600"><i class="fas fa-check"></i></div>
+                    <div><div class="font-bold text-sm">Chuẩn GDPT</div><div class="text-xs text-slate-500">Cập nhật liên tục</div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bento Grid Features -->
+        <section id="features" class="py-24">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-extrabold mb-4">Tại sao bạn sẽ yêu thích AIGEO?</h2>
+                <p class="text-slate-500">Những tính năng đột phá được thiết kế để tối ưu hóa hành trình khám phá của bạn.</p>
+            </div>
+
+            <div class="bento-grid">
+                <div class="bento-card col-span-1 md:grid md:grid-cols-2 md:col-span-3 theme-glass">
+                    <div class="flex flex-col justify-center">
+                        <div class="bc-icon-wrap bg-teal-100 text-teal-600"><i class="fas fa-map-marked-alt"></i></div>
+                        <h3 class="text-xl font-bold mb-3">Lộ trình cá nhân hóa</h3>
+                        <p class="text-slate-500 text-sm">AI phân tích điểm mạnh, yếu để tạo ra lộ trình ôn tập riêng biệt, giúp bạn tập trung vào những kiến thức quan trọng nhất.</p>
+                    </div>
+                    <div class="hidden md:flex items-center justify-center">
+                        <i class="fas fa-route text-8xl text-teal-100"></i>
+                    </div>
+                    <i class="fas fa-fingerprint bc-watermark"></i>
+                </div>
+
+                <div class="bento-card col-span-1 md:col-span-3 theme-glass">
+                    <div class="bc-icon-wrap bg-emerald-100 text-emerald-600"><i class="fas fa-database"></i></div>
+                    <h3 class="text-xl font-bold mb-3">Ngân hàng câu hỏi khổng lồ</h3>
+                    <p class="text-slate-500 text-sm">Hàng ngàn câu hỏi chất lượng, bám sát chương trình GDPT 2018, được kiểm duyệt và cập nhật liên tục bởi các chuyên gia.</p>
+                    <i class="fas fa-server bc-watermark"></i>
+                </div>
+
+                <div class="bento-card col-span-1 md:col-span-2 theme-glass">
+                    <div class="bc-icon-wrap bg-sky-100 text-sky-600"><i class="fas fa-bolt"></i></div>
+                    <h3 class="text-xl font-bold mb-3">Tạo đề thi bằng AI</h3>
+                    <p class="text-slate-500 text-sm">Giáo viên có thể tạo ra các bộ đề kiểm tra đa dạng theo yêu cầu chỉ trong vài giây, tiết kiệm tối đa thời gian soạn thảo.</p>
+                </div>
+
+                <div class="bento-card col-span-1 md:col-span-4 theme-gradient">
+                    <div class="flex flex-col h-full justify-center">
+                        <h3 class="text-2xl font-bold mb-3">Sẵn sàng chinh phục đỉnh cao?</h3>
+                        <p class="opacity-90 max-w-lg">Bắt đầu học tập với hệ thống thông minh ngay hôm nay để thấy sự khác biệt trong kết quả của bạn.</p>
+                        <div class="mt-6"><a href="auth.html" class="bg-white text-teal-600 px-6 py-2 rounded-full font-bold inline-block">Tham gia ngay</a></div>
+                    </div>
+                    <i class="fas fa-rocket bc-watermark" style="color: white"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- How it works -->
+        <section id="how-it-works" class="py-24">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-extrabold mb-4">Bắt đầu thật dễ dàng</h2>
+                <p class="text-slate-500">Chỉ với 3 bước đơn giản để khởi động hành trình chinh phục kiến thức của bạn.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="step-card">
+                    <div class="step-num">1</div>
+                    <h3 class="text-xl font-bold mb-3">Đăng ký tài khoản</h3>
+                    <p class="text-slate-500 text-sm">Tạo tài khoản miễn phí và thiết lập hồ sơ học tập của bạn chỉ trong một phút.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">2</div>
+                    <h3 class="text-xl font-bold mb-3">Làm bài & Nhận phân tích</h3>
+                    <p class="text-slate-500 text-sm">Hoàn thành các bài kiểm tra đầu vào để AI hiểu rõ năng lực của bạn.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">3</div>
+                    <h3 class="text-xl font-bold mb-3">Học theo lộ trình AI</h3>
+                    <p class="text-slate-500 text-sm">Luyện tập với các câu hỏi được cá nhân hóa để cải thiện nhanh chóng.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- About / Mission Tabs -->
+        <section id="about" class="py-24 relative">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-extrabold mb-4 text-slate-900">Sứ mệnh của AIGEO</h2>
+                    <p class="text-slate-500 max-w-2xl mx-auto">Chúng tôi tin rằng công nghệ là chìa khóa để khai mở tiềm năng học tập vô hạn.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                    <!-- Card lớn: Sứ mệnh -->
+                    <div class="md:col-span-8 bg-white p-10 rounded-[32px] border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all duration-500">
+                        <div class="relative z-10">
+                            <div class="w-14 h-14 bg-teal-100 text-teal-600 rounded-2xl flex items-center justify-center mb-6">
+                                <i class="fas fa-bullseye text-2xl"></i>
+                            </div>
+                            <h3 class="text-3xl font-bold mb-4">Khai mở tiềm năng vô hạn</h3>
+                            <p class="text-slate-600 text-lg leading-relaxed max-w-xl">
+                                AIGEO ra đời với sứ mệnh mang đến một công cụ học tập thông minh, hiệu quả và dễ dàng tiếp cận cho mọi học sinh, giúp các em tự tin chinh phục tri thức và đạt được những mục tiêu lớn lao.
+                            </p>
+                        </div>
+                        <!-- Hình ảnh chìm trang trí -->
+                        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=400&q=80" 
+                            class="absolute right-[-50px] bottom-[-50px] w-80 h-80 object-cover opacity-10 group-hover:opacity-20 transition-opacity rounded-full">
+                    </div>
+
+                    <!-- Card nhỏ: Công nghệ -->
+                    <div class="md:col-span-4 bg-teal-900 text-white p-8 rounded-[32px] shadow-lg relative overflow-hidden flex flex-col justify-end min-h-[300px]">
+                        <div class="absolute top-8 left-8">
+                            <div class="w-12 h-12 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center">
+                                <i class="fas fa-microchip text-xl"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-bold mb-2">Công nghệ AI</h4>
+                            <p class="text-teal-100/80 text-sm">Cá nhân hóa lộ trình học tập dựa trên dữ liệu thời gian thực.</p>
+                        </div>
+                    </div>
+
+                    <!-- Card nhỏ: Tầm nhìn -->
+                    <div class="md:col-span-4 bg-emerald-50 p-8 rounded-[32px] border border-emerald-100">
+                        <div class="w-12 h-12 bg-emerald-500 text-white rounded-xl flex items-center justify-center mb-6">
+                            <i class="fas fa-eye text-xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold mb-2 text-emerald-900">Tầm nhìn 2026</h4>
+                        <p class="text-emerald-700/70 text-sm">Trở thành nền tảng số 1 hỗ trợ học tập và giáo dục môn Địa lý.</p>
+                    </div>
+
+                    <!-- Card rộng: Sự tin tưởng -->
+                    <div class="md:col-span-8 bg-slate-50 p-8 rounded-[32px] border border-slate-200 flex items-center justify-between">
+                        <div>
+                            <h4 class="text-xl font-bold mb-1">Kết nối tri thức</h4>
+                            <p class="text-slate-500">Hơn 1.000 câu hỏi được kiểm duyệt.</p>
+                        </div>
+                        <div class="flex -space-x-3">
+                            <img src="https://hopvan.info.vn/IMG/thungan.png" class="w-12 h-12 rounded-full border-4 border-white">
+                            <img src="https://hopvan.info.vn/IMG/vinhan.png" class="w-12 h-12 rounded-full border-4 border-white">
+                            <img src="https://hopvan.info.vn/IMG/minhnguyet.png" class="w-12 h-12 rounded-full border-4 border-white">
+                            <div class="w-12 h-12 rounded-full border-4 border-white bg-teal-500 flex items-center justify-center text-white text-xs font-bold">+</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section id="testimonials" class="py-24">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-extrabold mb-4">Học sinh & Giáo viên nói gì?</h2>
+                <p class="text-slate-500">Lắng nghe chia sẻ từ những người đã và đang trải nghiệm AIGEO.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Testimonial 1 -->
+                <div class="glass p-8 rounded-3xl border border-white relative">
+                    <i class="fas fa-quote-left text-teal-100 text-6xl absolute top-4 left-4 z-0"></i>
+                    <div class="relative z-10">
+                        <p class="text-slate-600 italic mb-8">"AIGEO thực sự đã thay đổi cách em học Địa Lí. Tính năng tạo đề theo năng lực giúp em tập trung vào những phần kiến thức còn yếu. Điểm số em đã cải thiện rõ rệt!"</p>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-teal-500 flex items-center justify-center text-white font-bold">A</div>
+                            <div><div class="font-bold">Trần Minh Anh</div><div class="text-xs text-slate-500">Học sinh lớp 12</div></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Testimonial 2 -->
+                <div class="glass p-8 rounded-3xl border border-white relative">
+                    <i class="fas fa-quote-left text-emerald-100 text-6xl absolute top-4 left-4 z-0"></i>
+                    <div class="relative z-10">
+                        <p class="text-slate-600 italic mb-8">"Tính năng tạo đề thi từ file và giám sát thi cử của AIGEO giúp tôi tiết kiệm rất nhiều thời gian và công sức. Giao diện thân thiện, học sinh của tôi rất thích thú khi sử dụng."</p>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold">L</div>
+                            <div><div class="font-bold">Cô Nguyễn Thị Lan</div><div class="text-xs text-slate-500">Giáo viên Địa lý</div></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Testimonial 3 -->
+                <div class="glass p-8 rounded-3xl border border-white relative">
+                    <i class="fas fa-quote-left text-sky-100 text-6xl absolute top-4 left-4 z-0"></i>
+                    <div class="relative z-10">
+                        <p class="text-slate-600 italic mb-8">"Ngân hàng câu hỏi rất đa dạng và chất lượng. Em đặc biệt thích chatbot AI, nó giải đáp thắc mắc của em gần như ngay lập tức, rất tiện lợi cho việc tự học tại nhà."</p>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-sky-500 flex items-center justify-center text-white font-bold">H</div>
+                            <div><div class="font-bold">Lê Quang Huy</div><div class="text-xs text-slate-500">Luyện thi THPT</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- CTA Card -->
+    <div class="container mx-auto px-6 mb-24">
+        <div class="bg-slate-900 rounded-[40px] p-12 md:p-20 text-center text-white relative overflow-hidden">
+            <div class="relative z-10">
+                <h2 class="text-3xl md:text-5xl font-extrabold mb-6">Sẵn sàng cho cuộc phiêu lưu tri thức?</h2>
+                <p class="text-slate-400 mb-10 max-w-2xl mx-auto">Tham gia cùng hàng trăm học viên khác và bắt đầu nâng cao điểm số của bạn ngay.</p>
+                <a href="auth.html" class="btn-primary py-4 px-10 rounded-full text-lg shadow-2xl shadow-teal-500/20">Bắt đầu miễn phí <i class="fas fa-arrow-right ml-2"></i></a>
+            </div>
+            <div class="absolute top-0 right-0 w-64 h-64 bg-teal-500 blur-[120px] opacity-20"></div>
+            <div class="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500 blur-[120px] opacity-20"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 pt-20 pb-10">
+        <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12">
+            <div class="col-span-1 md:col-span-1">
+                <a href="#" class="logo mb-6">
+                    <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" alt="Logo">
+                    <span>AIGEO</span>
+                </a>
+                <p class="text-slate-500 text-sm">Nền tảng học tập Địa lý ứng dụng AI tiên phong, đồng hành cùng sĩ tử chinh phục ước mơ.</p>
+            </div>
+            <div>
+                <h4 class="font-bold mb-6">Khám phá</h4>
+                <ul class="space-y-4 text-slate-500 text-sm">
+                    <li><a href="/student/classrooms.html" class="hover:text-teal-600">Lớp học của tôi</a></li>
+                    <li><a href="/student/practice-hub.html" class="hover:text-teal-600">Trung tâm Luyện tập</a></li>
+                    <li><a href="/student/stats.html" class="hover:text-teal-600">Thống kê học tập</a></li>
+                    <li><a href="/student/chat-bot.html" class="hover:text-teal-600">Chatbot AI</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold mb-6">Hỗ trợ</h4>
+                <ul class="space-y-4 text-slate-500 text-sm">
+                    <li><a href="huong-dan-su-dung.html" class="hover:text-teal-600">Hướng dẫn sử dụng</a></li>
+                    <li><a href="#" class="hover:text-teal-600">Điều khoản dịch vụ</a></li>
+                    <li><a href="#" class="hover:text-teal-600">Chính sách bảo mật</a></li>
+                    <li><a href="#" class="hover:text-teal-600">Câu hỏi thường gặp</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold mb-6">Tải ứng dụng</h4>
+                <div class="flex flex-col gap-3">
+                    <a href="#" class="flex items-center gap-3 bg-slate-900 text-white p-3 rounded-xl hover:scale-105 transition">
+                        <i class="fab fa-apple text-2xl"></i>
+                        <div><div class="text-[10px] opacity-60">Download on the</div><div class="text-sm font-bold">App Store</div></div>
+                    </a>
+                    <a href="#" class="flex items-center gap-3 bg-slate-900 text-white p-3 rounded-xl hover:scale-105 transition">
+                        <i class="fab fa-google-play text-2xl"></i>
+                        <div><div class="text-[10px] opacity-60">Get it on</div><div class="text-sm font-bold">Google Play</div></div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="container mx-auto px-6 mt-20 pt-8 border-t border-slate-100 text-center text-slate-400 text-xs">
+            &copy; 2025 AIGEO. All rights reserved.
+        </div>
+        <div style="margin-top: 12px; width: 100%; display: flex; justify-content: center;">
+            <div style="
+                display: inline-flex; align-items: center; gap: 6px; 
+                padding: 4px 12px; border-radius: 999px; 
+                background-color: rgba(249, 250, 251, 0.8); border: 1px solid #f3f4f6;
+                cursor: default;">
+                <span style="font-size: 8px; font-weight: 900; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px;">AIGEO Platform</span>
+                <span style="width: 4px; height: 4px; border-radius: 50%; background-color: #22c55e;"></span>
+                <span style="font-size: 9px; font-weight: 700; color: #0D9488; font-family: monospace;">v1.1.1</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Slideshow ảnh nền Hero (Logic cũ của AIGEO)
+        const images = [
+            'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1600&q=80',
+            'https://images.unsplash.com/photo-1526772662000-3f88f10405ff?auto=format&fit=crop&w=1600&q=80',
+            'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1600&q=80'
+        ];
+        let currentIndex = 0;
+        const carousel = document.getElementById('background-carousel');
+        function changeBg() {
+            carousel.style.opacity = 0;
+            setTimeout(() => {
+                carousel.style.backgroundImage = `url('${images[currentIndex]}')`;
+                carousel.style.opacity = 0.1;
+                currentIndex = (currentIndex + 1) % images.length;
+            }, 1000);
+        }
+        setInterval(changeBg, 5000);
+        changeBg();
+
+        // Dark Mode Toggle
+        const darkToggle = document.getElementById('dark-toggle');
+        darkToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            darkToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        });
+
+        // Tab Switcher (About section)
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.about-pane').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.about-tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        // Animation Reveal (AnimeJS)
+        document.addEventListener('DOMContentLoaded', () => {
+            anime({
+                targets: '.hero-text, .hero-image',
+                translateY: [30, 0],
+                opacity: [0, 1],
+                delay: anime.stagger(200),
+                easing: 'easeOutExpo'
+            });
+        });
+    </script>
+</body>
+</html>

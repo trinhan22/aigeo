@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo Đề thi Mới - AIGEO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        :root {
+            --primary-teal: #0D9488;
+            --primary-emerald: #10B981;
+        }
+        body { 
+            font-family: 'Be Vietnam Pro', sans-serif; 
+            background-color: #f1f5f9; 
+        }
+        .sidebar-link { display: flex; align-items: center; padding: 0.75rem 1rem; border-radius: 0.5rem; transition: background-color 0.2s, color 0.2s; }
+        .sidebar-link:hover { background-color: #e2e8f0; color: #0f172a; }
+        .sidebar-link.active { 
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            color: white; 
+            font-weight: 600; 
+            box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2);
+        }
+        .sidebar-link.active:hover { background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald)); }
+        .sidebar-link.active svg { color: white; }
+        .sidebar-link svg { margin-right: 0.75rem; }
+        
+        .brand-gradient-text {
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .cta-button {
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.2);
+        }
+        .cta-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(13, 148, 136, 0.3);
+        }
+        select:disabled { background-color: #f1f5f9; cursor: not-allowed; }
+        .source-option { border: 2px solid #e2e8f0; transition: all 0.2s; }
+        .source-option:has(input:checked) { border-color: var(--primary-teal); background-color: #f0fdfa; }
+        .skeleton { background-color: #e2e8f0; border-radius: 0.25rem; animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 50% { opacity: .5; } }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            margin-top: 0.5rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.5rem;
+            background-color: #f8fafc;
+            transition: all 0.2s ease-in-out;
+        }
+        .form-input:focus {
+            outline: none;
+            background-color: white;
+            border-color: var(--primary-teal);
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+        }
+    </style>
+</head>
+<body class="flex h-screen">
+
+    <aside class="w-64 bg-white shadow-md flex-shrink-0 flex flex-col">
+        <div class="h-16 flex-shrink-0 flex items-center justify-center border-b px-4">
+            <a href="/index.html" class="flex items-center gap-2">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" alt="AIGEO Logo" class="h-8 w-auto">
+                <span class="text-2xl font-bold brand-gradient-text">AIGEO</span>
+            </a>
+        </div>
+        <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
+            <a href="index.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="home"></i>Bảng điều khiển</a>
+            <a href="classrooms.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="users"></i>Quản lý Lớp học</a>
+            <a href="question-bank.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="database"></i>Ngân hàng câu hỏi</a>
+            <a href="tests.html" class="sidebar-link active"><i data-feather="file-text"></i>Quản lý đề thi</a>
+            <a href="account.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="user"></i>Tài khoản</a>
+        </nav>
+        <div class="p-4 border-t flex-shrink-0"><button id="logout-btn" class="w-full sidebar-link text-slate-600 text-left"><i data-feather="log-out"></i>Đăng xuất</button></div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <header class="bg-white shadow-sm h-16 flex items-center justify-end px-6">
+            <div class="flex items-center">
+                <span id="user-name" class="font-semibold text-gray-700 mr-4">Đang tải...</span>
+                <img id="user-avatar" class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/40x40/E2E8F0/475569?text=T" alt="Teacher Avatar">
+            </div>
+        </header>
+        <div class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-100 p-8">
+            <div class="max-w-4xl mx-auto">
+                <a href="tests.html" class="flex items-center text-slate-500 hover:text-teal-600 font-semibold mb-4 nav-link">
+                    <i data-feather="arrow-left" class="mr-2 w-4 h-4"></i>Quay lại danh sách
+                </a>
+                <h1 class="text-3xl font-bold text-slate-800">Tạo Đề thi Mới (Bước 1)</h1>
+                <p class="mt-2 text-slate-600">Nhập các thông tin cơ bản để bắt đầu tạo đề thi.</p>
+                
+                <div class="mt-8 bg-white p-8 rounded-xl shadow-lg space-y-6">
+                    <div>
+                        <label for="test-name" class="block text-sm font-medium text-gray-700">Tên đề thi</label>
+                        <input type="text" id="test-name" placeholder="Ví dụ: Đề kiểm tra 15 phút - Chương 1" class="form-input">
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                             <label for="time-limit" class="block text-sm font-medium text-gray-700">Thời gian làm bài (phút)</label>
+                             <input type="number" id="time-limit" value="45" min="1" class="form-input">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Loại bài tập</label>
+                            <div id="monitoring-options" class="mt-2 flex items-center space-x-4">
+                               <label class="flex items-center p-3 border rounded-lg cursor-pointer flex-1 source-option">
+                                   <input type="radio" name="monitoring" value="true" class="h-4 w-4 text-teal-600 border-gray-300 focus:ring-teal-500" checked>
+                                   <span class="ml-3 text-sm font-medium">Kiểm tra (Có giám sát)</span>
+                               </label>
+                               <label class="flex items-center p-3 border rounded-lg cursor-pointer flex-1 source-option">
+                                   <input type="radio" name="monitoring" value="false" class="h-4 w-4 text-teal-600 border-gray-300 focus:ring-teal-500">
+                                   <span class="ml-3 text-sm font-medium">Bài tập về nhà</span>
+                               </label>
+                            </div>
+                        </div>
+                    </div>
+                     <div>
+                        <label class="block text-sm font-medium text-gray-700">Nguồn câu hỏi</label>
+                         <div id="source-options" class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                             <label class="source-option p-4 rounded-lg cursor-pointer flex items-start">
+                                 <input type="radio" name="question-source" value="manual_all" class="h-4 w-4 text-teal-600 border-gray-300 focus:ring-teal-500 mt-1" checked>
+                                 <div class="ml-3">
+                                     <span class="font-semibold text-slate-800">Chọn từ Ngân hàng</span>
+                                     <p class="text-sm text-slate-500">Lấy câu hỏi có sẵn từ hệ thống và do bạn tạo.</p>
+                                 </div>
+                             </label>
+                             <label class="source-option p-4 rounded-lg cursor-pointer flex items-start">
+                                 <input type="radio" name="question-source" value="manual_input" class="h-4 w-4 text-teal-600 border-gray-300 focus:ring-teal-500 mt-1">
+                                 <div class="ml-3">
+                                     <span class="font-semibold text-slate-800">Tự nhập câu hỏi (Nhập tay)</span>
+                                     <p class="text-sm text-slate-500">Tự soạn các câu hỏi cho riêng đề thi này.</p>
+                                 </div>
+                             </label>
+                         </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Phạm vi kiến thức</label>
+                        <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <select id="filter-subject" class="form-input"></select>
+                            <select id="filter-grade" class="form-input" disabled></select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Giao bài cho lớp (Tùy chọn)</label>
+                        <div id="classrooms-list" class="mt-2 space-y-2 max-h-40 overflow-y-auto p-3 border rounded-lg bg-slate-50">
+                             <div class="space-y-3">
+                                <div class="skeleton h-5 w-3/4"></div>
+                                <div class="skeleton h-5 w-1/2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex justify-end">
+                    <button id="next-step-btn" class="cta-button text-white font-bold px-8 py-4 rounded-lg disabled:bg-slate-400 disabled:cursor-not-allowed" disabled>
+                        Tiếp tục <i data-feather="arrow-right" class="inline-block ml-2 w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2"></div>
+
+    <script src="../firebase-config.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, getDocs, addDoc, serverTimestamp, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- DOM ELEMENTS ---
+        const testNameInput = document.getElementById('test-name');
+        const subjectFilter = document.getElementById('filter-subject');
+        const gradeFilter = document.getElementById('filter-grade');
+        const timeLimitInput = document.getElementById('time-limit');
+        const sourceOptions = document.getElementById('source-options');
+        const classroomsListContainer = document.getElementById('classrooms-list');
+        const nextStepBtn = document.getElementById('next-step-btn');
+        const toastContainer = document.getElementById('toast-container');
+
+        // --- STATE ---
+        let allData = { subjects: [], lessons: [], classrooms: [] };
+        let currentUser = null;
+
+        // --- UTILS ---
+        function showToast(message, type = 'error') {
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+            toast.className = `toast show ${bgColor} text-white px-4 py-2 rounded-lg shadow-lg`;
+            toast.textContent = message;
+            toastContainer.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                toast.addEventListener('transitionend', () => toast.remove());
+            }, 3000);
+        }
+
+        function populateSelect(selectElement, data, placeholder) {
+            selectElement.innerHTML = `<option value="">${placeholder}</option>`;
+            data.sort((a, b) => (a.name || '').localeCompare(b.name || '')).forEach(item => {
+                selectElement.innerHTML += `<option value="${item.id || item.value}">${item.name}</option>`;
+            });
+        }
+
+        // --- AUTH & PAGE LOAD ---
+        onAuthStateChanged(auth, async (user) => {
+             if (user) {
+                currentUser = user;
+                const docSnap = await getDoc(doc(db, "users", user.uid));
+                if (docSnap.exists() && docSnap.data().role === 'teacher') {
+                    const userData = docSnap.data();
+                    document.getElementById('user-name').textContent = userData.name || 'Giáo viên';
+                    const nameInitial = (userData.name || 'T').charAt(0).toUpperCase();
+                    document.getElementById('user-avatar').src = `https://placehold.co/40x40/10B981/FFFFFF?text=${nameInitial}`;
+                    initCreateTestPage();
+                } else {
+                    const userRole = docSnap.data()?.role;
+                    window.location.href = userRole ? `../${userRole}/index.html` : '../auth.html';
+                }
+             } else {
+                window.location.href = '../auth.html';
+             }
+        });
+        
+        async function initCreateTestPage() {
+            try {
+                const [subjectsSnap, lessonsSnap, classroomsSnap] = await Promise.all([
+                    getDocs(collection(db, "subjects")),
+                    getDocs(collection(db, "lessons")),
+                    getDocs(query(collection(db, "classrooms"), where("teacherId", "==", currentUser.uid)))
+                ]);
+                allData.subjects = subjectsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                allData.lessons = lessonsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                allData.classrooms = classroomsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                
+                populateSelect(subjectFilter, allData.subjects, "Chọn Môn học");
+                renderClassroomsList();
+                setupEventListeners();
+            } catch (error) {
+                console.error("Error loading initial data:", error);
+                showToast("Không thể tải dữ liệu cần thiết.", "error");
+            }
+        }
+
+        function renderClassroomsList() {
+            classroomsListContainer.innerHTML = '';
+            if (allData.classrooms.length === 0) {
+                classroomsListContainer.innerHTML = `<p class="text-sm text-slate-500">Bạn chưa có lớp học nào. Hãy tạo lớp học trước khi giao bài.</p>`;
+                return;
+            }
+            allData.classrooms.forEach(classroom => {
+                const label = document.createElement('label');
+                label.className = "flex items-center space-x-3 p-2 rounded-md hover:bg-slate-100 cursor-pointer";
+                label.innerHTML = `
+                    <input type="checkbox" value="${classroom.id}" name="classroom" class="h-4 w-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500">
+                    <span class="text-sm text-slate-700">${classroom.className}</span>
+                `;
+                classroomsListContainer.appendChild(label);
+            });
+        }
+
+        function setupEventListeners() {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.body.style.opacity = '0';
+                    setTimeout(() => { window.location.href = this.href; }, 200);
+                });
+            });
+            document.body.style.transition = 'opacity 0.2s ease-in-out';
+            
+            document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+            
+            [testNameInput, subjectFilter, gradeFilter, timeLimitInput].forEach(el => {
+                el.addEventListener('input', validateForm);
+                el.addEventListener('change', validateForm);
+            });
+            sourceOptions.addEventListener('change', validateForm);
+            
+            subjectFilter.addEventListener('change', handleSubjectChange);
+            nextStepBtn.addEventListener('click', saveAndProceed);
+        }
+
+        function handleSubjectChange() {
+            const subjectId = subjectFilter.value;
+            if (!subjectId) {
+                gradeFilter.innerHTML = '<option value="">Chọn Lớp</option>';
+                gradeFilter.disabled = true;
+                return;
+            }
+            const relevantLessons = allData.lessons.filter(l => l.subjectId === subjectId);
+            const grades = [...new Set(relevantLessons.map(t => t.grade))].sort((a,b) => a-b);
+            const gradeOptions = grades.map(g => ({ value: g, name: `Lớp ${g}` }));
+            populateSelect(gradeFilter, gradeOptions, "Chọn Lớp");
+            gradeFilter.disabled = false;
+        }
+        
+        function validateForm() {
+            const selectedSource = sourceOptions.querySelector('input[name="question-source"]:checked');
+            const isFormValid = testNameInput.value.trim() !== '' &&
+                                subjectFilter.value !== '' &&
+                                gradeFilter.value !== '' &&
+                                timeLimitInput.value > 0 &&
+                                selectedSource;
+            nextStepBtn.disabled = !isFormValid;
+        }
+        
+        async function saveAndProceed() {
+            nextStepBtn.disabled = true;
+            nextStepBtn.innerHTML = 'Đang xử lý...';
+            
+            const selectedSource = sourceOptions.querySelector('input[name="question-source"]:checked').value;
+            const isMonitored = document.querySelector('input[name="monitoring"]:checked').value === 'true';
+            const selectedClassrooms = Array.from(document.querySelectorAll('input[name="classroom"]:checked')).map(cb => cb.value);
+
+            const testData = {
+                name: testNameInput.value.trim(),
+                subjectId: subjectFilter.value,
+                grade: parseInt(gradeFilter.value, 10),
+                timeLimit: parseInt(timeLimitInput.value, 10),
+                authorId: currentUser.uid,
+                status: 'draft',
+                createdAt: serverTimestamp(),
+                creationMethod: selectedSource,
+                isMonitored: isMonitored,
+                assignedClassroomIds: selectedClassrooms,
+                ...(selectedSource === 'manual_input' && { questions: [] })
+            };
+
+            try {
+                const docRef = await addDoc(collection(db, "tests"), testData);
+                // ĐÃ SỬA LỖI ĐIỀU HƯỚNG: Luôn trỏ đến create-test-teacher-step2.html
+                const destination = `create-test-teacher-step2.html?testId=${docRef.id}&source=${selectedSource}`;
+                
+                window.location.href = destination;
+            } catch (error) {
+                console.error("Error creating test:", error);
+                showToast("Đã xảy ra lỗi khi tạo đề thi.", "error");
+                nextStepBtn.disabled = false;
+                nextStepBtn.innerHTML = 'Tiếp tục <i data-feather="arrow-right" class="inline-block ml-2 w-5 h-5"></i>';
+                feather.replace();
+            }
+        }
+        
+        feather.replace();
+    </script>
+</body>
+</html>

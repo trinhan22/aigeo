@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Lớp học - AIGEO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        :root {
+            --primary-teal: #0D9488;
+            --primary-emerald: #10B981;
+        }
+        body { 
+            font-family: 'Be Vietnam Pro', sans-serif; 
+            background-color: #f1f5f9; 
+        }
+        .sidebar-link { display: flex; align-items: center; padding: 0.75rem 1rem; border-radius: 0.5rem; transition: background-color 0.2s, color 0.2s; }
+        .sidebar-link:hover { background-color: #e2e8f0; color: #0f172a; }
+        .sidebar-link.active { 
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            color: white; 
+            font-weight: 600; 
+            box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2);
+        }
+        .sidebar-link.active:hover { background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald)); }
+        .sidebar-link.active svg { color: white; }
+        .sidebar-link svg { margin-right: 0.75rem; }
+        
+        .brand-gradient-text {
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .cta-button {
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.2);
+        }
+        .cta-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(13, 148, 136, 0.3);
+        }
+        .modal-backdrop { background-color: rgba(0, 0, 0, 0.5); transition: opacity 0.3s ease; }
+        .modal-content { transition: transform 0.3s ease, opacity 0.3s ease; transform: translateY(-20px); }
+        .toast { transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; transform: translateY(100%); opacity: 0; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+    </style>
+</head>
+<body class="flex h-screen">
+
+    <aside class="w-64 bg-white shadow-md flex-shrink-0 flex flex-col">
+        <div class="h-16 flex-shrink-0 flex items-center justify-center border-b px-4">
+            <a href="/index.html" class="flex items-center gap-2">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" alt="AIGEO Logo" class="h-8 w-auto">
+                <span class="text-2xl font-bold brand-gradient-text">AIGEO</span>
+            </a>
+        </div>
+        <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
+            <a href="index.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="home"></i>Bảng điều khiển</a>
+            <a href="classrooms.html" class="sidebar-link active"><i data-feather="users"></i>Quản lý Lớp học</a>
+            <a href="question-bank.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="database"></i>Ngân hàng câu hỏi</a>
+            <a href="tests.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="file-text"></i>Quản lý đề thi</a>
+            <a href="account.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="user"></i>Tài khoản</a>
+        </nav>
+        <div class="p-4 border-t flex-shrink-0"><button id="logout-btn" class="w-full sidebar-link text-slate-600 text-left"><i data-feather="log-out"></i>Đăng xuất</button></div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <header class="bg-white shadow-sm h-16 flex items-center justify-end px-6">
+            <div class="flex items-center">
+                <span id="user-name" class="font-semibold text-gray-700 mr-4">Đang tải...</span>
+                <img id="user-avatar" class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/40x40/E2E8F0/475569?text=T" alt="Teacher Avatar">
+            </div>
+        </header>
+        <div class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-100 p-8">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-3xl font-bold text-slate-800">Lớp học của tôi</h1>
+                    <button id="add-classroom-btn" class="cta-button text-white font-semibold px-4 py-2 rounded-lg flex items-center shadow-sm">
+                        <i data-feather="plus" class="mr-2 w-5 h-5"></i>Tạo Lớp học mới
+                    </button>
+                </div>
+                
+                <div id="classrooms-area" class="mt-8 bg-white rounded-xl shadow-sm overflow-x-auto">
+                    <table class="w-full text-sm text-left text-slate-500">
+                        <thead class="text-xs text-slate-700 uppercase bg-slate-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">Tên lớp học</th>
+                                <th scope="col" class="px-6 py-3">Môn học</th>
+                                <th scope="col" class="px-6 py-3">Khối</th>
+                                <th scope="col" class="px-6 py-3">Mã lớp</th>
+                                <th scope="col" class="px-6 py-3">Sĩ số</th>
+                                <th scope="col" class="px-6 py-3 text-right">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="classrooms-table-body">
+                            </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <div id="classroom-modal" class="fixed inset-0 z-40 items-center justify-center hidden modal-backdrop">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg modal-content">
+            <h2 id="classroom-modal-title" class="text-xl font-bold mb-4">Tạo lớp học mới</h2>
+            <form id="classroom-form">
+                <div class="space-y-4">
+                    <div>
+                        <label for="class-name" class="block text-sm font-medium text-gray-700">Tên lớp học</label>
+                        <input type="text" id="class-name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required placeholder="Ví dụ: Lớp 10A1 - Địa lý">
+                    </div>
+                    <div>
+                        <label for="class-subject" class="block text-sm font-medium text-gray-700">Môn học</label>
+                        <select id="class-subject" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required></select>
+                    </div>
+                    <div>
+                        <label for="class-grade" class="block text-sm font-medium text-gray-700">Khối lớp</label>
+                        <select id="class-grade" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2" required>
+                            <option value="">Chọn khối lớp</option>
+                            <option value="10">Lớp 10</option>
+                            <option value="11">Lớp 11</option>
+                            <option value="12">Lớp 12</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="button" id="classroom-cancel-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-md">Hủy</button>
+                    <button type="submit" id="classroom-submit-btn" class="cta-button text-white px-4 py-2 rounded-md">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+        
+     <div id="delete-confirm-modal" class="fixed inset-0 z-40 items-center justify-center hidden modal-backdrop">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm modal-content">
+            <h2 class="text-xl font-bold">Xác nhận xóa</h2>
+            <p id="delete-confirm-text" class="mt-2 text-gray-600"></p>
+            <div class="flex justify-end space-x-3 mt-6">
+                <button id="delete-cancel-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-md">Hủy</button>
+                <button id="delete-confirm-btn" class="bg-red-600 text-white px-4 py-2 rounded-md">Xóa</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50"></div>
+    
+    <script src="../firebase-config.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, onSnapshot, query, where, getDocs, addDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+
+            // --- State ---
+            let currentUser = null;
+            let classrooms = [];
+            let allSubjects = [];
+            let currentClassContext = {};
+
+            // --- Elements ---
+            const classroomsArea = document.getElementById('classrooms-area');
+            const classroomsTableBody = document.getElementById('classrooms-table-body');
+            const addClassroomBtn = document.getElementById('add-classroom-btn');
+            const classroomModal = document.getElementById('classroom-modal');
+            const classroomForm = document.getElementById('classroom-form');
+            const classroomModalTitle = document.getElementById('classroom-modal-title');
+            const classroomCancelBtn = document.getElementById('classroom-cancel-btn');
+            const deleteConfirmModal = document.getElementById('delete-confirm-modal');
+            const deleteConfirmBtn = document.getElementById('delete-confirm-btn');
+            const deleteCancelBtn = document.getElementById('delete-cancel-btn');
+            const deleteConfirmText = document.getElementById('delete-confirm-text');
+            const toastContainer = document.getElementById('toast-container');
+
+            // --- Utility Functions ---
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+                toast.className = `toast show ${bgColor} text-white px-4 py-2 rounded-lg shadow-lg`;
+                toast.textContent = message;
+                toastContainer.appendChild(toast);
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    toast.addEventListener('transitionend', () => toast.remove());
+                }, 3000);
+            }
+             function generateClassCode() {
+                const chars = 'ABCDEFGHIJKLMNPQRSTUVWXYZ123456789';
+                let result = '';
+                for (let i = 0; i < 6; i++) {
+                    result += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                return result;
+            }
+
+            // --- Auth & Data Loading ---
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    currentUser = user;
+                    const docSnap = await getDoc(doc(db, "users", user.uid));
+                    if (docSnap.exists() && docSnap.data().role === 'teacher') {
+                        const userData = docSnap.data();
+                        document.getElementById('user-name').textContent = userData.name || 'Giáo viên';
+                        document.getElementById('user-avatar').src = userData.avatar || `https://placehold.co/40x40/10B981/FFFFFF?text=${(userData.name || 'T').charAt(0)}`;
+                        initPage();
+                    } else {
+                        const userRole = docSnap.data()?.role;
+                        window.location.href = userRole ? `../${userRole}/index.html` : '../auth.html';
+                    }
+                } else {
+                    window.location.href = '../auth.html';
+                }
+            });
+
+            async function initPage() {
+                try {
+                    const subjectsSnap = await getDocs(collection(db, "subjects"));
+                    allSubjects = subjectsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+                    const q = query(collection(db, "classrooms"), where("teacherId", "==", currentUser.uid));
+                    onSnapshot(q, (snapshot) => {
+                        classrooms = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        renderClassrooms();
+                    });
+                    
+                    setupEventListeners();
+                } catch (error) {
+                    console.error("Error loading initial data:", error);
+                    showToast("Lỗi tải dữ liệu ban đầu.", "error");
+                }
+            }
+
+            // --- Rendering ---
+            function renderClassrooms() {
+                classroomsTableBody.innerHTML = '';
+                if (classrooms.length === 0) {
+                    classroomsTableBody.innerHTML = `<tr><td colspan="6" class="text-center py-10 text-slate-500">Bạn chưa tạo lớp học nào. Hãy nhấn nút "Tạo Lớp học mới" để bắt đầu.</td></tr>`;
+                    return;
+                }
+                classrooms.forEach(c => {
+                    const subject = allSubjects.find(s => s.id === c.subjectId);
+                    const tr = document.createElement('tr');
+                    tr.className = "bg-white border-b hover:bg-slate-50";
+                    tr.innerHTML = `
+                        <th scope="row" class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">${c.className}</th>
+                        <td class="px-6 py-4">${subject ? subject.name : 'N/A'}</td>
+                        <td class="px-6 py-4">${c.grade}</td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center font-mono">
+                                <span>${c.classCode}</span>
+                                <button data-action="copy-code" data-code="${c.classCode}" title="Sao chép mã" class="ml-2 p-1 text-slate-500 hover:bg-slate-200 rounded-md"><i data-feather="copy" class="w-4 h-4"></i></button>
+                                <button data-action="share-link" data-code="${c.classCode}" title="Sao chép link mời" class="ml-1 p-1 text-slate-500 hover:bg-slate-200 rounded-md"><i data-feather="link" class="w-4 h-4"></i></button>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">${c.students ? c.students.length : 0}</td>
+                        <td class="px-6 py-4 text-right">
+                            <div class="flex items-center justify-end space-x-2">
+                                <a href="student-progress.html?classId=${c.id}" class="font-medium text-teal-600 hover:underline nav-link">Xem chi tiết</a>
+                                <button data-action="edit" data-id="${c.id}" class="p-2 text-slate-500 hover:bg-slate-200 rounded-md"><i data-feather="edit" class="w-4 h-4"></i></button>
+                                <button data-action="delete" data-id="${c.id}" class="p-2 text-slate-500 hover:bg-red-100 hover:text-red-600 rounded-md"><i data-feather="trash-2" class="w-4 h-4"></i></button>
+                            </div>
+                        </td>
+                    `;
+                    classroomsTableBody.appendChild(tr);
+                });
+                feather.replace();
+                
+                // Gắn lại event listener cho các link .nav-link vừa tạo
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        document.body.style.opacity = '0';
+                        setTimeout(() => { window.location.href = this.href; }, 200);
+                    });
+                });
+            }
+
+            // --- Event Listeners & Handlers ---
+            function setupEventListeners() {
+                // Chỉ gắn listener cho nav-link cố định một lần
+                document.querySelectorAll('aside .nav-link').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        document.body.style.opacity = '0';
+                        setTimeout(() => { window.location.href = this.href; }, 200);
+                    });
+                });
+                document.body.style.transition = 'opacity 0.2s ease-in-out';
+                
+                document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+
+                addClassroomBtn.addEventListener('click', () => showClassroomModal('add'));
+                classroomForm.addEventListener('submit', handleFormSubmit);
+                classroomCancelBtn.addEventListener('click', hideClassroomModal);
+                deleteConfirmBtn.addEventListener('click', handleDelete);
+                deleteCancelBtn.addEventListener('click', hideDeleteModal);
+
+                // Gắn listener vào Bảng, không phải link <a>
+                classroomsTableBody.addEventListener('click', e => {
+                    const targetElement = e.target.closest('button[data-action]');
+                    if (!targetElement) return;
+
+                    const action = targetElement.dataset.action;
+                    if (action) e.preventDefault();
+                    
+                    const id = targetElement.dataset.id;
+
+                    if (action === 'copy-code') {
+                        navigator.clipboard.writeText(targetElement.dataset.code);
+                        showToast("Đã sao chép mã lớp!");
+                    } else if (action === 'share-link') {
+                        const classCode = targetElement.dataset.code;
+                        const joinLink = `${window.location.origin}/student/join-class.html?code=${classCode}`;
+                        navigator.clipboard.writeText(joinLink);
+                        showToast("Đã sao chép link mời tham gia lớp học!");
+                    } else if (action === 'edit') {
+                        const classroom = classrooms.find(c => c.id === id);
+                        if(classroom) showClassroomModal('edit', classroom);
+                    } else if (action === 'delete') {
+                        showDeleteModal(id);
+                    }
+                });
+            }
+            
+            async function handleFormSubmit(e) {
+                e.preventDefault();
+                const { mode, data } = currentClassContext;
+                const payload = {
+                    className: document.getElementById('class-name').value,
+                    subjectId: document.getElementById('class-subject').value,
+                    grade: document.getElementById('class-grade').value,
+                    teacherId: currentUser.uid
+                };
+                
+                try {
+                    if (mode === 'add') {
+                        payload.classCode = generateClassCode();
+                        payload.students = [];
+                        payload.assignments = [];
+                        await addDoc(collection(db, "classrooms"), payload);
+                        showToast('Tạo lớp học thành công!');
+                    } else {
+                        await updateDoc(doc(db, "classrooms", data.id), payload);
+                        showToast('Cập nhật lớp học thành công!');
+                    }
+                    hideClassroomModal();
+                } catch (error) {
+                    showToast('Có lỗi xảy ra', 'error');
+                }
+            }
+
+            function showClassroomModal(mode, data = {}) {
+                currentClassContext = { mode, data };
+                classroomForm.reset();
+                classroomModalTitle.textContent = mode === 'add' ? 'Tạo lớp học mới' : 'Chỉnh sửa lớp học';
+                
+                const subjectSelect = document.getElementById('class-subject');
+                subjectSelect.innerHTML = '<option value="">Chọn môn học</option>';
+                allSubjects.forEach(s => subjectSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`);
+
+                if(mode === 'edit') {
+                    document.getElementById('class-name').value = data.className;
+                    subjectSelect.value = data.subjectId;
+                    document.getElementById('class-grade').value = data.grade;
+                }
+
+                classroomModal.classList.remove('hidden');
+                classroomModal.classList.add('flex');
+            }
+            
+            function hideClassroomModal() {
+                classroomModal.classList.add('hidden');
+                classroomModal.classList.remove('flex');
+            }
+            
+            function showDeleteModal(classId) {
+                currentClassContext = { id: classId };
+                const classroom = classrooms.find(c => c.id === classId);
+                deleteConfirmText.textContent = `Bạn có chắc chắn muốn xóa lớp "${classroom.className}"? Mọi dữ liệu liên quan sẽ bị mất.`;
+                deleteConfirmModal.classList.remove('hidden');
+                deleteConfirmModal.classList.add('flex');
+            }
+
+            function hideDeleteModal() {
+                deleteConfirmModal.classList.add('hidden');
+                deleteConfirmModal.classList.remove('flex');
+            }
+
+            async function handleDelete() {
+                try {
+                    await deleteDoc(doc(db, "classrooms", currentClassContext.id));
+                    showToast('Xóa lớp học thành công!');
+                } catch (error) {
+                    showToast('Lỗi khi xóa lớp học.', 'error');
+                } finally {
+                    hideDeleteModal();
+                }
+            }
+            
+            feather.replace();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Đề thi - AIGEO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        :root {
+            --primary-teal: #0D9488;
+            --primary-emerald: #10B981;
+        }
+        body { 
+            font-family: 'Be Vietnam Pro', sans-serif; 
+            background-color: #f1f5f9; 
+        }
+        .sidebar-link { display: flex; align-items: center; padding: 0.75rem 1rem; border-radius: 0.5rem; transition: background-color 0.2s, color 0.2s; }
+        .sidebar-link:hover { background-color: #e2e8f0; color: #0f172a; }
+        .sidebar-link.active { 
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            color: white; 
+            font-weight: 600; 
+            box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2);
+        }
+        .sidebar-link.active:hover { background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald)); }
+        .sidebar-link.active svg { color: white; }
+        .sidebar-link svg { margin-right: 0.75rem; }
+        
+        .brand-gradient-text {
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .cta-button {
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.2);
+        }
+        .cta-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(13, 148, 136, 0.3);
+        }
+        .skeleton { background-color: #e2e8f0; border-radius: 0.25rem; animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 50% { opacity: .5; } }
+        .modal-backdrop { background-color: rgba(0, 0, 0, 0.5); transition: opacity 0.3s ease; display: none; }
+        .modal-backdrop.flex { display: flex; }
+        .modal-content { transition: transform 0.3s ease, opacity 0.3s ease; transform: translateY(-20px); }
+        .toast { transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; transform: translateY(100%); opacity: 0; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+    </style>
+</head>
+<body class="flex h-screen">
+
+    <aside class="w-64 bg-white shadow-md flex-shrink-0 flex flex-col">
+        <div class="h-16 flex-shrink-0 flex items-center justify-center border-b px-4">
+            <a href="/index.html" class="flex items-center gap-2">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" alt="AIGEO Logo" class="h-8 w-auto">
+                <span class="text-2xl font-bold brand-gradient-text">AIGEO</span>
+            </a>
+        </div>
+        <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
+            <a href="index.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="home"></i>Bảng điều khiển</a>
+            <a href="classrooms.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="users"></i>Quản lý Lớp học</a>
+            <a href="question-bank.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="database"></i>Ngân hàng câu hỏi</a>
+            <a href="tests.html" class="sidebar-link active"><i data-feather="file-text"></i>Quản lý đề thi</a>
+            <a href="account.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="user"></i>Tài khoản</a>
+        </nav>
+        <div class="p-4 border-t flex-shrink-0"><button id="logout-btn" class="w-full sidebar-link text-slate-600 text-left"><i data-feather="log-out"></i>Đăng xuất</button></div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <header class="bg-white shadow-sm h-16 flex items-center justify-end px-6">
+            <div class="flex items-center">
+                <span id="user-name" class="font-semibold text-gray-700 mr-4">Đang tải...</span>
+                <img id="user-avatar" class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/40x40/E2E8F0/475569?text=T" alt="Teacher Avatar">
+            </div>
+        </header>
+        <div class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-100 p-8">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-3xl font-bold text-slate-800">Quản lý Đề thi</h1>
+                        <p class="mt-2 text-slate-600">Tạo, xem và giao các bài kiểm tra cho lớp học của bạn.</p>
+                    </div>
+                    <a href="create-test-teacher.html" class="cta-button text-white font-bold px-6 py-3 rounded-lg flex items-center">
+                        <i data-feather="plus" class="mr-2"></i>Tạo Đề Thi Mới
+                    </a>
+                </div>
+                
+                <div class="mt-8 bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="p-4 border-b">
+                        <input type="text" id="search-input" placeholder="Tìm kiếm đề thi..." class="w-full md:w-1/3 p-2 border rounded-lg focus:ring-teal-500 focus:border-teal-500">
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full table-auto">
+                            <thead class="bg-slate-50 border-b">
+                                <tr>
+                                    <th class="p-4 text-sm font-semibold text-slate-600 text-left">Tên đề thi</th>
+                                    <th class="p-4 text-sm font-semibold text-slate-600 text-center">Số câu</th>
+                                    <th class="p-4 text-sm font-semibold text-slate-600 text-center">Trạng thái</th>
+                                    <th class="p-4 text-sm font-semibold text-slate-600 text-right">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tests-table-body">
+                                <tr><td colspan="4" class="p-4"><div class="skeleton h-8 w-full"></div></td></tr>
+                                <tr><td colspan="4" class="p-4"><div class="skeleton h-8 w-full"></div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <div id="monitor-modal" class="fixed inset-0 z-40 items-center justify-center hidden modal-backdrop">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg modal-content">
+            <h2 class="text-xl font-bold">Chọn lớp để giám sát</h2>
+            <p id="monitor-modal-test-name" class="mt-2 text-gray-600"></p>
+            <div id="monitor-classrooms-list" class="mt-4 max-h-60 overflow-y-auto space-y-2 border p-3 rounded-md">
+                </div>
+            <div class="flex justify-end mt-6">
+                <button type="button" id="monitor-cancel-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 font-semibold">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="assign-modal" class="fixed inset-0 z-40 items-center justify-center hidden modal-backdrop">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg modal-content">
+            <h2 id="assign-modal-title" class="text-xl font-bold">Giao bài cho lớp</h2>
+            <p id="assign-modal-test-name" class="mt-2 text-gray-600"></p>
+            <div id="classrooms-list" class="mt-4 max-h-60 overflow-y-auto space-y-2 border p-3 rounded-md">
+                <p class="text-slate-500">Đang tải danh sách lớp...</p>
+            </div>
+            <div class="flex justify-end space-x-3 mt-6">
+                <button type="button" id="assign-cancel-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 font-semibold">Hủy</button>
+                <button type="button" id="assign-confirm-btn" class="cta-button text-white px-4 py-2 rounded-lg font-semibold">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="delete-confirm-modal" class="fixed inset-0 z-40 items-center justify-center hidden modal-backdrop">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm modal-content">
+            <h2 class="text-xl font-bold">Xác nhận xóa</h2>
+            <p id="delete-confirm-text" class="mt-2 text-gray-600">Bạn có chắc chắn muốn xóa đề thi này không? Hành động này không thể hoàn tác.</p>
+            <div class="flex justify-end space-x-3 mt-6">
+                <button type="button" id="delete-cancel-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 font-semibold">Hủy</button>
+                <button type="button" id="delete-confirm-btn" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 font-semibold">Xóa</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2"></div>
+    
+    <script src="../firebase-config.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, onSnapshot, query, where, deleteDoc, getDocs, orderBy, updateDoc, arrayUnion, arrayRemove, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+
+            const testsTableBody = document.getElementById('tests-table-body');
+            const userNameEl = document.getElementById('user-name');
+            const userAvatarEl = document.getElementById('user-avatar');
+            const searchInput = document.getElementById('search-input');
+            const deleteConfirmModal = document.getElementById('delete-confirm-modal');
+            const deleteConfirmText = document.getElementById('delete-confirm-text');
+            const deleteCancelBtn = document.getElementById('delete-cancel-btn');
+            const deleteConfirmBtn = document.getElementById('delete-confirm-btn');
+            const assignModal = document.getElementById('assign-modal');
+            const assignModalTitle = document.getElementById('assign-modal-title');
+            const assignModalTestName = document.getElementById('assign-modal-test-name');
+            const classroomsListEl = document.getElementById('classrooms-list');
+            const assignCancelBtn = document.getElementById('assign-cancel-btn');
+            const assignConfirmBtn = document.getElementById('assign-confirm-btn');
+            const toastContainer = document.getElementById('toast-container');
+            const monitorModal = document.getElementById('monitor-modal');
+            const monitorModalTestName = document.getElementById('monitor-modal-test-name');
+            const monitorClassroomsList = document.getElementById('monitor-classrooms-list');
+            const monitorCancelBtn = document.getElementById('monitor-cancel-btn');
+            
+            let currentUser = null;
+            let allTests = [];
+            let teacherClassrooms = [];
+            let itemToDelete = null;
+            let currentTestContext = null; 
+            let testToMonitor = null;
+
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+                toast.className = `toast show ${bgColor} text-white px-4 py-2 rounded-lg shadow-lg`;
+                toast.textContent = message;
+                toastContainer.appendChild(toast);
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    toast.addEventListener('transitionend', () => toast.remove());
+                }, 3000);
+            }
+
+            onAuthStateChanged(auth, async (user) => {
+                 if (user) {
+                    currentUser = user;
+                    const docSnap = await getDoc(doc(db, "users", user.uid));
+                    if (docSnap.exists() && docSnap.data().role === 'teacher') {
+                        const userData = docSnap.data();
+                        userNameEl.textContent = userData.name || 'Giáo viên';
+                        const nameInitial = (userData.name || 'T').charAt(0).toUpperCase();
+                        userAvatarEl.src = `https://placehold.co/40x40/10B981/FFFFFF?text=${nameInitial}`;
+                        
+                        listenForTeacherClassrooms();
+                        listenForTests();
+                    } else {
+                        const userRole = docSnap.data()?.role;
+                        window.location.href = userRole ? `../${userRole}/index.html` : '../auth.html';
+                    }
+                 } else {
+                    window.location.href = '../auth.html';
+                 }
+            });
+
+            function listenForTeacherClassrooms() {
+                const q = query(collection(db, "classrooms"), where("teacherId", "==", currentUser.uid));
+                onSnapshot(q, (snapshot) => {
+                    teacherClassrooms = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                    renderTable(allTests); 
+                });
+            }
+
+            function listenForTests() {
+                // UPDATE: Only fetch tests created by the current teacher
+                const q = query(collection(db, "tests"), 
+                    where("authorId", "==", currentUser.uid),
+                    orderBy("createdAt", "desc")
+                );
+                
+                onSnapshot(q, (snapshot) => {
+                    allTests = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                    renderTable(allTests);
+                });
+            }
+
+            function renderTable(tests) {
+                if (testsTableBody.innerHTML !== '' && tests.length === 0) {
+                    testsTableBody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-500">Bạn chưa tạo đề thi nào.</td></tr>`;
+                    return;
+                }
+                
+                testsTableBody.innerHTML = '';
+                tests.forEach(test => {
+                    const statusBg = test.status === 'published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+                    const statusText = test.status === 'published' ? 'Đã xuất bản' : 'Bản nháp';
+                    
+                    const assignedClasses = teacherClassrooms.filter(c => c.assignments?.some(a => a.testId === test.id));
+                    const isAssigned = assignedClasses.length > 0;
+                    
+                    const showMonitorButton = isAssigned && test.status === 'published' && test.isMonitored === true;
+
+                    const tr = document.createElement('tr');
+                    tr.className = 'border-b hover:bg-slate-50';
+                    tr.innerHTML = `
+                        <td class="p-4 font-medium text-slate-800">${test.name}</td>
+                        <td class="p-4 text-slate-600 text-center">${test.questionIds?.length || test.questions?.length || 0}</td>
+                        <td class="p-4 text-center"><span class="px-2 py-1 text-xs font-semibold rounded-full ${statusBg}">${statusText}</span></td>
+                        <td class="p-4 text-right">
+                           <div class="flex items-center justify-end space-x-2">
+                                ${showMonitorButton ? `<button data-action="monitor" data-id="${test.id}" data-name="${test.name}" class="bg-yellow-500 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-yellow-600">Giám sát</button>` : ''}
+                                <button data-action="assign" data-id="${test.id}" class="cta-button text-white text-sm font-semibold px-4 py-2 rounded-lg">Giao bài</button>
+                                ${isAssigned ? `<button data-action="unassign" data-id="${test.id}" class="bg-red-500 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-red-600">Hủy giao</button>`: ''}
+                                <a href="test-view-teacher.html?testId=${test.id}" class="p-2 text-slate-500 hover:bg-slate-100 rounded-md" title="Xem đề"><i data-feather="eye" class="w-4 h-4"></i></a>
+                                <button data-action="delete" data-id="${test.id}" data-name="${test.name}" class="p-2 text-slate-500 hover:bg-red-100 hover:text-red-600 rounded-md" title="Xóa đề thi"><i data-feather="trash-2" class="w-4 h-4"></i></button>
+                           </div>
+                        </td>
+                    `;
+                    testsTableBody.appendChild(tr);
+                });
+                feather.replace();
+            }
+
+            function showDeleteConfirmModal(id, name) {
+                itemToDelete = { id, name };
+                deleteConfirmText.textContent = `Bạn có chắc chắn muốn xóa đề thi "${name}" không? Mọi giao bài liên quan cũng sẽ bị hủy.`;
+                deleteConfirmModal.classList.remove('hidden');
+                deleteConfirmModal.classList.add('flex');
+            }
+
+            function hideDeleteConfirmModal() {
+                deleteConfirmModal.classList.add('hidden');
+                deleteConfirmModal.classList.remove('flex');
+            }
+
+            async function confirmDelete() {
+                if (!itemToDelete) return;
+                deleteConfirmBtn.disabled = true;
+                deleteConfirmBtn.textContent = "Đang xóa...";
+
+                try {
+                    const batch = writeBatch(db);
+
+                    // 1. Delete the test document itself
+                    const testRef = doc(db, "tests", itemToDelete.id);
+                    batch.delete(testRef);
+
+                    // 2. Find all classrooms where this test was assigned and remove the assignment
+                    const assignedClasses = teacherClassrooms.filter(c => 
+                        c.assignments?.some(a => a.testId === itemToDelete.id)
+                    );
+
+                    for (const classroom of assignedClasses) {
+                        const classRef = doc(db, "classrooms", classroom.id);
+                        const assignmentToRemove = classroom.assignments.find(a => a.testId === itemToDelete.id);
+                        if (assignmentToRemove) {
+                            batch.update(classRef, {
+                                assignments: arrayRemove(assignmentToRemove)
+                            });
+                        }
+                    }
+
+                    // 3. Commit all batched writes
+                    await batch.commit();
+                    
+                    showToast(`Đã xóa thành công đề thi "${itemToDelete.name}" và hủy các bài giao liên quan.`);
+                } catch (error) {
+                    console.error("Error deleting test:", error);
+                    showToast("Lỗi khi xóa đề thi.", "error");
+                } finally {
+                    hideDeleteConfirmModal();
+                    itemToDelete = null;
+                    deleteConfirmBtn.disabled = false;
+                    deleteConfirmBtn.textContent = "Xóa";
+                }
+            }
+            
+            function showAssignModal(action, testObject) {
+                currentTestContext = { action, test: testObject };
+                assignModalTestName.textContent = `Đề thi: "${testObject.name}"`;
+                
+                let relevantClasses = [];
+                if (action === 'assign') {
+                    assignModalTitle.textContent = "Giao bài cho lớp";
+                    assignConfirmBtn.textContent = "Xác nhận Giao bài";
+                    assignConfirmBtn.className = "cta-button text-white px-4 py-2 rounded-lg font-semibold";
+                    relevantClasses = teacherClassrooms.filter(c => !c.assignments?.some(a => a.testId === testObject.id));
+                } else { // unassign
+                    assignModalTitle.textContent = "Hủy giao bài";
+                    assignConfirmBtn.textContent = "Xác nhận Hủy";
+                    assignConfirmBtn.className = "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold";
+                    relevantClasses = teacherClassrooms.filter(c => c.assignments?.some(a => a.testId === testObject.id));
+                }
+                
+                classroomsListEl.innerHTML = '';
+                if (relevantClasses.length === 0) {
+                    classroomsListEl.innerHTML = `<p class="text-slate-500 text-sm">Không có lớp học nào phù hợp cho hành động này.</p>`;
+                } else {
+                    relevantClasses.forEach(classroom => {
+                        classroomsListEl.innerHTML += `
+                            <label class="flex items-center space-x-3 p-2 rounded-md hover:bg-slate-100 cursor-pointer">
+                                <input type="checkbox" value="${classroom.id}" name="classroom-select" class="h-4 w-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500">
+                                <span class="text-sm text-slate-700">${classroom.className}</span>
+                            </label>
+                        `;
+                    });
+                }
+                assignModal.classList.remove('hidden');
+                assignModal.classList.add('flex');
+            }
+            
+            function hideAssignModal() {
+                assignModal.classList.add('hidden');
+                assignModal.classList.remove('flex');
+                currentTestContext = null;
+            }
+
+            async function handleAssignAction() {
+                if (!currentTestContext) return;
+
+                const { action, test } = currentTestContext;
+                const selectedClassroomIds = Array.from(document.querySelectorAll('input[name="classroom-select"]:checked')).map(cb => cb.value);
+                if (selectedClassroomIds.length === 0) {
+                    showToast("Vui lòng chọn ít nhất một lớp học.", "error");
+                    return;
+                }
+                
+                assignConfirmBtn.disabled = true;
+                assignConfirmBtn.textContent = 'Đang xử lý...';
+
+                try {
+                    const batch = writeBatch(db);
+                    
+                    if (action === 'assign') {
+                        const testRef = doc(db, "tests", test.id);
+                        if (test.status === 'draft') {
+                            batch.update(testRef, { status: "published" });
+                        }
+                        const assignment = { testId: test.id, assignedAt: new Date() };
+                        selectedClassroomIds.forEach(classId => {
+                            const classRef = doc(db, "classrooms", classId);
+                            batch.update(classRef, { assignments: arrayUnion(assignment) });
+                        });
+                        await batch.commit();
+                        showToast(`Đã giao bài thành công cho ${selectedClassroomIds.length} lớp!`, "success");
+                    } else { // unassign
+                        selectedClassroomIds.forEach(classId => {
+                            const classRef = doc(db, "classrooms", classId);
+                            const classroom = teacherClassrooms.find(c => c.id === classId);
+                            const exactAssignment = classroom.assignments.find(a => a.testId === test.id);
+                            if(exactAssignment) {
+                                batch.update(classRef, { assignments: arrayRemove(exactAssignment) });
+                            }
+                        });
+                        await batch.commit();
+                        showToast(`Đã hủy giao bài cho ${selectedClassroomIds.length} lớp!`, "success");
+                    }
+                    hideAssignModal();
+                } catch (error) {
+                    console.error(`Error during ${action}:`, error);
+                    showToast("Đã có lỗi xảy ra.", "error");
+                } finally {
+                    assignConfirmBtn.disabled = false;
+                }
+            }
+
+            async function showMonitorModal(id, name) {
+                testToMonitor = { id, name };
+                monitorModalTestName.textContent = `Đề thi: "${name}"`;
+                monitorClassroomsList.innerHTML = '<p class="text-slate-500 text-sm">Đang tìm các lớp đã được giao...</p>';
+                
+                const assignedClasses = teacherClassrooms.filter(c => 
+                    c.assignments && c.assignments.some(a => a.testId === id)
+                );
+
+                if (assignedClasses.length === 0) {
+                    monitorClassroomsList.innerHTML = `<p class="text-slate-500 text-sm">Đề thi này chưa được giao cho lớp nào.</p>`;
+                } else {
+                    monitorClassroomsList.innerHTML = '';
+                    assignedClasses.forEach(classroom => {
+                        monitorClassroomsList.innerHTML += `
+                            <a href="test-monitoring.html?testId=${id}&classId=${classroom.id}" class="block p-3 rounded-md hover:bg-slate-100 text-slate-700 font-semibold">
+                                ${classroom.className}
+                            </a>
+                        `;
+                    });
+                }
+                monitorModal.classList.remove('hidden');
+                monitorModal.classList.add('flex');
+            }
+
+            function hideMonitorModal() {
+                monitorModal.classList.add('hidden');
+                monitorModal.classList.remove('flex');
+                testToMonitor = null;
+            }
+
+            testsTableBody.addEventListener('click', (e) => {
+                const button = e.target.closest('button[data-action]');
+                if (!button) return;
+
+                const id = button.dataset.id;
+                const name = button.dataset.name;
+                const action = button.dataset.action;
+
+                if (action === 'delete') {
+                    showDeleteConfirmModal(id, name);
+                } else if (action === 'assign' || action === 'unassign') {
+                    const testObject = allTests.find(t => t.id === id);
+                    if (testObject) {
+                        showAssignModal(action, testObject);
+                    }
+                } else if (action === 'monitor') {
+                    showMonitorModal(id, name);
+                }
+            });
+            
+            deleteCancelBtn.addEventListener('click', hideDeleteConfirmModal);
+            deleteConfirmBtn.addEventListener('click', confirmDelete);
+            assignCancelBtn.addEventListener('click', hideAssignModal);
+            assignConfirmBtn.addEventListener('click', handleAssignAction);
+            monitorCancelBtn.addEventListener('click', hideMonitorModal);
+            
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const filteredTests = allTests.filter(test => test.name.toLowerCase().includes(searchTerm));
+                renderTable(filteredTests);
+            });
+            
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.body.style.opacity = '0';
+                    setTimeout(() => { window.location.href = this.href; }, 200);
+                });
+            });
+            document.body.style.transition = 'opacity 0.2s ease-in-out';
+            
+            document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+        });
+    </script>
+</body>
+</html>

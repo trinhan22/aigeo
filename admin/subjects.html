@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Học liệu - AIGEO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <style>
+        :root {
+            --primary-teal: #0D9488;
+            --primary-emerald: #10B981;
+        }
+        body { 
+            font-family: 'Be Vietnam Pro', sans-serif; 
+            background-color: #f8fafc; 
+        }
+        .sidebar-link { display: flex; align-items: center; padding: 0.75rem 1rem; border-radius: 0.5rem; transition: background-color 0.2s, color 0.2s; }
+        .sidebar-link:hover { background-color: #e2e8f0; color: #0f172a; }
+        .sidebar-link.active { 
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            color: white; 
+            font-weight: 600; 
+            box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2);
+        }
+        .sidebar-link.active svg { color: white; }
+        .sidebar-link svg { margin-right: 0.75rem; }
+
+        .brand-gradient-text {
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .cta-button {
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.2);
+        }
+        .cta-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(13, 148, 136, 0.3);
+        }
+        .form-input {
+            width: 100%; padding: 0.75rem 1rem; margin-top: 0.5rem; border: 1px solid #cbd5e1;
+            border-radius: 0.5rem; background-color: #f8fafc; transition: all 0.2s ease-in-out;
+        }
+        .form-input:focus {
+            outline: none; background-color: white; border-color: var(--primary-teal);
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+        }
+        .modal-backdrop { background-color: rgba(0, 0, 0, 0.5); transition: opacity 0.3s ease; }
+        .modal-content { transition: transform 0.3s ease, opacity 0.3s ease; transform: translateY(-20px); }
+        .toast { transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; transform: translateY(100%); opacity: 0; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        
+        /* Giao diện cây thư mục mới */
+        .tree-item-container {
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            position: relative;
+        }
+        .tree-item { display: flex; align-items: center; gap: 0.75rem; }
+        .tree-item-container:hover { background-color: #f1f5f9; }
+        .tree-item-container.selected { background-color: #f0fdfa; }
+        .tree-item-container.selected .tree-item-name { color: #0f766e; font-weight: 600; }
+        .tree-item-container.selected .tree-item-icon { color: #0f766e; }
+
+        .tree-item .chevron { transition: transform 0.2s; }
+        .tree-item .chevron.expanded { transform: rotate(90deg); }
+        .tree-children { padding-left: 1.25rem; border-left: 1px solid #e2e8f0; margin-left: 0.625rem; display: none; }
+        .tree-children.expanded { display: block; }
+        .item-actions { display: none; }
+        .tree-item-container:hover .item-actions { display: flex; }
+        
+        .ghost-class { opacity: 0.4; background: #ccfbf1; border: 1px dashed #14b8a6; }
+        .sortable-drag { opacity: 1 !important; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); }
+        .prose { max-width: none; }
+    </style>
+</head>
+<body class="flex h-screen">
+
+    <aside class="w-64 bg-white shadow-md flex-shrink-0 flex flex-col">
+        <div class="h-16 flex-shrink-0 flex items-center justify-center border-b"><a href="/index.html" class="text-2xl font-bold brand-gradient-text">AIGEO</a></div>
+        <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
+            <a href="index.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="home"></i>Tổng quan</a>
+            <a href="users.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="users"></i>Quản lý người dùng</a>
+            <a href="subjects.html" class="sidebar-link active"><i data-feather="book-open"></i>Quản lý Học liệu</a>
+            <a href="questions.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="help-circle"></i>Quản lý Câu hỏi</a>
+            <a href="tests.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="file-text"></i>Quản lý Đề thi</a>
+            <a href="apikeys.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="key"></i>Quản lý API Key</a>
+            <a href="feedback.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="message-square"></i>Quản lý Góp ý</a>
+            <a href="settings.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="settings"></i>Cài đặt hệ thống</a>
+        </nav>
+        <div class="p-4 border-t flex-shrink-0"><button id="logout-btn" class="w-full sidebar-link text-slate-600 text-left"><i data-feather="log-out"></i>Đăng xuất</button></div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <header class="bg-white shadow-sm h-16 flex items-center justify-between px-6 flex-shrink-0">
+            <div>
+                 <h1 class="text-xl font-bold text-slate-800">Quản lý Học liệu</h1>
+                 <p class="text-sm text-slate-500">Tổ chức cấu trúc Môn học, Khối và Bài học.</p>
+            </div>
+            <div class="flex items-center">
+                <span id="user-name" class="font-semibold text-gray-700 mr-4">Đang tải...</span>
+                <img id="user-avatar" class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/40x40/E2E8F0/475569?text=A" alt="Admin Avatar">
+            </div>
+        </header>
+        <div class="flex-1 flex overflow-hidden">
+            <div class="w-1/3 bg-white flex flex-col border-r border-slate-200">
+                 <div class="p-4 border-b flex justify-between items-center flex-shrink-0">
+                    <h2 class="font-bold text-lg text-slate-800">Cấu trúc học liệu</h2>
+                    <div class="flex items-center space-x-1">
+                        <button id="add-subject-btn" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg flex items-center" title="Thêm môn học">
+                            <i data-feather="plus-circle" class="w-4 h-4 mr-2"></i>Thêm Môn học
+                        </button>
+                    </div>
+                </div>
+                <div id="tree-container" class="p-2 overflow-y-auto flex-grow">
+                    </div>
+            </div>
+            <div class="w-2/3 bg-slate-50 flex flex-col">
+                <div id="content-panel" class="overflow-y-auto flex-grow">
+                     <div class="text-center text-slate-500 h-full flex flex-col justify-center items-center">
+                        <i data-feather="sidebar" class="w-16 h-16 mx-auto text-slate-400"></i>
+                        <p class="mt-4 max-w-xs mx-auto">Chọn một mục từ cây cấu trúc bên trái để xem chi tiết và quản lý.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <div id="edit-modal" class="fixed inset-0 z-40 items-center justify-center hidden modal-backdrop">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md modal-content">
+            <h2 id="modal-title" class="text-xl font-bold mb-4"></h2>
+            <form id="modal-form">
+                <input type="hidden" id="edit-id">
+                <input type="hidden" id="edit-type">
+                <input type="hidden" id="edit-context-id">
+                <div class="mb-4">
+                    <label for="item-name" class="block text-sm font-medium text-gray-700">Tên</label>
+                    <input type="text" id="item-name" class="form-input" required>
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="button" id="modal-cancel-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg">Hủy</button>
+                    <button type="submit" class="cta-button text-white px-4 py-2 rounded-lg">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+     <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 w-80"></div>
+
+    <script src="../firebase-config.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, onSnapshot, addDoc, updateDoc, deleteDoc, writeBatch, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+
+            const treeContainer = document.getElementById('tree-container');
+            const contentPanel = document.getElementById('content-panel');
+            const editModal = document.getElementById('edit-modal');
+            const modalForm = document.getElementById('modal-form');
+            const toastContainer = document.getElementById('toast-container');
+            
+            let allData = { subjects: [], lessons: [], questions: [] };
+            let selected = { subjectId: null, gradeId: null, lessonId: null };
+            let expanded = new Set();
+            let sortableInstances = {};
+
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+                const icon = type === 'success' ? 'check-circle' : 'alert-circle';
+                toast.className = `toast show ${bgColor} text-white p-4 rounded-lg shadow-lg flex items-center space-x-3`;
+                toast.innerHTML = `<i data-feather="${icon}" class="w-5 h-5"></i><span>${message}</span>`;
+                toastContainer.appendChild(toast);
+                feather.replace();
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    toast.addEventListener('transitionend', () => toast.remove());
+                }, 3000);
+            }
+            
+            function cleanPrefix(text) {
+                if (!text) return '';
+                return text.replace(/^(Bài|Chương|Phần)\s*\d+\s*[:.]?\s*/i, '').trim();
+            }
+
+            function getTypeIcon(type) {
+                const icons = { subject: 'book', grade: 'layers', lesson: 'file-text' };
+                return icons[type] || 'chevron-right';
+            }
+            
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    const docSnap = await getDoc(doc(db, "users", user.uid));
+                    if (docSnap.exists() && docSnap.data().role === 'admin') {
+                        const userData = docSnap.data();
+                        document.getElementById('user-name').textContent = userData.name || 'Admin';
+                        document.getElementById('user-avatar').src = `https://placehold.co/40x40/DC2626/FFFFFF?text=${(userData.name || 'A').charAt(0).toUpperCase()}`;
+                        initPage();
+                    } else { window.location.href = `../${docSnap.data()?.role || 'auth'}/index.html`; }
+                } else { window.location.href = '../auth.html'; }
+            });
+
+            function initPage() {
+                treeContainer.innerHTML = `<div class="p-4 text-center text-sm text-slate-500">Đang tải cấu trúc...</div>`;
+                const collections = ['subjects', 'lessons', 'questions'];
+                let loadedCount = 0;
+                collections.forEach(key => {
+                    onSnapshot(collection(db, key), (snapshot) => {
+                        allData[key] = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                        if (++loadedCount === collections.length) {
+                            renderTree();
+                            if(selected.subjectId) renderContentPanel();
+                        }
+                    });
+                });
+                setupEventListeners();
+            }
+
+            function setupEventListeners() {
+                document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+                document.getElementById('add-subject-btn').addEventListener('click', () => showModal('add', 'subject'));
+                document.getElementById('modal-cancel-btn').addEventListener('click', () => editModal.classList.add('hidden'));
+                modalForm.addEventListener('submit', handleFormSubmit);
+                treeContainer.addEventListener('click', handleTreeClick);
+                contentPanel.addEventListener('click', handleContentPanelClick);
+            }
+            
+            function renderTree() {
+                treeContainer.innerHTML = '';
+                const sortedSubjects = [...allData.subjects].sort((a,b) => a.name.localeCompare(b.name));
+                sortedSubjects.forEach(subject => {
+                    const subjectEl = createTreeItem(subject, 'subject', allData.lessons.filter(l => l.subjectId === subject.id).length);
+                    treeContainer.appendChild(subjectEl);
+                    if (expanded.has(subject.id)) {
+                        const childrenContainer = document.createElement('div');
+                        childrenContainer.className = 'tree-children expanded';
+                        [10, 11, 12].forEach(grade => {
+                            const gradeLessons = allData.lessons.filter(l => l.subjectId === subject.id && l.grade == grade);
+                            // Luôn hiển thị Khối lớp dù chưa có bài học để người dùng có thể chọn và thêm bài
+                            const gradeId = `${subject.id}_${grade}`;
+                            const gradeEl = createTreeItem({ id: gradeId, name: `Lớp ${grade}` }, 'grade', gradeLessons.length);
+                            childrenContainer.appendChild(gradeEl);
+                            if (expanded.has(gradeId)) {
+                                const lessonContainer = document.createElement('div');
+                                lessonContainer.className = 'tree-children expanded';
+                                if (gradeLessons.length > 0) {
+                                    gradeLessons.sort((a,b) => (a.order ?? Infinity) - (b.order ?? Infinity)).forEach(lesson => {
+                                        const qCount = allData.questions.filter(q => q.lessonId === lesson.id).length;
+                                        lessonContainer.appendChild(createTreeItem(lesson, 'lesson', qCount));
+                                    });
+                                } else {
+                                    lessonContainer.innerHTML = `<div class="p-2 text-xs text-slate-400 italic pl-4">Chưa có bài học</div>`;
+                                }
+                                gradeEl.appendChild(lessonContainer);
+                            }
+                        });
+                        subjectEl.appendChild(childrenContainer);
+                    }
+                });
+                feather.replace();
+            }
+
+            function createTreeItem(item, type, childCount = 0) {
+                const container = document.createElement('div');
+                const isSelected = selected.subjectId === item.id || selected.lessonId === item.id || selected.gradeId === item.id;
+                const isExpandable = type !== 'lesson';
+                const isExpanded = expanded.has(item.id);
+
+                container.className = `tree-item-container ${isSelected ? 'selected' : ''}`;
+                container.dataset.id = item.id;
+                container.dataset.type = type;
+
+                container.innerHTML = `
+                    <div class="tree-item">
+                        <i data-feather="chevron-right" class="chevron ${isExpandable ? '' : 'invisible'} ${isExpanded ? 'expanded' : ''} w-4 h-4 text-slate-400"></i>
+                        <i data-feather="${getTypeIcon(type)}" class="tree-item-icon w-5 h-5 text-slate-500"></i>
+                        <span class="tree-item-name flex-grow truncate text-sm ml-2">${cleanPrefix(item.name)}</span>
+                        ${childCount > 0 ? `<span class="text-xs bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full">${childCount}</span>` : ''}
+                        <div class="item-actions ml-2 space-x-1 bg-transparent">
+                             ${type !== 'grade' ? `<button data-action="edit" title="Sửa" class="p-1.5 hover:bg-slate-200 rounded-md"><i data-feather="edit-2" class="w-4 h-4 text-slate-500"></i></button><button data-action="delete" title="Xóa" class="p-1.5 hover:bg-slate-200 rounded-md"><i data-feather="trash-2" class="w-4 h-4 text-red-500"></i></button>` : ''}
+                        </div>
+                    </div>`;
+                return container;
+            }
+            
+            function renderContentPanel() {
+                const { subjectId, gradeId, lessonId } = selected;
+                
+                if (lessonId) {
+                    renderQuestionDetails(lessonId);
+                } else if (gradeId) {
+                    renderLessonDetails(gradeId);
+                } else if (subjectId) {
+                    renderSubjectDetails(subjectId);
+                } else {
+                    contentPanel.innerHTML = `<div class="text-center text-slate-500 h-full flex flex-col justify-center items-center"><i data-feather="sidebar" class="w-16 h-16 text-slate-400"></i><p class="mt-4">Chọn một mục để xem chi tiết.</p></div>`;
+                    feather.replace();
+                }
+            }
+
+             function renderSubjectDetails(subjectId) {
+                const subject = allData.subjects.find(s => s.id === subjectId);
+                if (!subject) return;
+                contentPanel.innerHTML = `<div class="p-8">
+                    <h2 class="text-2xl font-bold text-slate-800">${subject.name}</h2>
+                    <p class="mt-2 text-slate-500">Tổng quan về môn học. Vui lòng mở rộng môn học và chọn một khối lớp bên trái để thêm và quản lý các bài học.</p>
+                </div>`;
+            }
+
+            function renderLessonDetails(gradeId) {
+                const [subjectId, grade] = gradeId.split('_');
+                const subject = allData.subjects.find(s => s.id === subjectId);
+                if (!subject) return;
+
+                let contentHTML = `<div class="p-6 border-b">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-800">Lớp ${grade} - ${subject.name}</h2>
+                            <p class="text-slate-500">Danh sách bài học trong khối lớp này.</p>
+                        </div>
+                        <button data-action="add-lesson" data-grade="${grade}" data-subject-id="${subjectId}" class="cta-button text-white px-3 py-2 rounded-lg text-sm flex items-center"><i data-feather="plus" class="w-4 h-4 mr-2"></i>Thêm bài học</button>
+                    </div>
+                </div>
+                <div id="lesson-list-container" class="p-4 space-y-1"></div>`;
+                contentPanel.innerHTML = contentHTML;
+                
+                const listEl = document.getElementById('lesson-list-container');
+                const lessons = allData.lessons.filter(l => l.subjectId === subjectId && l.grade == grade).sort((a,b) => (a.order ?? 0) - (b.order ?? 0));
+                
+                if(lessons.length > 0) {
+                    lessons.forEach(lesson => {
+                        const qCount = allData.questions.filter(q => q.lessonId === lesson.id).length;
+                        const lessonItem = createTreeItem(lesson, 'lesson', qCount);
+                        const treeItemDiv = lessonItem.querySelector('.tree-item');
+                        treeItemDiv.insertAdjacentHTML('afterbegin', `<i data-feather="move" class="w-4 h-4 text-slate-400 cursor-grab handle"></i>`);
+                        listEl.appendChild(lessonItem);
+                    });
+                } else {
+                    listEl.innerHTML = `<p class="text-sm text-slate-400 text-center py-4">Chưa có bài học nào. Hãy nhấn nút "Thêm bài học" để bắt đầu.</p>`;
+                }
+
+                feather.replace();
+
+                if(lessons.length > 0) {
+                    sortableInstances[grade] = new Sortable(listEl, {
+                        animation: 150,
+                        ghostClass: 'ghost-class',
+                        handle: '.handle',
+                        onEnd: async (evt) => {
+                            const batch = writeBatch(db);
+                            Array.from(evt.to.children).forEach((item, index) => {
+                                batch.update(doc(db, "lessons", item.dataset.id), { order: index });
+                            });
+                            await batch.commit();
+                            showToast('Đã cập nhật thứ tự bài học!', 'success');
+                        }
+                    });
+                }
+            }
+            
+            function renderQuestionDetails(lessonId) {
+                const lesson = allData.lessons.find(l => l.id === lessonId);
+                if (!lesson) return;
+                const questions = allData.questions.filter(q => q.lessonId === lessonId);
+                
+                let contentHTML = `<div class="p-6 border-b">
+                    <h2 class="text-2xl font-bold text-slate-800">${cleanPrefix(lesson.name)}</h2>
+                    <p class="text-slate-500">Lớp ${lesson.grade}</p>
+                </div>
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-lg text-slate-700">Danh sách câu hỏi (${questions.length})</h3>
+                        <a href="questions.html?lessonId=${lessonId}" class="cta-button text-white px-3 py-2 rounded-lg text-sm flex items-center"><i data-feather="edit" class="w-4 h-4 mr-2"></i>Quản lý chi tiết</a>
+                    </div>
+                    <div class="space-y-4 max-h-[60vh] overflow-y-auto pr-2 border-t pt-4">`;
+
+                if (questions.length > 0) {
+                    questions.forEach((q, i) => {
+                        contentHTML += `<div class="p-3 bg-slate-50 rounded-md prose prose-sm border border-slate-200"><span class="font-bold text-slate-700">Câu ${i+1}:</span> ${q.content}</div>`;
+                    });
+                } else {
+                    contentHTML += `<p class="text-sm text-slate-400 text-center py-4">Chưa có câu hỏi nào trong bài học này.</p>`;
+                }
+                contentHTML += `</div></div>`;
+                contentPanel.innerHTML = contentHTML;
+                feather.replace();
+            }
+
+            function handleTreeClick(e) {
+                const treeItemContainer = e.target.closest('.tree-item-container');
+                if (!treeItemContainer) return;
+
+                const id = treeItemContainer.dataset.id;
+                const type = treeItemContainer.dataset.type;
+                const actionBtn = e.target.closest('[data-action]');
+                
+                if (actionBtn) {
+                    e.stopPropagation();
+                    handleItemAction(actionBtn.dataset.action, type, id);
+                    return;
+                }
+                
+                // Toggle expand/collapse
+                if (type !== 'lesson') {
+                    if(expanded.has(id)) {
+                        expanded.delete(id);
+                    } else {
+                        expanded.add(id);
+                    }
+                }
+                
+                // Set selected item
+                if (type === 'subject') selected = { subjectId: id, gradeId: null, lessonId: null };
+                else if (type === 'grade') selected = { subjectId: id.split('_')[0], gradeId: id, lessonId: null };
+                else if (type === 'lesson') {
+                     const lesson = allData.lessons.find(l => l.id === id);
+                     if(lesson) selected = { subjectId: lesson.subjectId, gradeId: `${lesson.subjectId}_${lesson.grade}`, lessonId: id };
+                }
+                
+                renderTree();
+                renderContentPanel();
+            }
+             
+            function handleContentPanelClick(e) {
+                const addLessonBtn = e.target.closest('[data-action="add-lesson"]');
+                if (addLessonBtn) {
+                     showModal('add', 'lesson', {
+                        grade: parseInt(addLessonBtn.dataset.grade),
+                        subjectId: addLessonBtn.dataset.subjectId
+                    });
+                    return;
+                }
+                
+                // Handle interactions within the list inside content panel
+                const listItem = e.target.closest('.tree-item-container');
+                const itemAction = e.target.closest('[data-action]');
+                
+                if(itemAction && listItem) {
+                    e.stopPropagation();
+                    handleItemAction(itemAction.dataset.action, listItem.dataset.type, listItem.dataset.id);
+                } else if(listItem) {
+                     selected.lessonId = listItem.dataset.id;
+                     const lesson = allData.lessons.find(l => l.id === selected.lessonId);
+                     if(lesson) selected.gradeId = `${lesson.subjectId}_${lesson.grade}`;
+                     
+                     renderTree(); // Update tree highlight
+                     renderContentPanel(); // Show lesson details
+                }
+            }
+
+            function handleItemAction(action, type, id) {
+                const item = allData[type + 's'].find(i => i.id === id) || { id: id };
+                if (action === 'edit') {
+                    showModal('edit', type, item);
+                } else if (action === 'delete') {
+                    if (confirm(`Bạn có chắc chắn muốn xóa "${item.name}"? Hành động này không thể hoàn tác.`)) {
+                        deleteItem(type, id);
+                    }
+                }
+            }
+            
+            function showModal(mode, type, data={}) {
+                 document.getElementById('edit-id').value = data.id || '';
+                 document.getElementById('edit-type').value = type;
+                 document.getElementById('modal-title').textContent = mode === 'add' ? `Thêm ${type === 'subject' ? 'Môn học' : 'Bài học'}` : `Sửa ${type === 'subject' ? 'Môn học' : 'Bài học'}`;
+                 document.getElementById('item-name').value = data.name || '';
+                 
+                 // Store context for new items
+                 if (type === 'lesson' && mode === 'add') {
+                     document.getElementById('edit-context-id').value = JSON.stringify({ subjectId: data.subjectId, grade: data.grade });
+                 } else {
+                     document.getElementById('edit-context-id').value = '';
+                 }
+                 
+                 editModal.classList.remove('hidden');
+                 editModal.classList.add('flex');
+                 document.getElementById('item-name').focus();
+            }
+
+            async function handleFormSubmit(e) {
+                e.preventDefault();
+                const id = document.getElementById('edit-id').value;
+                const type = document.getElementById('edit-type').value;
+                const name = document.getElementById('item-name').value.trim();
+                const contextStr = document.getElementById('edit-context-id').value;
+                
+                if (!name) return;
+
+                const payload = { name };
+                const collectionName = type === 'lesson' ? 'lessons' : 'subjects';
+                
+                try {
+                    if (id) {
+                        await updateDoc(doc(db, collectionName, id), payload);
+                        showToast('Cập nhật thành công!');
+                    } else {
+                        if (type === 'lesson') {
+                            const context = JSON.parse(contextStr);
+                            payload.subjectId = context.subjectId;
+                            payload.grade = context.grade;
+                            
+                            // Get max order
+                            const q = query(collection(db, 'lessons'), where('subjectId', '==', context.subjectId), where('grade', '==', context.grade));
+                            const snapshot = await getDocs(q);
+                            payload.order = snapshot.size;
+                        }
+                        
+                        await addDoc(collection(db, collectionName), payload);
+                        showToast('Thêm mới thành công!');
+                    }
+                    editModal.classList.add('hidden');
+                    editModal.classList.remove('flex');
+                } catch(error) { 
+                    console.error(error);
+                    showToast('Lỗi: ' + error.message, 'error'); 
+                }
+            }
+
+             async function deleteItem(type, id) {
+                const batch = writeBatch(db);
+                batch.delete(doc(db, `${type}s`, id));
+                
+                if (type === 'subject') {
+                    const lessonsToDelete = allData.lessons.filter(l => l.subjectId === id);
+                    for (const lesson of lessonsToDelete) {
+                        batch.delete(doc(db, 'lessons', lesson.id));
+                        const questionsToDelete = allData.questions.filter(q => q.lessonId === lesson.id);
+                        questionsToDelete.forEach(q => batch.delete(doc(db, 'questions', q.id)));
+                    }
+                } else if (type === 'lesson') {
+                     const questionsToDelete = allData.questions.filter(q => q.lessonId === id);
+                     questionsToDelete.forEach(q => batch.delete(doc(db, 'questions', q.id)));
+                }
+                
+                try {
+                    await batch.commit();
+                    showToast('Xóa thành công!');
+                    
+                    if(selected.subjectId === id) selected = { subjectId: null, gradeId: null, lessonId: null };
+                    if(selected.lessonId === id) selected.lessonId = null;
+                    
+                    renderContentPanel();
+                } catch (error) {
+                    showToast('Lỗi khi xóa: ' + error.message, 'error');
+                }
+            }
+            
+            feather.replace();
+        });
+    </script>
+</body>
+</html>

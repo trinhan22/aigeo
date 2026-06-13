@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIGEO - Kết quả Bài làm</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    
+    <!-- Rendering Engines -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #0D9488;
+            --primary-light: #F0FDFA;
+            --secondary: #10B981;
+            --text-main: #1E293B;
+            --text-light: #64748B;
+            --bg-body: #F8FAFC;
+            --primary-gradient: linear-gradient(135deg, #0D9488 0%, #10B981 100%);
+        }
+
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body); color: var(--text-main); overflow: hidden; }
+
+        /* --- SIDEBAR STYLE (Đồng bộ) --- */
+        .sidebar { width: 280px; background: white; border-right: 1px solid #E2E8F0; height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; }
+        .nav-group-title { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #94A3B8; padding: 1.5rem 1.5rem 0.5rem; }
+        .sidebar-link { display: flex; align-items: center; padding: 0.8rem 1.5rem; color: var(--text-light); font-weight: 600; font-size: 0.9rem; transition: 0.3s; gap: 12px; }
+        .sidebar-link:hover { color: var(--primary); background: var(--primary-light); }
+        .sidebar-link.active { background: var(--primary-gradient); color: white; border-radius: 12px; margin: 0 12px; box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.2); }
+
+        /* --- RESULT COMPONENTS --- */
+        .bento-card { background: white; border-radius: 24px; border: 1px solid #E2E8F0; padding: 24px; transition: 0.3s; }
+        .score-display { font-size: 3.5rem; font-weight: 900; line-height: 1; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .ai-feedback-container { background: white; border-radius: 32px; border: 1px solid #E2E8F0; position: relative; overflow: hidden; }
+        .ai-feedback-container::before { content: ''; position: absolute; top: 0; left: 0; width: 6px; height: 100%; background: var(--primary-gradient); }
+
+        .question-card { background: white; border-radius: 24px; padding: 32px; border: 1px solid #E2E8F0; margin-bottom: 24px; }
+        .answer-option { display: flex; align-items: flex-start; gap: 12px; padding: 16px; border-radius: 16px; border: 2px solid #F1F5F9; margin-top: 10px; }
+        .answer-option.correct { background: #F0FDFA; border-color: #5EEAD4; color: #0F766E; }
+        .answer-option.incorrect { background: #FEF2F2; border-color: #FECACA; color: #991B1B; }
+
+        .cta-button { background: var(--primary-gradient); color: white; padding: 12px 24px; border-radius: 14px; font-weight: 800; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; border: none; cursor: pointer; box-shadow: 0 10px 20px rgba(13, 148, 136, 0.15); }
+        .cta-button:hover { transform: translateY(-2px); box-shadow: 0 15px 25px rgba(13, 148, 136, 0.25); }
+
+        /* Custom UI */
+        #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000; }
+        .skeleton { background: #E2E8F0; animation: pulse 2s infinite; border-radius: 12px; }
+        @keyframes pulse { 50% { opacity: .5; } }
+
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #0D9488; border-radius: 10px; }
+
+        .prose strong { color: var(--primary); }
+    </style>
+</head>
+<body class="flex h-screen">
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Sidebar (Đồng bộ) -->
+    <aside class="sidebar">
+        <div class="p-8">
+            <a href="/index.html" class="flex items-center gap-3">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" class="h-9 w-auto">
+                <span class="text-xl font-black text-teal-600 tracking-tight">AIGEO</span>
+            </a>
+        </div>
+        <nav class="flex-grow overflow-y-auto">
+            <a href="index.html" class="sidebar-link"><i data-feather="grid"></i> Tổng quan</a>
+            <div class="nav-group-title">Quản lý học tập</div>
+            <a href="classrooms.html" class="sidebar-link"><i data-feather="book-open"></i> Lớp học của tôi</a>
+            <a href="practice-hub.html" class="sidebar-link active"><i data-feather="zap"></i> Luyện tập</a>
+            <a href="stats.html" class="sidebar-link"><i data-feather="bar-chart-2"></i> Thống kê</a>
+            <div class="nav-group-title">Khám phá</div>
+            <a href="chat-bot.html" class="sidebar-link"><i data-feather="message-circle"></i> Chatbot AI</a>
+            <div class="nav-group-title">Cá nhân</div>
+            <a href="account.html" class="sidebar-link"><i data-feather="user"></i> Tài khoản</a>
+        </nav>
+        <div class="p-4 border-t">
+            <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 rounded-xl transition">
+                <i data-feather="log-out"></i> Đăng xuất
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <header class="h-16 bg-white border-b flex items-center justify-between px-8 shrink-0">
+            <div class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                <a href="index.html" class="hover:text-teal-600 transition">Dashboard</a>
+                <span>/</span>
+                <a href="practice-hub.html" class="hover:text-teal-600 transition">Practice Center</a>
+                <span>/</span>
+                <span class="text-slate-800">Result Insight</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="text-right hidden sm:block">
+                    <p id="user-name" class="text-sm font-black text-slate-800 leading-none">Đang tải...</p>
+                    <span class="text-[10px] font-bold text-teal-600 uppercase">Student Account</span>
+                </div>
+                <img id="user-avatar" class="h-10 w-10 rounded-xl border-2 border-slate-100 object-cover shadow-sm">
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="flex-1 overflow-y-auto bg-slate-50/50 p-8">
+            <div id="result-page-content" class="max-w-5xl mx-auto opacity-0 transition-opacity duration-500 space-y-10">
+                
+                <!-- Title & Meta -->
+                <div class="flex flex-col md:flex-row justify-between items-end gap-4">
+                    <div>
+                        <h1 id="test-name-title" class="text-4xl font-black text-slate-900 tracking-tight">Kết quả bài làm</h1>
+                        <span id="result-id-display" class="text-[10px] font-black bg-slate-200 text-slate-500 px-2 py-1 rounded mt-2 inline-block uppercase tracking-widest">#LOADING</span>
+                    </div>
+                    <div id="action-buttons" class="flex gap-3">
+                        <a id="back-to-hub" href="practice-hub.html" class="px-6 py-3 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl text-sm hover:bg-slate-50 transition">Luyện tập tiếp</a>
+                        <a id="retry-test-btn" href="#" class="px-6 py-3 bg-teal-50 text-teal-600 font-bold rounded-xl text-sm border border-teal-100 hover:bg-teal-100 transition">Làm lại bài</a>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div class="bento-card flex flex-col items-center justify-center">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Điểm số</p>
+                        <div id="score-display" class="score-display">--</div>
+                    </div>
+                    <div class="bento-card flex flex-col items-center justify-center">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Câu trả lời đúng</p>
+                        <div id="raw-score-display" class="text-3xl font-black text-slate-800">--/--</div>
+                    </div>
+                    <div class="bento-card flex flex-col items-center justify-center">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Thời gian làm</p>
+                        <div id="time-taken-display" class="text-2xl font-black text-slate-800">--:--</div>
+                    </div>
+                    <div class="bento-card flex flex-col items-center justify-center">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Ngày thực hiện</p>
+                        <div id="completed-at-display" class="text-lg font-black text-slate-800">--/--</div>
+                    </div>
+                </div>
+
+                <!-- AI Analysis -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 ai-feedback-container p-8 shadow-sm">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-xl font-black text-slate-800 flex items-center gap-3">
+                                <i data-feather="cpu" class="text-teal-600"></i> AI Coach Nhận xét
+                            </h2>
+                            <div class="flex gap-2">
+                                <button id="ai-retry-btn" class="hidden text-xs font-black text-slate-400 hover:text-teal-600 transition uppercase tracking-widest">Thử lại</button>
+                                <button id="ai-detail-btn" class="cta-button !py-2 !px-4 !text-[10px] uppercase">Phân tích chuyên sâu</button>
+                            </div>
+                        </div>
+                        <div id="ai-feedback" class="prose prose-sm text-slate-600 font-medium leading-relaxed ai-response">
+                            <div class="skeleton h-32 w-full"></div>
+                        </div>
+                    </div>
+
+                    <div class="bento-card bg-white">
+                        <h3 class="font-black text-slate-800 mb-6 flex items-center gap-2">
+                            <i data-feather="target" class="text-red-500 w-4"></i> Cần ôn tập gấp
+                        </h3>
+                        <ul id="review-topics" class="space-y-3">
+                            <li class="skeleton h-10 w-full rounded-xl"></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Review Section -->
+                <div class="space-y-6">
+                    <h2 class="text-2xl font-black text-slate-900 flex items-center gap-3">
+                        <i data-feather="eye" class="text-teal-600"></i> Xem lại chi tiết
+                    </h2>
+                    <div id="review-container" class="space-y-6 pb-20">
+                        <!-- Questions injected here -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- (Toàn bộ logic JS được giữ nguyên bên dưới) -->
+    <script src="../firebase-config.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+            
+            const userNameEl = document.getElementById('user-name');
+            const userAvatarEl = document.getElementById('user-avatar');
+            const scoreDisplayEl = document.getElementById('score-display');
+            const rawScoreDisplayEl = document.getElementById('raw-score-display');
+            const timeTakenDisplay = document.getElementById('time-taken-display');
+            const completedAtDisplay = document.getElementById('completed-at-display');
+            const testNameTitle = document.getElementById('test-name-title');
+            const aiFeedbackEl = document.getElementById('ai-feedback');
+            const reviewTopicsEl = document.getElementById('review-topics');
+            const reviewContainerEl = document.getElementById('review-container');
+            const resultPageContent = document.getElementById('result-page-content');
+            const aiDetailBtn = document.getElementById('ai-detail-btn');
+            const aiRetryBtn = document.getElementById('ai-retry-btn'); 
+            const actionButtons = document.getElementById('action-buttons');
+            const retryTestBtn = document.getElementById('retry-test-btn');
+            const resultIdDisplay = document.getElementById('result-id-display');
+            
+            let currentUser = null;
+            let currentResultData = null;
+            let currentQuestions = [];
+            let allLessonsCache = [];
+            let apiKeysCache = null;
+            let historySummary = null;
+            let resultId = null;
+
+            onAuthStateChanged(auth, async (user) => {
+                if (!user) { window.location.href = '../auth.html'; return; }
+                currentUser = user;
+                const userDocRef = doc(db, "users", user.uid);
+                const docSnap = await getDoc(userDocRef);
+                if (docSnap.exists() && docSnap.data().role === 'student') {
+                    const userData = docSnap.data();
+                    userNameEl.textContent = userData.name || 'Học sinh';
+                    const nameInitial = (userData.name || 'S').charAt(0).toUpperCase();
+                    userAvatarEl.src = `https://placehold.co/40x40/10B981/FFFFFF?text=${nameInitial}`;
+                    initResultPage();
+                } else {
+                    window.location.href = `../${docSnap.data()?.role || 'auth'}/index.html`;
+                }
+            });
+            
+             function cleanPrefix(text) {
+                 if (!text) return '';
+                 return text.replace(/^(Bài|Chương|Phần|Câu)\s*\d+\s*[:.]?\s*/i, '').trim();
+             }
+
+            async function initResultPage() {
+                try {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    resultId = urlParams.get('id') || sessionStorage.getItem('latestResultId');
+                    
+                    if (!resultId) throw new Error("Không tìm thấy mã kết quả. Vui lòng quay lại và thử lại.");
+                    
+                    resultIdDisplay.textContent = `#${resultId.slice(0, 8)}`;
+                    
+                    if (!urlParams.get('id')) {
+                        const newUrl = new URL(window.location.href);
+                        newUrl.searchParams.set('id', resultId);
+                        window.history.replaceState({}, '', newUrl);
+                    }
+
+                    const resultDocRef = doc(db, "submissions", resultId);
+                    const resultSnap = await getDoc(resultDocRef);
+                    if (!resultSnap.exists()) throw new Error("Không tìm thấy dữ liệu kết quả.");
+                    
+                    currentResultData = resultSnap.data();
+                    const { score, totalQuestions, userAnswers, incorrectQuestions, questionIds, embeddedQuestions, timeTaken, completedAt, testName, type, testId, classId, subjectId } = currentResultData;
+                    
+                    if (testName.startsWith("Luyện tập")) {
+                        actionButtons.querySelector('#back-to-hub').classList.add('hidden');
+                    }
+
+                    const tenPointScore = totalQuestions > 0 ? (score / totalQuestions) * 10 : 0;
+                    scoreDisplayEl.textContent = tenPointScore.toFixed(1);
+                    rawScoreDisplayEl.textContent = `${score}/${totalQuestions}`;
+                    testNameTitle.textContent = `Kết quả: ${testName}`;
+                    const minutes = Math.floor((timeTaken || 0) / 60);
+                    const seconds = (timeTaken || 0) % 60;
+                    timeTakenDisplay.textContent = `${minutes}m ${seconds}s`;
+                    completedAtDisplay.textContent = completedAt.toDate().toLocaleDateString('vi-VN');
+                    if(tenPointScore >= 8) launchConfetti();
+
+                    if (classId) {
+                        retryTestBtn.href = `test.html?testId=${testId}&classId=${classId}`;
+                    } else {
+                        retryTestBtn.href = `practice-test.html?testId=${testId}`;
+                    }
+                    
+                    // --- TẢI DỮ LIỆU CÂU HỎI VÀ LỊCH SỬ ---
+                    const [fetchedQuestions, allLessons, apiKeySnap, historyData] = await Promise.all([
+                        fetchQuestions(questionIds),
+                        fetchAllLessons(),
+                        getDoc(doc(db, "system_settings", "api_keys")),
+                        getHistorySummary(currentUser.uid, subjectId, resultId) // Truyền resultId để loại trừ bài hiện tại
+                    ]);
+                    
+                    allLessonsCache = allLessons; 
+                    apiKeysCache = apiKeySnap.exists() ? apiKeySnap.data() : null; 
+                    currentQuestions = [...(embeddedQuestions || []), ...fetchedQuestions];
+                    historySummary = historyData;
+
+                    renderReviewSection(currentQuestions, userAnswers, allLessonsCache);
+                    
+                    let weakTopicsToDisplay = [];
+                    const uniqueIncorrectLessonIds = [...new Set((incorrectQuestions || []).map(q => q.lessonId).filter(id => id))];
+                    weakTopicsToDisplay = allLessonsCache.filter(l => uniqueIncorrectLessonIds.includes(l.id));
+
+                    reviewTopicsEl.innerHTML = weakTopicsToDisplay.length > 0
+                        ? weakTopicsToDisplay.map(l => `<li><i data-feather="alert-circle" class="w-4 h-4 inline-block mr-2 text-red-500"></i>${cleanPrefix(l.name)}</li>`).join('')
+                        : `<li><i data-feather="check-circle" class="w-4 h-4 inline-block mr-2 text-green-500"></i>Không có chủ đề yếu nổi bật.</li>`;
+                    
+                    if (currentResultData.aiFeedback) {
+                        renderAiResponse(currentResultData.aiFeedback);
+                    } else {
+                        const aiFeedbackFn = (isDetailed) => getAiFeedback(
+                            currentQuestions, // Truyền toàn bộ câu hỏi để phân tích đúng/sai
+                            userAnswers,
+                            incorrectQuestions || [], 
+                            weakTopicsToDisplay, 
+                            score, 
+                            totalQuestions, 
+                            apiKeysCache, 
+                            isDetailed,
+                            historySummary 
+                        );
+
+                        aiDetailBtn.addEventListener('click', () => aiFeedbackFn(true));
+                        aiRetryBtn.addEventListener('click', () => aiFeedbackFn(false));
+                        
+                        aiFeedbackFn(false); 
+                    }
+                    
+                    resultPageContent.classList.add('opacity-100');
+                    feather.replace();
+
+                } catch (error) {
+                    console.error("Error loading result page:", error);
+                    const mainContent = document.querySelector('.max-w-4xl.mx-auto');
+                    if (mainContent) {
+                        mainContent.innerHTML = `<div class="bg-white p-8 rounded-xl shadow-lg text-center"><i data-feather="alert-triangle" class="w-16 h-16 mx-auto text-red-500"></i><h2 class="mt-4 text-2xl font-bold text-slate-800">Đã xảy ra lỗi</h2><p class="mt-2 text-slate-600">${error.message}</p><a href="index.html" class="mt-6 inline-block cta-button text-white font-semibold px-6 py-3 rounded-lg">Về trang tổng quan</a></div>`;
+                        feather.replace();
+                    }
+                }
+            }
+            
+            async function getHistorySummary(studentId, subjectId, currentSubmissionId) {
+                if (!subjectId) return null;
+                try {
+                    const q = query(
+                        collection(db, "submissions"), 
+                        where("studentId", "==", studentId), 
+                        where("subjectId", "==", subjectId),
+                        orderBy("completedAt", "desc"),
+                        limit(6) // Lấy 6 để trừ bài hiện tại
+                    );
+                    const snapshot = await getDocs(q);
+                    // Lọc bỏ bài làm hiện tại
+                    const submissions = snapshot.docs
+                        .filter(d => d.id !== currentSubmissionId) 
+                        .map(d => d.data())
+                        .slice(0, 5); // Chỉ lấy 5 bài gần nhất trước đó
+                    
+                    if (submissions.length === 0) return null;
+
+                    // Lấy điểm của bài gần nhất (bài ngay trước bài hiện tại)
+                    const lastScore = (submissions[0].score / submissions[0].totalQuestions) * 10;
+
+                    const totalScore = submissions.reduce((sum, s) => sum + (s.score / s.totalQuestions) * 10, 0);
+                    const avgScore = (totalScore / submissions.length).toFixed(1);
+                    const scoreTrend = submissions.map(s => ((s.score / s.totalQuestions) * 10).toFixed(1)).reverse(); 
+
+                    return {
+                        avgScore,
+                        lastScore: lastScore.toFixed(1), // Lưu điểm bài trước
+                        scoreTrend,
+                        recentCount: submissions.length
+                    };
+                } catch (e) {
+                    console.error("Error fetching history:", e);
+                    return null;
+                }
+            }
+
+            async function fetchQuestions(questionIds) {
+                if (!questionIds || questionIds.length === 0) return [];
+                const fetchedQuestions = [];
+                const CHUNK_SIZE = 30;
+                for (let i = 0; i < questionIds.length; i += CHUNK_SIZE) {
+                    const chunk = questionIds.slice(i, i + CHUNK_SIZE);
+                    const q = query(collection(db, "questions"), where("__name__", "in", chunk));
+                    const snapshot = await getDocs(q);
+                    snapshot.forEach(doc => fetchedQuestions.push({ id: doc.id, ...doc.data() }));
+                }
+                const originalIdOrder = currentResultData.questionIds || [];
+                return fetchedQuestions.sort((a, b) => originalIdOrder.indexOf(a.id) - originalIdOrder.indexOf(b.id));
+            }
+            
+            async function fetchAllLessons() {
+                const lessonsSnap = await getDocs(collection(db, "lessons"));
+                return lessonsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+            }
+            
+            function renderReviewSection(questions, userAnswers, allLessons) {
+                reviewContainerEl.innerHTML = '';
+                const originalIdOrder = currentResultData.questionIds || questions.map(q => q.id);
+                const sortedQuestions = questions.sort((a, b) => originalIdOrder.indexOf(a.id) - originalIdOrder.indexOf(b.id));
+
+                sortedQuestions.forEach((q, index) => {
+                    const lesson = allLessons.find(l => l.id === q.lessonId);
+                    const userAnswer = userAnswers[q.id];
+                    let isCorrect = false;
+                    let answerHTML = '';
+                    if (q.type === 'multiple_choice') {
+                         const originalAnswer = q.shuffledOptions?.find(opt => opt.originalLetter === q.correctAnswer);
+                         const selectedOption = q.shuffledOptions?.find((opt, i) => String.fromCharCode(65 + i) === userAnswer);
+                         isCorrect = selectedOption?.originalLetter === q.correctAnswer;
+
+                        answerHTML = (q.shuffledOptions || []).map((optionData, i) => {
+                            const optionLetter = String.fromCharCode(65 + i);
+                            let classes = 'answer-option border-2 border-slate-200 p-4 rounded-lg mt-2 flex items-start';
+                            if(optionData.originalLetter === q.correctAnswer) classes += ' correct';
+                            else if (optionLetter === userAnswer && !isCorrect) classes += ' incorrect';
+                            return `<div class="${classes}"><span class="font-bold mr-2">${optionLetter}.</span> <div>${optionData.content}</div></div>`;
+                        }).join('');
+
+                    } else if (q.type === 'short_answer') {
+                        const formattedCorrectAnswer = String(q.correctAnswer).trim().toLowerCase();
+                        const formattedUserAnswer = String(userAnswer || "").trim().toLowerCase();
+                        isCorrect = formattedUserAnswer === formattedCorrectAnswer;
+                        answerHTML = `<div class="mt-4"><p><strong>Đáp án đúng:</strong> <span class="font-mono bg-green-100 text-green-800 px-2 py-1 rounded">${q.correctAnswer}</span></p><p><strong>Câu trả lời của bạn:</strong> <span class="font-mono ${isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} px-2 py-1 rounded">${userAnswer || '(bỏ trống)'}</span></p></div>`;
+                    } else if (q.type === 'true_false' || q.type === 'true_false_group') {
+                        const statements = q.statements || {};
+                        const statementKeys = Array.isArray(statements) ? Object.keys(statements) : Object.keys(statements).filter(k => statements[k]);
+
+                        isCorrect = userAnswer && statementKeys.length > 0 && statementKeys.every(key => {
+                             const correctAnswer = Array.isArray(statements) ? statements[key].answer : q.answers[key];
+                             return userAnswer[key] === correctAnswer;
+                        });
+                        
+                        answerHTML = statementKeys.map(key => {
+                             const statementContent = Array.isArray(statements) ? statements[key].statement : statements[key];
+                             if(!statementContent) return '';
+                             
+                             const userAns = userAnswer ? userAnswer[key] : undefined;
+                             const correctAns = Array.isArray(statements) ? statements[key].answer : q.answers[key];
+                             const isSubCorrect = userAns === correctAns;
+                             
+                             const displayKey = Array.isArray(statements) ? (parseInt(key, 10) + 1) : key;
+
+                             return `<div class="p-3 border-t"><p>${displayKey}) ${statementContent}</p><div class="text-sm mt-2"><span>Đáp án: <strong class="${correctAns ? 'text-green-600' : 'text-red-600'}">${correctAns ? 'Đúng' : 'Sai'}</strong></span> | <span>Bạn chọn: <strong class="${isSubCorrect ? 'text-green-600' : 'text-red-600'}">${userAns === undefined ? '(bỏ trống)' : (userAns ? 'Đúng' : 'Sai')}</strong></span></div></div>`;
+                        }).join('');
+                        answerHTML = `<div class="mt-4 border rounded-lg divide-y">${answerHTML}</div>`;
+                    }
+                    const questionCard = document.createElement('div');
+                    questionCard.className = 'bg-white p-6 rounded-xl shadow-sm';
+                    questionCard.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <div><p class="font-bold text-slate-800">Câu ${index + 1}</p><p class="text-xs text-slate-500 mt-1">Chủ đề: ${lesson ? cleanPrefix(lesson.name) : 'N/A'}</p></div>
+                            <span class="px-3 py-1 text-xs font-semibold rounded-full ${isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">${isCorrect ? 'Đúng' : 'Sai'}</span>
+                        </div>
+                        ${q.imageUrl ? `<div class="my-4"><img src="${q.imageUrl}" alt="Hình ảnh câu hỏi" class="max-w-full h-auto rounded-lg mx-auto border"></div>` : ''}
+                        <div class="prose mt-4">${q.content}</div>
+                        <div class="mt-4 space-y-2">${answerHTML}</div>
+                        ${q.explanation ? `<div class="mt-4 pt-4 border-t border-slate-200 prose prose-sm text-slate-600"><strong>Giải thích:</strong> ${q.explanation}</div>` : ''}
+                    `;
+                    reviewContainerEl.appendChild(questionCard);
+                });
+                renderMathWithKaTeX(reviewContainerEl);
+            }
+
+            function getNextApiKey(openRouterKeys) {
+                if (!openRouterKeys || openRouterKeys.length === 0) return null;
+                let currentKeyIndex = parseInt(sessionStorage.getItem('orKeyIndex') || '0', 10) % openRouterKeys.length;
+                const key = openRouterKeys[currentKeyIndex];
+                sessionStorage.setItem('orKeyIndex', ((currentKeyIndex + 1) % openRouterKeys.length).toString());
+                return key;
+            }
+
+            function renderAiResponse(text) {
+                const renderedHtml = marked.parse(text);
+                aiFeedbackEl.innerHTML = renderedHtml;
+                renderMathWithKaTeX(aiFeedbackEl);
+                aiDetailBtn.disabled = false;
+                aiDetailBtn.innerHTML = `<i data-feather="zoom-in" class="w-4 h-4 mr-2"></i>Xem phân tích chi tiết`;
+                feather.replace();
+            }
+
+            async function getAiFeedback(allQuestions, userAnswers, incorrectQuestions, topicsToReview, score, total, apiKeysData, isDetailed, historySummary) {
+                const openRouterKeys = apiKeysData?.openrouter_keys;
+                if (!openRouterKeys || openRouterKeys.length === 0) {
+                    aiFeedbackEl.innerHTML = "Tính năng nhận xét AI chưa được cấu hình."; return;
+                }
+                
+                aiDetailBtn.disabled = true;
+                aiRetryBtn.classList.add('hidden');
+                aiDetailBtn.innerHTML = `<i data-feather="loader" class="animate-spin w-4 h-4 mr-2"></i>Đang phân tích...`;
+                feather.replace();
+
+                let systemPrompt, userPrompt;
+
+                // --- PROMPT ENGINEERING: ĐỊNH HÌNH CHUYÊN GIA TÂM LÝ & TẬN TỤY ---
+                const expertPersona = `Bạn là một giáo viên Địa lý tâm lý, ân cần và tận tụy. Hãy xưng hô là 'Cô' và gọi học sinh là 'Em'. Giọng văn phải thật nhẹ nhàng, khích lệ, tránh chỉ trích nặng nề. Nhiệm vụ của bạn là đưa ra nhận xét, đánh giá và hướng dẫn học sinh dựa trên CHUẨN KIẾN THỨC KỸ NĂNG SGK Địa lý 12 (CT 2018).`;
+
+                if (isDetailed) {
+                    const incorrectQuestionsData = allQuestions.filter(q => incorrectQuestions.some(iq => iq.questionContent === q.content));
+                    const detailedIncorrectContent = incorrectQuestionsData.map((q, index) => {
+                        let questionText = `Câu ${index + 1}: ${q.content}\n`;
+                        if (q.type === 'multiple_choice') {
+                            questionText += (q.shuffledOptions || []).map((opt, i) => `  ${String.fromCharCode(65+i)}. ${opt.content}`).join('\n');
+                            const correctLetter = q.shuffledOptions.find(opt => opt.originalLetter === q.correctAnswer);
+                            const correctChoice = correctLetter ? String.fromCharCode(65 + q.shuffledOptions.indexOf(correctLetter)) : q.correctAnswer;
+                            questionText += `\n  Đáp án đúng: ${correctChoice}`;
+                        } else {
+                            questionText += `\n  Đáp án đúng: ${q.correctAnswer}`;
+                        }
+                        return questionText;
+                    }).join('\n\n');
+
+                    systemPrompt = `${expertPersona}\n\nNhiệm vụ: Giải thích chi tiết từng câu sai một cách ân cần. Hãy nói: "Ở câu này, đáp án đúng là... vì... Trong sách giáo khoa bài..., kiến thức này được giải thích là...". Mục tiêu là giúp em hiểu bản chất vấn đề. BẮT BUỘC dùng HTML (<p>, <strong>, <ul>, <li>).`;
+                    userPrompt = `Cô hãy giải thích giúp em các câu sai này ạ:\n\n${detailedIncorrectContent}`;
+                } else {
+                    const topicsContent = topicsToReview.map(t => cleanPrefix(t.name)).join(', ');
+                    
+                    // --- PHÂN TÍCH CÂU ĐÚNG ĐỂ KHEN ---
+                    const correctQuestions = allQuestions.filter(q => !incorrectQuestions.some(iq => iq.questionContent === q.content));
+                    // Lấy ngẫu nhiên tối đa 2 chủ đề từ các câu làm đúng để khen
+                    let strongTopics = [];
+                    if (correctQuestions.length > 0) {
+                        const correctLessonIds = [...new Set(correctQuestions.map(q => q.lessonId).filter(id => id))];
+                        strongTopics = allLessonsCache.filter(l => correctLessonIds.includes(l.id)).map(l => cleanPrefix(l.name)).slice(0, 3);
+                    }
+                    const strengthText = strongTopics.length > 0 ? `Em đã nắm khá vững các kiến thức về: ${strongTopics.join(', ')}.` : "Cô thấy em đã rất cố gắng hoàn thành bài.";
+
+                    let historyText = "";
+                    let adviceContext = "";
+
+                    if (historySummary && historySummary.lastScore) {
+                        const currentScore = (score / total) * 10;
+                        const diff = currentScore - parseFloat(historySummary.lastScore);
+                        if (diff > 0) {
+                            historyText = `So với bài trước (đạt ${historySummary.lastScore} điểm), hôm nay em đã tiến bộ thêm ${diff.toFixed(1)} điểm. Cô rất vui vì sự nỗ lực này!`;
+                        } else if (diff < 0) {
+                            historyText = `Bài trước em đạt ${historySummary.lastScore} điểm, hôm nay kết quả có thấp hơn một chút (${Math.abs(diff).toFixed(1)} điểm). Đừng buồn nhé, mình cùng cố gắng hơn ở lần sau.`;
+                        } else {
+                            historyText = `Em vẫn giữ vững phong độ so với bài trước (${historySummary.lastScore} điểm).`;
+                        }
+                    } else {
+                        historyText = "Đây là bài làm đầu tiên của em, khởi đầu như vậy là rất đáng ghi nhận!";
+                    }
+
+                    systemPrompt = `${expertPersona}\n\nNhiệm vụ: Đưa ra nhận xét tổng quan theo phương pháp 'Sandwich' (Khen - Góp ý - Động viên).
+                    1.  **Lời khen & Điểm mạnh:** Bắt đầu bằng việc khen ngợi điểm số (nếu tốt) hoặc sự nỗ lực. Cụ thể hóa bằng cách nhắc đến các chủ đề em làm tốt: "${strengthText}".
+                    2.  **So sánh lịch sử:** Lồng ghép nhận xét về sự tiến bộ/thụt lùi: "${historyText}".
+                    3.  **Điểm cần cải thiện:** Nhẹ nhàng chỉ ra các lỗ hổng kiến thức ở: ${topicsContent || 'các câu hỏi khó'}. Hãy so sánh: "Tuy em làm tốt phần [Điểm mạnh], nhưng phần [Điểm yếu] em cần lưu ý hơn chút nữa...".
+                    4.  **Hướng dẫn ôn tập chi tiết:** Liệt kê cụ thể tên bài học trong SGK Địa lý 12 mà em cần đọc lại.
+                    5.  **Kết thúc:** Một lời động viên ấm áp.`;
+                    
+                    userPrompt = `Em vừa làm xong bài, được ${score}/${total} điểm. Cô nhận xét giúp em với ạ.`;
+                }
+
+                const MAX_RETRIES = 3;
+                let lastError = null;
+
+                for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+                    const openRouterApiKey = getNextApiKey(openRouterKeys);
+                    if (!openRouterApiKey) {
+                        lastError = new Error("Chưa cấu hình OpenRouter API Key.");
+                        break; 
+                    }
+                    
+                    try {
+                        const response = await fetch(`https://openrouter.ai/api/v1/chat/completions`, {
+                            method: 'POST',
+                            headers: { 
+                                'Authorization': `Bearer ${openRouterApiKey}`, 'Content-Type': 'application/json',
+                                'HTTP-Referer': `https://${firebaseConfig.projectId}.web.app`, 'X-Title': 'AIGEO Student Review' 
+                            },
+                            body: JSON.stringify({ 
+                                model: "openai/gpt-oss-20b:free", 
+                                messages: [{ role: "system", content: systemPrompt }, { role: "user", content: userPrompt }] 
+                            })
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            const text = data.choices[0]?.message?.content;
+                            if (!text) throw new Error("Phản hồi từ AI không hợp lệ.");
+                            
+                            renderAiResponse(text);
+
+                            if (!isDetailed && resultId) {
+                                await updateDoc(doc(db, "submissions", resultId), {
+                                    aiFeedback: text
+                                });
+                            }
+                            return;
+                        }
+                        
+                        try {
+                            const errorData = await response.json();
+                            lastError = new Error(errorData.error.message || `Lỗi API: ${response.status}`);
+                        } catch (e) {
+                            lastError = new Error(`Lỗi API: ${response.status}`);
+                        }
+                        
+                        if (attempt < MAX_RETRIES) {
+                            await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+                        }
+
+                    } catch (error) {
+                        lastError = error;
+                        if (attempt < MAX_RETRIES) {
+                            await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+                        }
+                    }
+                }
+                
+                console.error("AI Feedback Error:", lastError);
+                aiFeedbackEl.innerHTML = `<div class="p-3 bg-red-50 text-red-700 rounded-lg"><p class="font-semibold">Lỗi tạo nhận xét AI</p><p class="text-sm">${lastError.message}</p></div>`;
+                aiRetryBtn.classList.remove('hidden');
+                aiDetailBtn.disabled = false;
+                aiDetailBtn.innerHTML = `<i data-feather="zoom-in" class="w-4 h-4 mr-2"></i>Xem phân tích chi tiết`;
+                feather.replace();
+            }
+            
+            function renderMathWithKaTeX(elem) {
+                if (window.renderMathInElement) { renderMathInElement(elem, { delimiters: [{left: "$$", right: "$$", display: true}, {left: "$", right: "$", display: false}] }); }
+            }
+
+            function launchConfetti() {
+                const canvas = document.getElementById('confetti-canvas');
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                let confetti = [];
+                const confettiCount = 200;
+                const colors = ['#0D9488', '#10B981', '#34D399', '#6EE7B7'];
+                for (let i = 0; i < confettiCount; i++) {
+                    confetti.push({
+                        x: Math.random() * canvas.width, y: Math.random() * canvas.height - canvas.height,
+                        r: Math.random() * 5 + 2, d: Math.random() * confettiCount,
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        tilt: Math.floor(Math.random() * 10) - 10,
+                        tiltAngleIncremental: (Math.random() * 0.07) + .05, tiltAngle: 0
+                    });
+                }
+                function draw() {
+                    if (!ctx) return;
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    confetti.forEach((c) => {
+                        ctx.beginPath(); ctx.lineWidth = c.r / 2; ctx.strokeStyle = c.color;
+                        ctx.moveTo(c.x + c.tilt, c.y); ctx.lineTo(c.x, c.y + c.tilt + c.r / 2);
+                        ctx.stroke();
+                    });
+                    update();
+                }
+                function update() {
+                    let remaining = 0;
+                    confetti.forEach((c, i) => {
+                        c.tiltAngle += c.tiltAngleIncremental;
+                        c.y += (Math.cos(c.d + i) + 2 + c.r / 2);
+                        c.x += Math.sin(c.d);
+                        c.tilt = (Math.sin(c.tiltAngle - (i / 3))) * 15;
+                        if (c.y < canvas.height) remaining++;
+                    });
+                    if (remaining > 0) requestAnimationFrame(draw);
+                }
+                requestAnimationFrame(draw);
+            }
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.body.style.opacity = '0';
+                    setTimeout(() => { window.location.href = this.href; }, 200);
+                });
+            });
+            document.body.style.transition = 'opacity 0.2s ease-in-out';
+            document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+            feather.replace();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tài liệu tham khảo - AIGEO</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    
+    <style>
+        :root {
+            --primary-teal: #0D9488;
+            --primary-emerald: #10B981;
+            --text-dark: #1E293B;
+            --text-light: #475569;
+        }
+        body { 
+            font-family: 'Be Vietnam Pro', sans-serif; 
+            background-color: #f1f5f9; /* Màu nền chung của dự án */
+        }
+        
+        /* Menu Ngang (Header) */
+        .glass-header { 
+            background-color: rgba(255, 255, 255, 0.65); 
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px); 
+            border-bottom: 1px solid rgba(0,0,0,0.05); 
+        }
+        .cta-button {
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.3);
+        }
+        .cta-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(13, 148, 136, 0.4);
+        }
+
+        /* Định dạng văn bản */
+        .gradient-text {
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Tùy chỉnh lớp .prose cho trang tài liệu */
+        .prose h1 {
+            color: var(--text-dark);
+            font-weight: 800;
+        }
+        .prose h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e2e8f0;
+            margin-top: 3.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+        .prose h2 svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.75rem;
+            color: var(--primary-teal);
+        }
+        .prose p {
+            line-height: 1.75;
+            color: #475569;
+            text-align: justify;
+            /* Style cho "hanging indent" (thụt lề dòng 2) */
+            text-indent: -2rem;
+            padding-left: 2rem;
+            margin-bottom: 1rem;
+        }
+        .prose a {
+            color: var(--primary-teal);
+            font-weight: 500;
+            text-decoration: none;
+            /* Giúp link không bị gạch chân vỡ dòng */
+            word-break: break-all;
+        }
+        .prose a:hover { text-decoration: underline; }
+        .prose i {
+            font-style: italic;
+        }
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="glass-header sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-2">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" alt="AIGEO Logo" class="h-8 w-auto">
+                <span class="text-2xl font-bold gradient-text">AIGEO</span>
+            </a>
+            
+            <div class="hidden md:flex items-center space-x-8 text-sm font-semibold">
+                <a href="index.html" class="text-slate-600 hover:text-teal-600 transition">Trang chủ</a>
+                <a href="huong-dan-su-dung.html" class="text-slate-600 hover:text-teal-600 transition">Hướng dẫn</a>
+                <a href="client/index.html" class="text-slate-600 hover:text-teal-600 transition">Dùng thử</a>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <a href="auth.html" class="hidden md:block cta-button text-white px-5 py-2.5 rounded-lg text-sm font-semibold">
+                    Đăng nhập
+                </a>
+                <button id="mobile-menu-button" class="md:hidden text-slate-800 p-2">
+                    <i data-feather="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </nav>
+
+        <div id="mobile-menu" class="hidden md:hidden px-6 pt-2 pb-4 space-y-2">
+            <a href="index.html" class="block py-2 text-slate-600 hover:text-teal-600 font-medium">Trang chủ</a>
+            <a href="huong-dan-su-dung.html" class="block py-2 text-slate-600 hover:text-teal-600 font-medium">Hướng dẫn</a>
+            <a href="client/index.html" class="block py-2 text-slate-600 hover:text-teal-600 font-medium">Dùng thử</a>
+            <a href="auth.html" class="block cta-button text-white text-center mt-2 px-5 py-2.5 rounded-lg font-semibold">Đăng nhập</a>
+        </div>
+    </header>
+
+    <main class="py-16">
+        <div class="max-w-4xl mx-auto bg-white p-8 md:p-12 rounded-xl shadow-lg">
+            <article class="prose max-w-none">
+                
+                <h1 class="gradient-text !mb-8 !text-center">TÀI LIỆU THAM KHẢO</h1>
+
+                <section id="section-vn">
+                    <h2><i data-feather="book"></i>Tài liệu Tiếng Việt</h2>
+                    
+                    <p>Bộ Giáo dục và Đào tạo. (2018). <i>Chương trình Giáo dục phổ thông môn Địa lí</i> [Ban hành kèm theo Thông tư số 32/2018/TT-BGDĐT ngày 26 tháng 12 năm 2018].</p>
+                    <p>Bộ Giáo dục và Đào tạo. (2025). <i>Sửa đổi, bổ sung một số nội dung trong Chương trình giáo dục phổ thông ban hành kèm theo Thông tư số 32/2018/TT-BGDĐT</i> [Thông tư số 17/2025/TT-BGDĐT ngày 12 tháng 9 năm 2025].</p>
+                    <p>Bùi Diên Thị, Nhân Thúy Thị, Đặng Huệ Thị Thu và Phùng Trang Thị Thu. (2022). Online learning experiences of secondary school students during COVID-19 – Dataset from Vietnam. <i>Data in Brief, 45</i>, 108662.</p>
+                    <p>Cao Thị Xuân Liên. (2023). Benefits and challenges of using LMS in blended learning: Views from EFL teachers and students at a Vietnamese public university. <i>International Journal of TESOL & Education, 3</i>(3), 1–20. <a href="https://doi.org/10.54855/ijte.23335" target="_blank" rel="noopener noreferrer">https://doi.org/10.54855/ijte.23335</a></p>
+                    <p>Đỗ Thị Quỳnh Như. (2023). Factors affecting the acceptance of e-learning by learners in the context of the COVID-19 pandemic: A hybrid ANN–SEM method. <i>Vietnam Journal of Education, 7</i>(1), 48–62. <a href="https://doi.org/10.52296/vje.2023.255" target="_blank" rel="noopener noreferrer">https://doi.org/10.52296/vje.2023.255</a></p>
+                    <p>Hoàng Thị Mai Anh. (2020). Ứng dụng công nghệ số trong dạy học Địa lí ở trường trung học phổ thông. <i>Tạp chí Khoa học Giáo dục, 66</i>(3), 95–100.</p>
+                    <p>Huỳnh Phẩm Dũng Phát. (2016). Ứng dụng công nghệ thông tin trong dạy học Địa lí ở trường trung học phổ thông. <i>Tạp chí Khoa học Trường Đại học Cần Thơ, 45</i>(2), 112–120.</p>
+                    <p>Lê Thông và Nguyễn Minh Tuệ (Đồng Chủ biên). (Năm xuất bản). <i>Ôn luyện trắc nghiệm thi tốt nghiệp Trung học Phổ thông môn Địa lí</i>. NXB Đại học Sư phạm.</p>
+                    <p>Liên Cao. (2021). The use of Learning Management System (LMS) in online learning at University of Foreign Languages, Hue University. <i>Tạp chí Khoa học Đại học Huế: Khoa học Xã hội và Nhân văn, 130</i>(6B). <a href="https://doi.org/10.26459/hueunijssh.v130i6B.6262" target="_blank" rel="noopener noreferrer">https://doi.org/10.26459/hueunijssh.v130i6B.6262</a></p>
+                    <p>Mai Quốc Khanh và Phan Trung Kiên. (2025). Students’ competency in using learning resources on the LMS at Hanoi National University of Education. <i>Journal of Science – Educational Science (HNUEJS)</i>. <a href="https://doi.org/10.18173/2354-1075.2025-0049" target="_blank" rel="noopener noreferrer">https://doi.org/10.18173/2354-1075.2025-0049</a></p>
+                    <p>Ngô Thị Ngọc Diệu, Mai Thị Hảo và Nguyễn Thanh Tùng. (2025). Overview of AI applications in the field of education in Vietnam. <i>TDMU Journal</i>.</p>
+                    <p>Nguyễn Công Khanh và Đào Thị Oanh. (2016). <i>Kiểm tra – Đánh giá trong giáo dục</i>. Nhà xuất bản Đại học Sư phạm.</p>
+                    <p>Nguyễn Đăng Khoa và Nguyễn Quốc Hưng. (2023). <i>Phát triển và ứng dụng trí tuệ nhân tạo trong giáo dục đại học Việt Nam: Cơ hội, thách thức và giải pháp</i> [Báo cáo khoa học]. Trường Đại học Kinh tế Quốc dân.</p>
+                    <p>Nguyễn Thị Quỳnh Trang và Phan Thị Thu. (2024). The role of AI in improving student learning outcomes: Evidence in Vietnam. <i>International Journal of Multidisciplinary Research and Analysis, 7</i>(6). <a href="https://doi.org/10.47191/ijmra/v7-i06-48" target="_blank" rel="noopener noreferrer">https://doi.org/10.47191/ijmra/v7-i06-48</a></p>
+                    <p>Phạm Thị Ngọc và Đặng Thị Xuân. (2025). An investigation into the application of artificial intelligence for language teaching and learning in Vietnam. <i>Vietnam Journal of Education, 9</i>(2), 265–283. <a href="https://doi.org/10.52296/vje.2025.557" target="_blank" rel="noopener noreferrer">https://doi.org/10.52296/vje.2025.557</a></p>
+                    <p>Phạm Văn Hùng. (2019). Vận dụng công nghệ thông tin trong kiểm tra, đánh giá kết quả học tập của học sinh trung học phổ thông. <i>Tạp chí Giáo dục, 454</i>(1), 60–63.</p>
+                    <p>Trần Quốc Trung. (2021). Hệ thống quản lí học tập trực tuyến trong giáo dục đại học. <i>Tạp chí Khoa học giáo dục Việt Nam, (Số đặc biệt tháng 01)</i>.</p>
+                    <p>Trần Thị Hường. (2021). Ứng dụng hệ thống quản lý học tập (LMS) trong giảng dạy và đánh giá kết quả học tập ở trường phổ thông. <i>Tạp chí Khoa học Giáo dục Việt Nam, 18</i>(2), 77–84.</p>
+                    <p>Trịnh Văn Biều. (2019). Một số vấn đề về đào tạo trực tuyến (E-learning). <i>Tạp chí Khoa học Trường Đại học Sư phạm TP. Hồ Chí Minh, 16</i>(4), 86–94.</p>
+                    <p>Trương Thị Thanh Hà, Nguyễn Thị Hồng Vân, Lê Thị Linh, và Trương Thị Ánh Nguyệt. (2021). Critical success factors for e-learning at university level: A case study from Da Nang University of Technology and Education. <i>Journal of Technical Education Science, 62</i>, 77–88. <a href="https://doi.org/10.54644/jte.62.2021.77" target="_blank" rel="noopener noreferrer">https://doi.org/10.54644/jte.62.2021.77</a></p>
+                </section>
+
+                <section id="section-en">
+                    <h2><i data-feather="globe"></i>Tài liệu Tiếng Anh</h2>
+                    
+                    <p>Alshammari, S., & Al-Emran, M. (2023). Trends in LMS research: A systematic review of adoption and pedagogical impact. <i>Education and Information Technologies, 28</i>(1), 111–129. <a href="https->://doi.org/10.1007/s10639-022-11110-8" target="_blank" rel="noopener noreferrer">https://doi.org/10.1007/s10639-022-11110-8</a></p>
+                    <p>Anderson, L. W., & Krathwohl, D. R. (Eds.). (2001). <i>A taxonomy for learning, teaching, and assessing: A revision of Bloom's taxonomy of educational objectives</i>. Longman.</p>
+                    <p>Bloom, B. S. (1956). <i>Taxonomy of educational objectives: The classification of educational goals</i>. David McKay Company.</p>
+                    <p>Brusilovsky, P., & Millán, E. (2007). User models for adaptive hypermedia and adaptive educational systems. In P. Brusilovsky, A. Kobsa, & W. Nejdl (Eds.), <i>The Adaptive Web: Methods and Strategies of Web Personalization</i> (pp. 3–53). Springer.</p>
+                    <p>Chen, L., & Li, X. (2024). Personalized learning paths through AI-based recommendation in LMS. <i>Computers in Human Behavior Reports, 9</i>, 100297. <a href="https://doi.org/10.1016/j.chbr.2023.100297" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.chbr.2023.100297</a></p>
+                    <p>Kim, S. J., & Park, H. (2023). AI-assisted formative assessment in digital learning environments. <i>British Journal of Educational Technology, 54</i>(6), 1410–1425. <a href="https://doi.org/10.1111/bjet.13328" target="_blank" rel="noopener noreferrer">https://doi.org/10.1111/bjet.13328</a></p>
+                    <p>Létourneau, K., Poirier, M., & Bélanger, C. (2024). A systematic review of AI-driven intelligent tutoring systems in K–12 education. <i>Frontiers in Education, 9</i>, 1342112. <a href="https://doi.org/10.3389/feduc.2024.1342112" target="_blank" rel="noopener noreferrer">https://doi.org/10.3389/feduc.2024.1342112</a></p>
+                    <p>Liao, C., & Yang, J. (2024). Adaptive learning systems using AI analytics: Trends and frameworks. <i>Educational Technology Research and Development, 72</i>(3), 187–205. <a href="https://doi.org/10.1007/s11423-023-10255-7" target="_blank" rel="noopener noreferrer">https://doi.org/10.1007/s11423-023-10255-7</a></p>
+                    <p>Liao, Y., & Zhang, H. (2023). Learning analytics and educational data mining in AI-enhanced environments. <i>Journal of Educational Computing Research, 61</i>(2), 207–230. <a href="https://doi.org/10.1177/07356331221109315" target="_blank" rel="noopener noreferrer">https://doi.org/10.1177/07356331221109315</a></p>
+                    <p>Martínez, M., & Rodríguez, A. (2022). Integrating artificial intelligence into LMS: Challenges and perspectives. <i>Computers & Education, 188</i>, 104594. <a href="https://doi.org/10.1016/j.compedu.2022.104594" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.compedu.2022.104594</a></p>
+                    <p>Martínez-García, A., García-Holgado, A., & García-Peñalvo, F. J. (2023). Evolution and current state of research into e-learning: A bibliometric analysis. <i>Heliyon, 9</i>(5), e15412. <a href="https://doi.org/10.1016/j.heliyon.2023.e15412" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.heliyon.2023.e15412</a></p>
+                    <p>Noesgaard, S. S., & Ørngreen, R. (2015). The effectiveness of e-learning: An explorative and integrative review. <i>International Review of Research in Open and Distributed Learning, 16</i>(1), 305–329. <a href="https://doi.org/10.19173/irrodl.v16i1.2197" target="_blank" rel="noopener noreferrer">https://doi.org/10.19173/irrodl.v16i1.2197</a></p>
+                    <p>Qiu, Z., & Xu, J. (2022). AI in education: From data to decision – A conceptual review. <i>Computers & Education: Artificial Intelligence, 3</i>, 100053. <a href="https://doi.org/10.1016/j.caeai.2022.100053" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.caeai.2022.100053</a></p>
+                    <p>U.S. Department of Education, Office of Educational Technology. (2023). <i>Artificial intelligence and the future of teaching and learning: Insights and recommendations</i>. U.S. Department of Education.</p>
+                    <p>Wang, S., & Zhao, Y. (2024). Artificial intelligence in education: A systematic literature review. <i>Expert Systems with Applications, 243</i>, 122907. <a href="https://doi.org/10.1016/j.eswa.2024.122907" target="_blank" rel="noopener noreferrer">https://doi.org/10.1016/j.eswa.2024.122907</a></p>
+                </section>
+                </article>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            feather.replace();
+
+            // --- Menu Mobile ---
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenuButton) {
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                    const icon = mobileMenuButton.querySelector('i');
+                    icon.setAttribute('data-feather', mobileMenu.classList.contains('hidden') ? 'menu' : 'x');
+                    feather.replace();
+                });
+            }
+        });
+    </script>
+</body>
+</html>

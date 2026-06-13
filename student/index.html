@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIGEO - Bảng điều khiển</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #0D9488;
+            --primary-light: #F0FDFA;
+            --secondary: #10B981;
+            --text-main: #1E293B;
+            --text-light: #64748B;
+            --bg-body: #F8FAFC;
+            --primary-gradient: linear-gradient(135deg, #0D9488 0%, #10B981 100%);
+        }
+
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body); color: var(--text-main); overflow: hidden; }
+
+        /* --- SIDEBAR --- */
+        .sidebar { width: 280px; background: white; border-right: 1px solid #E2E8F0; height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; }
+        .nav-group-title { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #94A3B8; padding: 1.5rem 1.5rem 0.5rem; }
+        .sidebar-link { display: flex; align-items: center; padding: 0.8rem 1.5rem; color: var(--text-light); font-weight: 600; font-size: 0.9rem; transition: 0.3s; gap: 12px; }
+        .sidebar-link i { width: 18px; height: 18px; }
+        .sidebar-link:hover { color: var(--primary); background: var(--primary-light); }
+        .sidebar-link.active { background: var(--primary-gradient); color: white; border-radius: 12px; margin: 0 12px; box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.2); }
+
+        /* --- DASHBOARD CARDS --- */
+        .bento-card { background: white; border-radius: 24px; border: 1px solid #E2E8F0; transition: 0.3s; }
+        .bento-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px -8px rgba(0,0,0,0.05); border-color: var(--primary); }
+        
+        .hero-banner { background: var(--primary-gradient); border-radius: 32px; position: relative; overflow: hidden; color: white; }
+        .hero-banner::after { content: ''; position: absolute; right: -20px; bottom: -20px; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%; }
+
+        .stat-badge { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #0D9488; border-radius: 10px; }
+
+        .anime-title .letter { display: inline-block; opacity: 0; }
+        .skeleton { background: #E2E8F0; animation: pulse 2s infinite; border-radius: 8px; }
+        @keyframes pulse { 50% { opacity: .5; } }
+        
+        .modal-backdrop { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); }
+        .toast { transition: 0.3s; transform: translateY(100%); opacity: 0; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+    </style>
+</head>
+<body class="flex h-screen">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="p-8">
+            <a href="/index.html" class="flex items-center gap-3">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" class="h-9 w-auto" alt="Logo">
+                <span class="text-xl font-black text-teal-600 tracking-tight">AIGEO</span>
+            </a>
+        </div>
+
+        <nav class="flex-grow overflow-y-auto">
+            <a href="index.html" class="sidebar-link active"><i data-feather="grid"></i> Tổng quan</a>
+            
+            <div class="nav-group-title">Quản lý học tập</div>
+            <a href="classrooms.html" class="sidebar-link"><i data-feather="book-open"></i> Lớp học của tôi</a>
+            <a href="practice-hub.html" class="sidebar-link"><i data-feather="zap"></i> Luyện tập</a>
+            <a href="stats.html" class="sidebar-link"><i data-feather="bar-chart-2"></i> Thống kê</a>
+
+            <div class="nav-group-title">Khám phá</div>
+            <a href="chat-bot.html" class="sidebar-link"><i data-feather="message-circle"></i> Chatbot AI</a>
+
+            <div class="nav-group-title">Cá nhân</div>
+            <a href="account.html" class="sidebar-link"><i data-feather="user"></i> Tài khoản</a>
+        </nav>
+
+        <div class="p-4 border-t space-y-2">
+            <button id="feedback-btn" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-50 rounded-xl transition">
+                <i data-feather="message-square" class="w-4"></i> Góp ý
+            </button>
+            <button id="view-feedback-btn" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-50 rounded-xl transition">
+                <i data-feather="inbox" class="w-4"></i> Lịch sử góp ý
+            </button>
+            <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-red-500 hover:bg-red-50 rounded-xl transition">
+                <i data-feather="log-out" class="w-4"></i> Đăng xuất
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <header class="h-16 bg-white border-b flex items-center justify-between px-8 shrink-0">
+            <h2 id="welcome-header" class="text-sm font-bold text-slate-400 uppercase tracking-widest">Đang tải dữ liệu...</h2>
+            <div class="flex items-center gap-4">
+                <div class="text-right hidden sm:block">
+                    <p id="user-name" class="text-sm font-black text-slate-800 leading-none">Đang tải...</p>
+                    <span class="text-[10px] font-bold text-teal-600 uppercase">Student Account</span>
+                </div>
+                <img id="user-avatar" class="h-10 w-10 rounded-xl border-2 border-slate-100 object-cover shadow-sm">
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-8">
+            <div class="max-w-7xl mx-auto space-y-8">
+                
+                <!-- Stat Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bento-card p-6 flex items-center gap-4">
+                        <div class="stat-badge bg-teal-50 text-teal-600"><i data-feather="award" class="w-5"></i></div>
+                        <div><p class="text-[10px] font-black text-slate-400 uppercase">Điểm TB</p><h3 id="avg-score" class="text-xl font-black">...</h3></div>
+                    </div>
+                    <div class="bento-card p-6 flex items-center gap-4">
+                        <div class="stat-badge bg-blue-50 text-blue-600"><i data-feather="check-circle" class="w-5"></i></div>
+                        <div><p class="text-[10px] font-black text-slate-400 uppercase">Đã hoàn thành</p><h3 id="tests-taken" class="text-xl font-black">...</h3></div>
+                    </div>
+                    <div class="bento-card p-6 flex items-center gap-4">
+                        <div class="stat-badge bg-emerald-50 text-emerald-600"><i data-feather="zap" class="w-5"></i></div>
+                        <div><p class="text-[10px] font-black text-slate-400 uppercase">Năng lực</p><h3 class="text-xl font-black">Tốt</h3></div>
+                    </div>
+                    <div class="bento-card p-6 flex items-center gap-4">
+                        <div class="stat-badge bg-orange-50 text-orange-600"><i data-feather="trending-up" class="w-5"></i></div>
+                        <div><p class="text-[10px] font-black text-slate-400 uppercase">Tiến độ</p><h3 class="text-xl font-black">--</h3></div>
+                    </div>
+                </div>
+
+                <!-- Banner & Assignments -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <div class="lg:col-span-8 hero-banner p-10 flex flex-col justify-center">
+                        <h1 id="welcome-message" class="text-4xl font-black mb-4 anime-title">Chào mừng trở lại!</h1>
+                        <p class="text-teal-50 font-medium max-w-md mb-8 opacity-90">AI Geo đã sẵn sàng đồng hành cùng bạn chinh phục kiến thức Địa lý.</p>
+                        <a href="practice-hub.html" class="bg-white text-teal-600 px-8 py-3 rounded-2xl font-black text-sm w-fit hover:scale-105 transition shadow-lg">Luyện tập ngay <i class="fas fa-arrow-right ml-2"></i></a>
+                    </div>
+
+                    <div class="lg:col-span-4 bento-card p-8">
+                        <h3 class="font-black text-slate-800 mb-6 flex items-center gap-2"><i data-feather="clock" class="w-4 text-teal-600"></i> Đề thi mới nhất</h3>
+                        <div id="assignments-container" class="space-y-4">
+                            <div class="skeleton h-12 w-full"></div>
+                            <div class="skeleton h-12 w-full"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Classrooms -->
+                <div class="space-y-6">
+                    <h3 class="text-xl font-black text-slate-800 flex items-center gap-3"><i data-feather="home" class="text-teal-600"></i> Lớp học của tôi</h3>
+                    <div id="classrooms-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="skeleton h-32 w-full rounded-[24px]"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Feedback Modal -->
+    <div id="feedback-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop p-4">
+        <div class="bg-white rounded-3xl p-8 w-full max-w-lg shadow-2xl">
+            <h2 class="text-2xl font-black text-slate-800 mb-2">Gửi góp ý</h2>
+            <p class="text-sm text-slate-500 mb-6">Ý kiến của bạn giúp AIGEO hoàn thiện hơn mỗi ngày.</p>
+            <form id="feedback-form">
+                <textarea id="feedback-content" rows="5" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-teal-500 outline-none transition font-medium" placeholder="Bạn muốn chúng tôi cải thiện điều gì?" required></textarea>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" id="feedback-cancel-btn" class="px-6 py-2.5 font-bold text-slate-400">Hủy</button>
+                    <button type="submit" id="feedback-submit-btn" class="bg-teal-600 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-teal-600/20">Gửi ngay</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- History Feedback Modal -->
+    <div id="view-feedback-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop p-4">
+        <div class="bg-white rounded-3xl p-8 w-full max-w-2xl shadow-2xl max-h-[80vh] flex flex-col">
+            <h2 class="text-2xl font-black text-slate-800 mb-6">Lịch sử góp ý</h2>
+            <div id="feedback-list-container" class="flex-grow overflow-y-auto space-y-4 pr-2"></div>
+            <button id="view-feedback-close-btn" class="mt-6 w-full py-3 font-bold bg-slate-100 text-slate-600 rounded-xl">Đóng</button>
+        </div>
+    </div>
+
+    <div id="toast-container" class="fixed bottom-10 right-10 z-[100] flex flex-col gap-3"></div>
+
+    <!-- Logic JS -->
+    <script src="../firebase-config.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, getDocs, query, where, onSnapshot, addDoc, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+
+            const welcomeHeader = document.getElementById('welcome-header');
+            const assignmentsContainer = document.getElementById('assignments-container');
+            const classroomsContainer = document.getElementById('classrooms-container');
+            const feedbackModal = document.getElementById('feedback-modal');
+            const feedbackForm = document.getElementById('feedback-form');
+            const toastContainer = document.getElementById('toast-container');
+            let currentUser = null;
+
+            // Helper Toast
+            function showToast(msg, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = `toast show ${type === 'success' ? 'bg-slate-900' : 'bg-red-500'} text-white px-6 py-3 rounded-2xl shadow-2xl font-bold text-sm`;
+                toast.textContent = msg;
+                toastContainer.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            }
+
+            // --- AUTH LOGIC ---
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    currentUser = user;
+                    const docSnap = await getDoc(doc(db, "users", user.uid));
+                    if (docSnap.exists() && docSnap.data().role === 'student') {
+                        const userData = docSnap.data();
+                        document.getElementById('user-name').textContent = userData.name;
+                        welcomeHeader.textContent = `Xin chào, ${userData.name.split(' ').pop()}!`;
+                        document.getElementById('welcome-message').textContent = `Chào mừng trở lại, ${userData.name.split(' ').pop()}!`;
+                        document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=0D9488&color=fff&bold=true`;
+                        
+                        listenForData();
+                        setupFeedbackLogic();
+                        animateWelcome();
+                    } else { window.location.href = '../auth.html'; }
+                } else { window.location.href = '../auth.html'; }
+            });
+
+            // --- DATA LISTENER ---
+            function listenForData() {
+                const subQuery = query(collection(db, "submissions"), where("studentId", "==", currentUser.uid));
+                onSnapshot(subQuery, (snap) => {
+                    const subs = snap.docs.map(d => d.data());
+                    if (subs.length > 0) {
+                        const avg = subs.reduce((sum, r) => sum + (r.score / r.totalQuestions), 0);
+                        document.getElementById('avg-score').textContent = ((avg / subs.length) * 10).toFixed(1);
+                        document.getElementById('tests-taken').textContent = subs.length;
+                    } else {
+                        document.getElementById('avg-score').textContent = "0.0";
+                        document.getElementById('tests-taken').textContent = "0";
+                    }
+                    loadClassroomsAndAssignments(subs);
+                });
+            }
+
+            async function loadClassroomsAndAssignments(subs) {
+                try {
+                    const q = query(collection(db, 'classrooms'), where('students', 'array-contains', currentUser.uid));
+                    const snap = await getDocs(q);
+                    const classrooms = snap.docs.map(d => ({id: d.id, ...d.data()}));
+                    
+                    // 1. Render Classrooms (Lớp học)
+                    classroomsContainer.innerHTML = classrooms.map(c => `
+                        <div class="bento-card p-6 flex flex-col justify-between min-h-[140px]">
+                            <div>
+                                <h4 class="font-black text-slate-800 truncate">${c.className || 'Lớp học không tên'}</h4>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase mt-1">GV: ${c.teacherName || 'Hệ thống'}</p>
+                            </div>
+                            <a href="classroom-view.html?classId=${c.id}" class="mt-4 text-xs font-black text-teal-600 hover:tracking-widest transition-all">VÀO LỚP →</a>
+                        </div>
+                    `).join('');
+
+                    // 2. Xử lý lấy thông tin Đề thi (Assignments)
+                    let allAss = [];
+                    classrooms.forEach(c => {
+                        if (c.assignments) {
+                            c.assignments.forEach(a => {
+                                allAss.push({ ...a, cName: c.className, cId: c.id });
+                            });
+                        }
+                    });
+
+                    if (allAss.length === 0) {
+                        assignmentsContainer.innerHTML = '<div class="py-10 text-center font-bold text-slate-300 text-xs uppercase tracking-widest">Không có bài tập mới</div>';
+                        return;
+                    }
+
+                    // Lấy danh sách testId để truy vấn tên đề
+                    const testIds = [...new Set(allAss.map(a => a.testId))];
+                    
+                    // Truy vấn thông tin chi tiết của các đề thi để lấy tên (Tránh lỗi undefined)
+                    const testsSnap = await getDocs(query(collection(db, "tests"), where("__name__", "in", testIds)));
+                    const testsData = {};
+                    testsSnap.forEach(doc => {
+                        testsData[doc.id] = doc.data().name; // Lưu tên đề vào object với key là id
+                    });
+
+                    // 3. Render Assignments (Đề thi mới)
+                    assignmentsContainer.innerHTML = allAss.slice(0, 4).map(a => {
+                        const isDone = subs.some(s => s.testId === a.testId);
+                        // Lấy tên đề từ testsData, nếu không có thì lấy a.testName, cuối cùng là fallback
+                        const finalTestName = testsData[a.testId] || a.testName || "Đề thi chưa đặt tên";
+                        
+                        return `
+                            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-transparent hover:border-teal-100 transition">
+                                <div class="flex items-center gap-3 overflow-hidden">
+                                    <div class="shrink-0 w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm"><i data-feather="file-text" class="w-4 text-teal-600"></i></div>
+                                    <div class="overflow-hidden">
+                                        <p class="text-xs font-black text-slate-800 truncate">${finalTestName}</p>
+                                        <p class="text-[10px] font-bold text-slate-400 truncate uppercase">${a.cName}</p>
+                                    </div>
+                                </div>
+                                <a href="test.html?testId=${a.testId}&classId=${a.cId}" class="shrink-0 ml-2 px-4 py-2 text-[10px] font-black rounded-lg ${isDone ? 'bg-slate-200 text-slate-500' : 'bg-teal-600 text-white shadow-lg shadow-teal-600/20'}">
+                                    ${isDone ? 'LÀM LẠI' : 'VÀO THI'}
+                                </a>
+                            </div>
+                        `;
+                    }).join('');
+                    
+                    feather.replace();
+
+                } catch (e) { 
+                    console.error("Lỗi tải dữ liệu:", e);
+                    assignmentsContainer.innerHTML = '<p class="text-red-500 text-xs text-center">Lỗi tải đề thi</p>';
+                }
+            }
+
+            // --- FEEDBACK LOGIC ---
+            function setupFeedbackLogic() {
+                document.getElementById('feedback-btn').onclick = () => feedbackModal.classList.replace('hidden', 'flex');
+                document.getElementById('feedback-cancel-btn').onclick = () => feedbackModal.classList.replace('flex', 'hidden');
+                
+                feedbackForm.onsubmit = async (e) => {
+                    e.preventDefault();
+                    const btn = document.getElementById('feedback-submit-btn');
+                    btn.disabled = true; btn.textContent = "Đang gửi...";
+                    try {
+                        await addDoc(collection(db, "feedback"), {
+                            content: document.getElementById('feedback-content').value,
+                            userId: currentUser.uid, userName: currentUser.displayName || "Học sinh",
+                            createdAt: serverTimestamp(), status: 'new'
+                        });
+                        feedbackModal.classList.replace('flex', 'hidden');
+                        feedbackForm.reset();
+                        showToast("Gửi góp ý thành công!");
+                    } catch (e) { showToast("Lỗi gửi góp ý", "error"); }
+                    finally { btn.disabled = false; btn.textContent = "Gửi ngay"; }
+                };
+
+                document.getElementById('view-feedback-btn').onclick = loadFeedbackHistory;
+                document.getElementById('view-feedback-close-btn').onclick = () => document.getElementById('view-feedback-modal').classList.replace('flex', 'hidden');
+            }
+
+            async function loadFeedbackHistory() {
+                const container = document.getElementById('feedback-list-container');
+                container.innerHTML = '<div class="text-center py-10 animate-pulse font-bold text-slate-300">Đang tải...</div>';
+                document.getElementById('view-feedback-modal').classList.replace('hidden', 'flex');
+                try {
+                    const q = query(collection(db, "feedback"), where("userId", "==", currentUser.uid), orderBy("createdAt", "desc"));
+                    const snap = await getDocs(q);
+                    if (snap.empty) container.innerHTML = '<p class="text-center py-10 font-bold text-slate-400">Chưa có góp ý nào.</p>';
+                    else {
+                        container.innerHTML = snap.docs.map(doc => {
+                            const f = doc.data();
+                            return `
+                                <div class="p-5 bg-slate-50 rounded-2xl border border-slate-100">
+                                    <div class="flex justify-between mb-2"><span class="text-[10px] font-black text-slate-400 uppercase">${f.createdAt?.toDate().toLocaleDateString('vi-VN')}</span></div>
+                                    <p class="text-sm font-bold text-slate-700">${f.content}</p>
+                                    ${f.reply ? `<div class="mt-3 p-3 bg-teal-50 border-l-4 border-teal-500 rounded-r-xl"><p class="text-[10px] font-black text-teal-600 mb-1 uppercase">Admin phản hồi:</p><p class="text-sm text-teal-800">${f.reply}</p></div>` : ''}
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                } catch (e) { container.innerHTML = '<p class="text-red-500 text-center font-bold">Lỗi tải dữ liệu</p>'; }
+            }
+
+            function animateWelcome() {
+                const msg = document.getElementById('welcome-message');
+                msg.innerHTML = msg.textContent.replace(/(\S)/g, "<span class='letter'>$&</span>");
+                anime({ targets: '#welcome-message .letter', translateY: [20, 0], opacity: [0, 1], delay: anime.stagger(30), easing: 'easeOutExpo' });
+            }
+
+            document.getElementById('logout-btn').onclick = () => signOut(auth);
+            feather.replace();
+        });
+    </script>
+</body>
+</html>

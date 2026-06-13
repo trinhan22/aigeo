@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIGEO - Thống kê học tập</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --primary: #0D9488;
+            --primary-light: #F0FDFA;
+            --secondary: #10B981;
+            --text-main: #1E293B;
+            --text-light: #64748B;
+            --bg-body: #F8FAFC;
+            --primary-gradient: linear-gradient(135deg, #0D9488 0%, #10B981 100%);
+        }
+
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body); color: var(--text-main); overflow: hidden; }
+
+        /* --- SIDEBAR STYLE (Đồng bộ) --- */
+        .sidebar { width: 280px; background: white; border-right: 1px solid #E2E8F0; height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; }
+        .nav-group-title { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #94A3B8; padding: 1.5rem 1.5rem 0.5rem; }
+        .sidebar-link { display: flex; align-items: center; padding: 0.8rem 1.5rem; color: var(--text-light); font-weight: 600; font-size: 0.9rem; transition: 0.3s; gap: 12px; }
+        .sidebar-link i { width: 18px; height: 18px; }
+        .sidebar-link:hover { color: var(--primary); background: var(--primary-light); }
+        .sidebar-link.active { background: var(--primary-gradient); color: white; border-radius: 12px; margin: 0 12px; box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.2); }
+
+        /* --- DASHBOARD CARDS --- */
+        .bento-card { background: white; border-radius: 32px; border: 1px solid #E2E8F0; padding: 24px; transition: 0.3s; }
+        .bento-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05); border-color: var(--primary); }
+        
+        .stat-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+
+        /* --- TABLE STYLE --- */
+        .modern-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .modern-table th { padding: 16px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #94A3B8; border-bottom: 1px solid #F1F5F9; }
+        .modern-table td { padding: 16px; vertical-align: middle; border-bottom: 1px solid #F1F5F9; }
+        .modern-table tr:last-child td { border-bottom: none; }
+
+        .score-badge { font-weight: 800; padding: 4px 12px; border-radius: 100px; font-size: 0.75rem; }
+        .score-good { background: #DCFCE7; color: #166534; }
+        .score-avg { background: #FEF9C3; color: #854D0E; }
+        .score-bad { background: #FEE2E2; color: #991B1B; }
+
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #0D9488; border-radius: 10px; }
+
+        .skeleton { background: #E2E8F0; animation: pulse 2s infinite; border-radius: 8px; }
+        @keyframes pulse { 50% { opacity: .5; } }
+    </style>
+</head>
+<body class="flex h-screen">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="p-8">
+            <a href="/index.html" class="flex items-center gap-3">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" class="h-9 w-auto">
+                <span class="text-xl font-black text-teal-600 tracking-tight">AIGEO</span>
+            </a>
+        </div>
+        <nav class="flex-grow overflow-y-auto">
+            <a href="index.html" class="sidebar-link"><i data-feather="grid"></i> Tổng quan</a>
+            <div class="nav-group-title">Quản lý học tập</div>
+            <a href="classrooms.html" class="sidebar-link"><i data-feather="book-open"></i> Lớp học của tôi</a>
+            <a href="practice-hub.html" class="sidebar-link"><i data-feather="zap"></i> Luyện tập</a>
+            <a href="stats.html" class="sidebar-link active"><i data-feather="bar-chart-2"></i> Thống kê</a>
+            <div class="nav-group-title">Khám phá</div>
+            <a href="chat-bot.html" class="sidebar-link"><i data-feather="message-circle"></i> Chatbot AI</a>
+            <div class="nav-group-title">Cá nhân</div>
+            <a href="account.html" class="sidebar-link"><i data-feather="user"></i> Tài khoản</a>
+        </nav>
+        <div class="p-4 border-t">
+            <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 rounded-xl transition">
+                <i data-feather="log-out"></i> Đăng xuất
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <header class="h-16 bg-white border-b flex items-center justify-between px-8 shrink-0">
+            <div class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                <a href="index.html" class="hover:text-teal-600 transition">Dashboard</a>
+                <span>/</span>
+                <span class="text-slate-800">Statistical</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="text-right hidden sm:block">
+                    <p id="user-name" class="text-sm font-black text-slate-800 leading-none">Đang tải...</p>
+                    <span class="text-[10px] font-bold text-teal-600 uppercase tracking-tighter">Student Account</span>
+                </div>
+                <img id="user-avatar" class="h-10 w-10 rounded-xl border-2 border-slate-100 object-cover shadow-sm">
+            </div>
+        </header>
+
+        <!-- Main Content Scroll -->
+        <div class="flex-1 overflow-y-auto bg-slate-50/50 p-8">
+            <div class="max-w-6xl mx-auto space-y-8">
+                
+                <!-- Title -->
+                <div>
+                    <h1 class="text-3xl font-black text-slate-900 tracking-tight">Thống kê học tập</h1>
+                    <p class="text-slate-500 font-medium">Theo dõi hành trình chinh phục tri thức Địa lý của bạn.</p>
+                </div>
+
+                <!-- Stats Overview Bento -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bento-card">
+                        <div class="stat-icon bg-teal-50 text-teal-600"><i data-feather="award" class="w-5"></i></div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Điểm trung bình</p>
+                        <h3 id="stat-avg-score" class="text-3xl font-black text-slate-800">...</h3>
+                    </div>
+                    <div class="bento-card">
+                        <div class="stat-icon bg-blue-50 text-blue-600"><i data-feather="file-text" class="w-5"></i></div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Số bài đã làm</p>
+                        <h3 id="stat-tests-taken" class="text-3xl font-black text-slate-800">...</h3>
+                    </div>
+                    <div class="bento-card">
+                        <div class="stat-icon bg-emerald-50 text-emerald-600"><i data-feather="trending-up" class="w-5"></i></div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Môn tốt nhất</p>
+                        <h3 id="stat-best-subject" class="text-3xl font-black text-slate-800 truncate">...</h3>
+                    </div>
+                    <div class="bento-card">
+                        <div class="stat-icon bg-red-50 text-red-600"><i data-feather="alert-circle" class="w-5"></i></div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Cần cải thiện</p>
+                        <h3 id="stat-worst-subject" class="text-3xl font-black text-slate-800 truncate">...</h3>
+                    </div>
+                </div>
+
+                <!-- Chart Card -->
+                <div class="bento-card">
+                    <h2 class="text-lg font-black text-slate-800 mb-6 flex items-center gap-2">
+                        <i class="fas fa-chart-line text-teal-600"></i> Biểu đồ tiến độ (10 bài gần nhất)
+                    </h2>
+                    <div id="chart-container" class="relative h-[400px]">
+                        <canvas id="progress-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- History Table Card -->
+                <div class="bento-card overflow-hidden !p-0">
+                    <div class="p-8 border-b border-slate-50">
+                        <h2 class="text-lg font-black text-slate-800">Lịch sử làm bài</h2>
+                    </div>
+                    <div id="history-table-container" class="overflow-x-auto">
+                        <div class="p-10 text-center"><div class="skeleton h-40 w-full"></div></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+    
+    <script src="../firebase-config.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, getDocs, query, onSnapshot, orderBy, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+
+            const userNameEl = document.getElementById('user-name');
+            const userAvatarEl = document.getElementById('user-avatar');
+            const historyTableContainer = document.getElementById('history-table-container');
+            const statAvgScore = document.getElementById('stat-avg-score');
+            const statTestsTaken = document.getElementById('stat-tests-taken');
+            const statBestSubject = document.getElementById('stat-best-subject');
+            const statWorstSubject = document.getElementById('stat-worst-subject');
+            
+            let currentUser = null;
+            let progressChart = null;
+
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    currentUser = user;
+                    const docSnap = await getDoc(doc(db, "users", user.uid));
+                    if (docSnap.exists() && docSnap.data().role === 'student') {
+                        const userData = docSnap.data();
+                        userNameEl.textContent = userData.name;
+                        userAvatarEl.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=0D9488&color=fff&bold=true`;
+                        listenForResults();
+                    } else { window.location.href = '../auth.html'; }
+                } else { window.location.href = '../auth.html'; }
+            });
+
+            // Override hàm renderHistoryTable để đẹp hơn
+            window.renderHistoryTable = (results, subjects) => {
+                let tableHTML = `
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Tên bài làm</th>
+                                <th>Môn học</th>
+                                <th class="text-center">Điểm</th>
+                                <th class="text-center">Ngày làm</th>
+                                <th class="text-right">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+                
+                results.forEach(result => {
+                    const subject = subjects.find(s => s.id === result.subjectId);
+                    const percentage = (result.score / result.totalQuestions) * 100;
+                    let scoreClass = percentage >= 80 ? 'score-good' : (percentage < 50 ? 'score-bad' : 'score-avg');
+                    const date = result.completedAt.toDate().toLocaleDateString('vi-VN');
+
+                    tableHTML += `
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="font-bold text-slate-800">${result.testName}</td>
+                            <td class="text-slate-500 font-medium">${subject?.name || 'N/A'}</td>
+                            <td class="text-center"><span class="score-badge ${scoreClass}">${result.score}/${result.totalQuestions}</span></td>
+                            <td class="text-center text-slate-400 font-bold text-xs">${date}</td>
+                            <td class="text-right">
+                                <a href="result.html" data-result-id="${result.id}" class="view-result-btn text-teal-600 font-black text-xs hover:tracking-widest transition-all">XEM LẠI →</a>
+                            </td>
+                        </tr>`;
+                });
+                tableHTML += `</tbody></table>`;
+                historyTableContainer.innerHTML = tableHTML;
+            }
+
+            async function listenForResults() {
+                try {
+                    const resultsQuery = query(
+                        collection(db, "submissions"), 
+                        where("studentId", "==", currentUser.uid),
+                        orderBy("completedAt", "desc")
+                    );
+                    
+                    const subjectsSnap = await getDocs(collection(db, "subjects"));
+                    const allSubjects = subjectsSnap.docs.map(d => ({id: d.id, ...d.data()}));
+
+                    onSnapshot(resultsQuery, (resultsSnapshot) => {
+                        const results = resultsSnapshot.docs.map(d => ({id: d.id, ...d.data()}));
+                        
+                        if(results.length === 0) {
+                            chartContainer.innerHTML = `<div class="flex items-center justify-center h-full text-slate-500"><p>Chưa có dữ liệu để vẽ biểu đồ.</p></div>`;
+                            historyTableContainer.innerHTML = `<div class="p-6 text-center"><p class="text-slate-500">Bạn chưa hoàn thành bài kiểm tra nào.</p></div>`;
+                            statAvgScore.textContent = 'N/A';
+                            statTestsTaken.textContent = '0';
+                            statBestSubject.textContent = 'N/A';
+                            statWorstSubject.textContent = 'N/A';
+                            return;
+                        }
+
+                        renderProgressChart(results.slice(0, 10).reverse());
+                        renderSummaryStats(results, allSubjects);
+                        renderHistoryTable(results, allSubjects);
+                    });
+                } catch (error) {
+                    console.error("Error loading stats data:", error);
+                    if (error.code === 'failed-precondition') {
+                         chartContainer.innerHTML = `<div class="p-4 bg-red-100 text-red-700 rounded-lg">Lỗi: Cần tạo chỉ mục (index) trong Firestore. Vui lòng kiểm tra console (F12) để xem link tạo chỉ mục.</div>`;
+                    }
+                }
+            }
+
+            function renderProgressChart(results) {
+                const ctx = document.getElementById('progress-chart').getContext('2d');
+                const labels = results.map((r, i) => {
+                    const date = r.completedAt?.toDate();
+                    return date ? date.toLocaleDateString('vi-VN') : `Lần ${i+1}`;
+                });
+                const scores = results.map(r => (r.score / r.totalQuestions) * 10);
+
+                if (progressChart) {
+                    progressChart.destroy();
+                }
+
+                progressChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Điểm (thang 10)',
+                            data: scores,
+                            borderColor: '#0D9488',
+                            backgroundColor: 'rgba(13, 148, 136, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#0D9488',
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true, max: 10, grid: { color: '#e2e8f0' } },
+                            x: { grid: { display: false } }
+                        },
+                         plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    title: function(context) {
+                                        const result = results[context[0].dataIndex];
+                                        return result.testName || `Bài làm ngày ${context[0].label}`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function renderSummaryStats(results, subjects) {
+                statTestsTaken.textContent = results.length;
+                
+                const totalScore = results.reduce((sum, r) => sum + (r.score / r.totalQuestions), 0);
+                const avg = (totalScore / results.length) * 10;
+                statAvgScore.textContent = avg.toFixed(1);
+
+                const statsBySubject = {};
+                results.forEach(result => {
+                    const subjectId = result.subjectId;
+                    if(subjectId) {
+                         if (!statsBySubject[subjectId]) statsBySubject[subjectId] = { scores: [], count: 0 };
+                        statsBySubject[subjectId].scores.push(result.score / result.totalQuestions);
+                        statsBySubject[subjectId].count++;
+                    }
+                });
+
+                let bestSubject = { name: 'N/A', score: -1 };
+                let worstSubject = { name: 'N/A', score: 101 };
+
+                for(const subjectId in statsBySubject) {
+                    const subject = subjects.find(s => s.id === subjectId);
+                    if (subject) {
+                        const avgScore = statsBySubject[subjectId].scores.reduce((a, b) => a + b, 0) / statsBySubject[subjectId].count * 100;
+                        if(avgScore > bestSubject.score) bestSubject = { name: subject.name, score: avgScore };
+                        if(avgScore < worstSubject.score) worstSubject = { name: subject.name, score: avgScore };
+                    }
+                }
+                
+                statBestSubject.textContent = bestSubject.name;
+                statWorstSubject.textContent = worstSubject.name;
+            }
+            
+            function renderHistoryTable(results, subjects) {
+                let tableHTML = `<table class="w-full text-sm text-left text-slate-500">
+                    <thead class="text-xs text-slate-700 uppercase bg-slate-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">Tên bài làm</th>
+                            <th scope="col" class="px-6 py-3">Môn học</th>
+                            <th scope="col" class="px-6 py-3 text-center">Điểm</th>
+                            <th scope="col" class="px-6 py-3 text-center">Ngày làm</th>
+                            <th scope="col" class="px-6 py-3 text-right"></th>
+                        </tr>
+                    </thead><tbody>`;
+                
+                results.forEach(result => {
+                    const subject = subjects.find(s => s.id === result.subjectId);
+                    const score = result.score;
+                    const total = result.totalQuestions;
+                    const percentage = (score / total) * 100;
+                    let scoreClass = percentage >= 80 ? 'score-good' : (percentage < 50 ? 'score-bad' : 'score-avg');
+                    const date = result.completedAt.toDate().toLocaleDateString('vi-VN');
+
+                    tableHTML += `
+                        <tr class="bg-white border-b hover:bg-slate-50">
+                            <th scope="row" class="px-6 py-4 font-medium text-slate-900">${result.testName}</th>
+                            <td class="px-6 py-4">${subject?.name || 'N/A'}</td>
+                            <td class="px-6 py-4 text-center"><span class="score ${scoreClass}">${score}/${total}</span></td>
+                            <td class="px-6 py-4 text-center">${date}</td>
+                            <td class="px-6 py-4 text-right">
+                                <a href="result.html" data-result-id="${result.id}" class="view-result-btn font-medium text-teal-600 hover:underline">Xem lại</a>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                tableHTML += `</tbody></table>`;
+                historyTableContainer.innerHTML = tableHTML;
+            }
+
+            historyTableContainer.addEventListener('click', (e) => {
+                const link = e.target.closest('.view-result-btn');
+                if (link) {
+                    e.preventDefault();
+                    sessionStorage.setItem('latestResultId', link.dataset.resultId);
+                    window.location.href = link.href;
+                }
+            });
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.body.style.opacity = '0';
+                    setTimeout(() => { window.location.href = this.href; }, 200);
+                });
+            });
+            document.body.style.transition = 'opacity 0.2s ease-in-out';
+
+            document.getElementById('logout-btn').onclick = () => signOut(auth);
+            feather.replace();
+        });
+    </script>
+</body>
+</html>

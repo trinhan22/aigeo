@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cài đặt Hệ thống - AIGEO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        :root {
+            --primary-teal: #0D9488;
+            --primary-emerald: #10B981;
+        }
+        body { 
+            font-family: 'Be Vietnam Pro', sans-serif; 
+            background-color: #f1f5f9; 
+        }
+        .sidebar-link { display: flex; align-items: center; padding: 0.75rem 1rem; border-radius: 0.5rem; transition: background-color 0.2s, color 0.2s; }
+        .sidebar-link:hover { background-color: #e2e8f0; color: #0f172a; }
+        .sidebar-link.active { 
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            color: white; 
+            font-weight: 600; 
+            box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2);
+        }
+        .sidebar-link.active:hover { background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald)); }
+        .sidebar-link.active svg { color: white; }
+        .sidebar-link svg { margin-right: 0.75rem; }
+        
+        .brand-gradient-text {
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cta-button {
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.2);
+        }
+        .cta-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(13, 148, 136, 0.3);
+        }
+
+        .form-input {
+            width: 100%; padding: 0.75rem 1rem; margin-top: 0.5rem; border: 1px solid #cbd5e1;
+            border-radius: 0.5rem; background-color: #f8fafc; transition: all 0.2s ease-in-out;
+        }
+        .form-input:focus {
+            outline: none; background-color: white; border-color: var(--primary-teal);
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+        }
+        
+        .toast { transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; transform: translateY(100%); opacity: 0; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        
+        .skeleton {
+            background-color: #e2e8f0;
+            border-radius: 0.25rem;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse { 50% { opacity: .5; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+
+        /* Cải tiến Toggle Switch */
+        .toggle-label {
+            width: 52px;
+            height: 28px;
+            border-radius: 9999px;
+            background-color: #cbd5e1;
+            transition: background-color 0.2s ease-in-out;
+            position: relative;
+        }
+        .toggle-checkbox {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-checkbox + .toggle-label::before {
+            content: '';
+            position: absolute;
+            left: 2px;
+            top: 2px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: white;
+            transition: transform 0.2s ease-in-out;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: var(--primary-teal);
+        }
+        .toggle-checkbox:checked + .toggle-label::before {
+            transform: translateX(24px);
+        }
+    </style>
+</head>
+<body class="flex h-screen">
+
+    <aside class="w-64 bg-white shadow-md flex-shrink-0 flex flex-col">
+        <div class="h-16 flex-shrink-0 flex items-center justify-center border-b"><a href="/index.html" class="text-2xl font-bold brand-gradient-text">AIGEO</a></div>
+        <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
+            <a href="index.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="home"></i>Tổng quan</a>
+            <a href="users.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="users"></i>Quản lý người dùng</a>
+            <a href="subjects.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="book-open"></i>Quản lý Học liệu</a>
+            <a href="questions.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="help-circle"></i>Quản lý Câu hỏi</a>
+            <a href="tests.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="file-text"></i>Quản lý Đề thi</a>
+            <a href="apikeys.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="key"></i>Quản lý API Key</a>
+            <a href="settings.html" class="sidebar-link active"><i data-feather="settings"></i>Cài đặt hệ thống</a>
+        </nav>
+        <div class="p-4 border-t flex-shrink-0"><button id="logout-btn" class="w-full sidebar-link text-slate-600 text-left"><i data-feather="log-out"></i>Đăng xuất</button></div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <header class="bg-white shadow-sm h-16 flex items-center justify-end px-6">
+            <div class="flex items-center">
+                <span id="user-name" class="font-semibold text-gray-700 mr-4">Đang tải...</span>
+                <img id="user-avatar" class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/40x40/E2E8F0/475569?text=A" alt="Admin Avatar">
+            </div>
+        </header>
+        <div class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-100 p-8">
+            <div class="max-w-4xl mx-auto">
+                <div class="fade-in">
+                    <h1 class="text-3xl font-bold text-slate-800">Cài đặt Hệ thống</h1>
+                    <p class="mt-2 text-slate-600">Quản lý các thông số và cấu hình chung cho toàn bộ ứng dụng.</p>
+                </div>
+                
+                <div id="settings-container" class="mt-8 bg-white rounded-xl shadow-lg p-8 fade-in" style="animation-delay: 100ms;">
+                    <div class="pb-6 border-b border-slate-200">
+                        <h2 class="text-lg font-bold text-slate-800">Cài đặt chung</h2>
+                        <div class="mt-4 space-y-4">
+                            <div>
+                                <label for="app-name" class="block text-sm font-medium text-gray-700">Tên ứng dụng</label>
+                                <div id="app-name-loader" class="skeleton h-10 w-full mt-1 rounded-md"></div>
+                                <input type="text" id="app-name" class="hidden form-input">
+                            </div>
+                            <div>
+                                <label for="contact-email" class="block text-sm font-medium text-gray-700">Email liên hệ</label>
+                                <div id="contact-email-loader" class="skeleton h-10 w-full mt-1 rounded-md"></div>
+                                <input type="email" id="contact-email" class="hidden form-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="py-6 border-b border-slate-200">
+                        <h2 class="text-lg font-bold text-slate-800">Bảo trì hệ thống</h2>
+                        <div class="mt-4 flex items-center justify-between">
+                            <div>
+                                <p class="font-medium text-gray-700">Chế độ bảo trì</p>
+                                <p class="text-sm text-gray-500">Khi bật, chỉ Admin có thể truy cập. Người dùng khác sẽ thấy thông báo bảo trì.</p>
+                            </div>
+                            <div class="relative inline-block cursor-pointer">
+                                <input id="maintenance-mode" type="checkbox" class="toggle-checkbox"/>
+                                <label for="maintenance-mode" class="toggle-label block cursor-pointer"></label>
+                            </div>
+                        </div>
+                        <div id="maintenance-details" class="hidden mt-6 space-y-4 border-t border-slate-200 pt-6">
+                            <div>
+                                <label for="maintenance-reason" class="block text-sm font-medium text-gray-700">Lí do bảo trì</label>
+                                <textarea id="maintenance-reason" rows="3" class="form-input" placeholder="Ví dụ: Hệ thống đang được nâng cấp để cải thiện hiệu suất."></textarea>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="maintenance-start" class="block text-sm font-medium text-gray-700">Thời gian bắt đầu</label>
+                                    <input type="datetime-local" id="maintenance-start" class="form-input">
+                                </div>
+                                <div>
+                                    <label for="maintenance-end" class="block text-sm font-medium text-gray-700">Thời gian kết thúc (dự kiến)</label>
+                                    <input type="datetime-local" id="maintenance-end" class="form-input">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-6 flex justify-end">
+                        <button id="save-settings-btn" class="cta-button text-white font-semibold px-6 py-3 rounded-lg disabled:bg-slate-400">
+                            Lưu tất cả thay đổi
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2"></div>
+    
+    <script src="../firebase-config.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+
+            const userNameEl = document.getElementById('user-name');
+            const userAvatarEl = document.getElementById('user-avatar');
+            const appNameInput = document.getElementById('app-name');
+            const contactEmailInput = document.getElementById('contact-email');
+            const maintenanceModeToggle = document.getElementById('maintenance-mode');
+            const maintenanceDetails = document.getElementById('maintenance-details');
+            const maintenanceReason = document.getElementById('maintenance-reason');
+            const maintenanceStart = document.getElementById('maintenance-start');
+            const maintenanceEnd = document.getElementById('maintenance-end');
+            const saveSettingsBtn = document.getElementById('save-settings-btn');
+            const toastContainer = document.getElementById('toast-container');
+            const appNameLoader = document.getElementById('app-name-loader');
+            const contactEmailLoader = document.getElementById('contact-email-loader');
+            const settingsDocRef = doc(db, "system_settings", "general");
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.body.style.opacity = '0';
+                    setTimeout(() => { window.location.href = this.href; }, 200);
+                });
+            });
+            document.body.style.transition = 'opacity 0.2s ease-in-out';
+
+            onAuthStateChanged(auth, async (user) => {
+                 if (user) {
+                    const docSnap = await getDoc(doc(db, "users", user.uid));
+                    if (docSnap.exists() && docSnap.data().role === 'admin') {
+                        const userData = docSnap.data();
+                        userNameEl.textContent = userData.name || 'Admin';
+                        const nameInitial = (userData.name || 'A').charAt(0).toUpperCase();
+                        userAvatarEl.src = `https://placehold.co/40x40/DC2626/FFFFFF?text=${nameInitial}`;
+                        
+                        loadSettings();
+                    } else {
+                        const userRole = docSnap.data()?.role;
+                        if (userRole === 'teacher' || userRole === 'student') {
+                            window.location.href = `../${userRole}/index.html`;
+                        } else {
+                            window.location.href = '../auth.html';
+                        }
+                    }
+                 } else {
+                    window.location.href = '../auth.html';
+                 }
+            });
+
+            function formatTimestampForInput(timestamp) {
+                if (!timestamp || !timestamp.toDate) return '';
+                const date = timestamp.toDate();
+                // Adjust for local timezone
+                const timezoneOffset = date.getTimezoneOffset() * 60000;
+                const localDate = new Date(date.getTime() - timezoneOffset);
+                return localDate.toISOString().slice(0, 16);
+            }
+
+            async function loadSettings() {
+                try {
+                    const docSnap = await getDoc(settingsDocRef);
+                    if (docSnap.exists()) {
+                        const settings = docSnap.data();
+                        appNameInput.value = settings.appName || 'AIGEO';
+                        contactEmailInput.value = settings.contactEmail || '';
+                        maintenanceModeToggle.checked = settings.maintenanceMode || false;
+
+                        if (settings.maintenanceMode) {
+                            maintenanceDetails.classList.remove('hidden');
+                        }
+                        maintenanceReason.value = settings.maintenanceReason || '';
+                        maintenanceStart.value = formatTimestampForInput(settings.maintenanceStartTime);
+                        maintenanceEnd.value = formatTimestampForInput(settings.maintenanceEndTime);
+
+                    } else {
+                        appNameInput.value = 'AIGEO';
+                    }
+                } catch (error) {
+                    console.error("Error fetching settings:", error);
+                    showToast('Không thể tải cài đặt.', 'error');
+                } finally {
+                    appNameLoader.classList.add('hidden');
+                    contactEmailLoader.classList.add('hidden');
+                    appNameInput.classList.remove('hidden');
+                    contactEmailInput.classList.remove('hidden');
+                }
+            }
+
+            maintenanceModeToggle.addEventListener('change', () => {
+                maintenanceDetails.classList.toggle('hidden', !maintenanceModeToggle.checked);
+            });
+
+            saveSettingsBtn.addEventListener('click', async () => {
+                const settingsToSave = {
+                    appName: appNameInput.value.trim(),
+                    contactEmail: contactEmailInput.value.trim(),
+                    maintenanceMode: maintenanceModeToggle.checked,
+                    maintenanceReason: maintenanceReason.value.trim(),
+                    maintenanceStartTime: maintenanceStart.value ? new Date(maintenanceStart.value) : null,
+                    maintenanceEndTime: maintenanceEnd.value ? new Date(maintenanceEnd.value) : null,
+                };
+
+                saveSettingsBtn.disabled = true;
+                saveSettingsBtn.textContent = 'Đang lưu...';
+
+                try {
+                    await setDoc(settingsDocRef, settingsToSave, { merge: true });
+                    showToast('Lưu cài đặt thành công!', 'success');
+                } catch (error) {
+                    console.error("Error saving settings:", error);
+                    showToast('Có lỗi xảy ra khi lưu.', 'error');
+                } finally {
+                    saveSettingsBtn.disabled = false;
+                    saveSettingsBtn.textContent = 'Lưu tất cả thay đổi';
+                }
+            });
+
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+                toast.className = `toast show ${bgColor} text-white px-4 py-2 rounded-lg shadow-lg`;
+                toast.textContent = message;
+                
+                toastContainer.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    toast.addEventListener('transitionend', () => toast.remove());
+                }, 3000);
+            }
+
+            document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+            feather.replace();
+        });
+    </script>
+</body>
+</html>

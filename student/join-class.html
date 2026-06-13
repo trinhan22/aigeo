@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIGEO - Tham gia lớp học</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <style>
+        :root {
+            --primary: #0D9488;
+            --primary-light: #F0FDFA;
+            --secondary: #10B981;
+            --text-main: #1E293B;
+            --text-light: #64748B;
+            --bg-body: #F8FAFC;
+            --primary-gradient: linear-gradient(135deg, #0D9488 0%, #10B981 100%);
+        }
+
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body); color: var(--text-main); overflow: hidden; }
+
+        /* --- SIDEBAR STYLE (Đồng bộ) --- */
+        .sidebar { width: 280px; background: white; border-right: 1px solid #E2E8F0; height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; }
+        .nav-group-title { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #94A3B8; padding: 1.5rem 1.5rem 0.5rem; }
+        .sidebar-link { display: flex; align-items: center; padding: 0.8rem 1.5rem; color: var(--text-light); font-weight: 600; font-size: 0.9rem; transition: 0.3s; gap: 12px; }
+        .sidebar-link:hover { color: var(--primary); background: var(--primary-light); }
+        .sidebar-link.active { background: var(--primary-gradient); color: white; border-radius: 12px; margin: 0 12px; box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.2); }
+
+        /* --- JOIN CARD STYLE --- */
+        .bento-card { background: white; border-radius: 32px; border: 1px solid #E2E8F0; padding: 40px; transition: 0.3s; }
+        
+        .code-input {
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            text-align: center;
+            font-weight: 900;
+            font-size: 1.5rem;
+            padding: 20px;
+            background: #F8FAFC;
+            border: 2px solid #E2E8F0;
+            border-radius: 20px;
+            width: 100%;
+            transition: 0.3s;
+            color: var(--primary);
+        }
+        .code-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1);
+        }
+        .code-input::placeholder { letter-spacing: normal; font-size: 1rem; color: #CBD5E1; font-weight: 700; }
+
+        .class-preview {
+            background: var(--primary-light);
+            border: 1px solid #CCFBF1;
+            padding: 20px;
+            border-radius: 20px;
+            animation: slideDown 0.4s ease forwards;
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- BUTTONS --- */
+        .cta-button { background: var(--primary-gradient); color: white; padding: 14px 32px; border-radius: 16px; font-weight: 800; transition: 0.3s; display: inline-flex; align-items: center; gap: 10px; border: none; cursor: pointer; box-shadow: 0 10px 20px rgba(13, 148, 136, 0.15); width: 100%; justify-content: center; }
+        .cta-button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(13, 148, 136, 0.25); }
+        .cta-button:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
+
+        /* Custom UI */
+        .toast { transition: 0.3s; transform: translateY(100%); opacity: 0; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #0D9488; border-radius: 10px; }
+    </style>
+</head>
+<body class="flex h-screen">
+
+    <!-- Sidebar (Đồng bộ) -->
+    <aside class="sidebar">
+        <div class="p-8">
+            <a href="/index.html" class="flex items-center gap-3">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" class="h-9 w-auto" alt="Logo">
+                <span class="text-xl font-black text-teal-600 tracking-tight">AIGEO</span>
+            </a>
+        </div>
+
+        <nav class="flex-grow overflow-y-auto">
+            <a href="index.html" class="sidebar-link"><i data-feather="grid"></i> Tổng quan</a>
+            <div class="nav-group-title">Quản lý học tập</div>
+            <a href="classrooms.html" class="sidebar-link active"><i data-feather="book-open"></i> Lớp học của tôi</a>
+            <a href="practice-hub.html" class="sidebar-link"><i data-feather="zap"></i> Luyện tập</a>
+            <a href="stats.html" class="sidebar-link"><i data-feather="bar-chart-2"></i> Thống kê</a>
+            <div class="nav-group-title">Khám phá</div>
+            <a href="chat-bot.html" class="sidebar-link"><i data-feather="message-circle"></i> Chatbot AI</a>
+            <div class="nav-group-title">Cá nhân</div>
+            <a href="account.html" class="sidebar-link"><i data-feather="user"></i> Tài khoản</a>
+        </nav>
+
+        <div class="p-4 border-t">
+            <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 rounded-xl transition">
+                <i data-feather="log-out"></i> Đăng xuất
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <header class="h-16 bg-white border-b flex items-center justify-between px-8 shrink-0">
+            <div class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                <a href="index.html" class="hover:text-teal-600 transition">Dashboard</a>
+                <span>/</span>
+                <a href="classrooms.html" class="hover:text-teal-600 transition">Classroom</a>
+                <span>/</span>
+                <span class="text-slate-800">Join Class</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="text-right hidden sm:block">
+                    <p id="user-name" class="text-sm font-black text-slate-800 leading-none">Đang tải...</p>
+                    <span class="text-[10px] font-bold text-teal-600 uppercase">Student Account</span>
+                </div>
+                <img id="user-avatar" class="h-10 w-10 rounded-xl border-2 border-slate-100 object-cover shadow-sm">
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50/50 p-8 flex items-center justify-center">
+            <div class="max-w-md w-full">
+                <!-- Nút Quay lại -->
+                <a href="classrooms.html" class="inline-flex items-center gap-2 text-slate-400 font-bold text-xs uppercase tracking-widest mb-6 hover:text-teal-600 transition">
+                    <i data-feather="arrow-left" class="w-4"></i> Trở lại danh sách
+                </a>
+
+                <div class="bento-card shadow-2xl shadow-teal-900/5">
+                    <div class="text-center mb-8">
+                        <div class="w-16 h-16 bg-teal-50 text-teal-600 rounded-[20px] flex items-center justify-center mx-auto mb-6">
+                            <i data-feather="user-plus" class="w-8 h-8"></i>
+                        </div>
+                        <h1 class="text-2xl font-black text-slate-900 tracking-tight">Tham gia lớp học</h1>
+                        <p class="text-slate-500 font-medium mt-1">Vui lòng nhập mã định danh lớp học.</p>
+                    </div>
+
+                    <!-- Class Preview (Dynamic) -->
+                    <div id="class-info" class="hidden mb-8 class-preview text-center">
+                        <!-- Thông tin lớp sẽ nạp ở đây -->
+                    </div>
+
+                    <form id="join-class-form" class="space-y-6">
+                        <div>
+                            <input id="class-code-input" name="code" type="text" maxlength="8" class="code-input" placeholder="MÃ LỚP">
+                        </div>
+                        <button id="join-btn" type="submit" class="cta-button">
+                            Xác nhận tham gia <i class="fas fa-chevron-right text-xs"></i>
+                        </button>
+                    </form>
+
+                    <div class="mt-8 pt-8 border-t border-slate-50 text-center">
+                        <p class="text-xs text-slate-400 font-medium">Lưu ý: Mã lớp gồm các ký tự chữ và số do giáo viên cung cấp.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <div id="toast-container" class="fixed bottom-10 right-10 z-50 flex flex-col gap-3"></div>
+    
+    <!-- Logic JS (GIỮ NGUYÊN TOÀN BỘ LOGIC CỦA BẠN) -->
+    <script src="../firebase-config.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, query, where, getDocs, updateDoc, arrayUnion, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+
+            // [GIỮ NGUYÊN TOÀN BỘ LOGIC FIREBASE DƯỚI ĐÂY]
+            let currentUser = null;
+            let classToJoin = null;
+            
+            const joinClassForm = document.getElementById('join-class-form');
+            const classCodeInput = document.getElementById('class-code-input');
+            const joinBtn = document.getElementById('join-btn');
+            const toastContainer = document.getElementById('toast-container');
+            const classInfoEl = document.getElementById('class-info');
+
+            // --- Override showToast để đồng bộ giao diện ---
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = `toast show ${type === 'success' ? 'bg-slate-900' : 'bg-red-500'} text-white px-6 py-3 rounded-2xl shadow-2xl font-bold text-sm`;
+                toast.textContent = message;
+                toastContainer.appendChild(toast);
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+            
+            // --- Auth & Data Loading ---
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    currentUser = user;
+                    const docSnap = await getDoc(doc(db, "users", user.uid));
+                    if (docSnap.exists() && docSnap.data().role === 'student') {
+                        const userData = docSnap.data();
+                        document.getElementById('user-name').textContent = userData.name;
+                        document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=0D9488&color=fff&bold=true`;
+                        initPage();
+                    } else { window.location.href = '../auth.html'; }
+                } else { window.location.href = '../auth.html'; }
+            });
+
+            // Override findClassByCode để hiển thị đẹp hơn
+            async function findClassByCode(code) {
+                 try {
+                    const q = query(collection(db, "classrooms"), where("classCode", "==", code));
+                    const querySnapshot = await getDocs(q);
+
+                    if (querySnapshot.empty) {
+                        classInfoEl.innerHTML = `<p class="text-red-500 font-bold text-xs uppercase tracking-wider">Không tìm thấy mã lớp này</p>`;
+                        classInfoEl.classList.remove('hidden');
+                        return null;
+                    }
+                    const classroomDoc = querySnapshot.docs[0];
+                    classToJoin = { id: classroomDoc.id, ...classroomDoc.data() };
+                    
+                    const teacherSnap = await getDoc(doc(db, 'users', classToJoin.teacherId));
+                    const teacherName = teacherSnap.exists() ? teacherSnap.data().name : 'Hệ thống';
+
+                    classInfoEl.innerHTML = `
+                        <p class="font-black text-teal-700 text-lg leading-tight mb-1">${classToJoin.className}</p>
+                        <p class="text-[10px] font-bold text-teal-600 uppercase tracking-widest">GV: ${teacherName}</p>
+                    `;
+                    classInfoEl.classList.remove('hidden');
+                    return classToJoin;
+                 } catch (error) { return null; }
+            }
+
+            // [NỐI TIẾP CÁC HÀM XỬ LÝ SỰ KIỆN CỦA BẠN...]
+            function initPage() {
+                setupEventListeners();
+            }
+
+            function setupEventListeners() {
+                joinClassForm.addEventListener('submit', handleJoinClass);
+                classCodeInput.addEventListener('input', () => {
+                    if (classCodeInput.value.trim().length >= 6) {
+                        findClassByCode(classCodeInput.value.trim().toUpperCase());
+                    } else {
+                        classInfoEl.classList.add('hidden');
+                        classToJoin = null;
+                    }
+                });
+                document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+            }
+
+            async function handleJoinClass(e) {
+                e.preventDefault();
+                if (!classToJoin) {
+                    showToast("Mã lớp không hợp lệ.", "error");
+                    return;
+                }
+                joinBtn.disabled = true; joinBtn.innerHTML = "Đang xử lý...";
+                try {
+                    if (classToJoin.students && classToJoin.students.includes(currentUser.uid)) {
+                        throw new Error("Bạn đã ở trong lớp này.");
+                    }
+                    const batch = writeBatch(db);
+                    batch.update(doc(db, "classrooms", classToJoin.id), { students: arrayUnion(currentUser.uid) });
+                    batch.update(doc(db, "users", currentUser.uid), { joinedClassrooms: arrayUnion(classToJoin.id) });
+                    await batch.commit();
+                    showToast("Tham gia lớp thành công!");
+                    setTimeout(() => window.location.href = 'classrooms.html', 1500);
+                } catch (error) {
+                    showToast(error.message, "error");
+                    joinBtn.disabled = false; joinBtn.innerHTML = "Tham gia";
+                }
+            }
+
+            feather.replace();
+        });
+    </script>
+</body>
+</html>

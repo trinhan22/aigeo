@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chương 3: Thiết kế Hệ thống - AIGEO</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    
+    <style>
+        :root {
+            --primary-teal: #0D9488;
+            --primary-emerald: #10B981;
+            --text-dark: #1E293B;
+            --text-light: #475569;
+        }
+        body { 
+            font-family: 'Be Vietnam Pro', sans-serif; 
+            background-color: #f8fafc;
+        }
+        
+        /* Menu Ngang (Header) */
+        .glass-header { 
+            background-color: rgba(255, 255, 255, 0.65); 
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px); 
+            border-bottom: 1px solid rgba(0,0,0,0.05); 
+        }
+        .cta-button {
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.3);
+        }
+        .cta-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(13, 148, 136, 0.4);
+        }
+
+        /* Định dạng văn bản */
+        .gradient-text {
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .prose h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e2e8f0;
+            margin-top: 3.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+        .prose h2 svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.75rem;
+            color: var(--primary-teal);
+        }
+        .prose h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #334155;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        .prose p {
+            line-height: 1.75;
+            color: #475569;
+            text-align: justify;
+        }
+        .prose a {
+            color: var(--primary-teal);
+            font-weight: 500;
+            text-decoration: none;
+        }
+        .prose a:hover { text-decoration: underline; }
+        .prose code {
+            background-color: #e2e8f0;
+            color: #475569;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        .prose ol, .prose ul {
+            padding-left: 1.5rem;
+            color: #475569;
+        }
+        .prose li {
+            margin-bottom: 0.75rem;
+            line-height: 1.75;
+            text-align: justify;
+        }
+        
+        /* Menu Dọc (Sidebar) */
+        .sidebar-link {
+            display: block;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            color: #475569;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        .sidebar-link:hover {
+            background-color: #f1f5f9;
+            color: #1e293b;
+        }
+        .sidebar-link.active {
+            background-color: #f0fdfa;
+            color: var(--primary-teal);
+            font-weight: 600;
+            border-left-color: var(--primary-teal);
+        }
+        .sidebar-heading {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            padding: 0 1rem;
+        }
+        #sidebar-nav::-webkit-scrollbar { width: 6px; }
+        #sidebar-nav::-webkit-scrollbar-track { background: transparent; }
+        #sidebar-nav::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        /* Animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="glass-header sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-2">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" alt="AIGEO Logo" class="h-8 w-auto">
+                <span class="text-2xl font-bold gradient-text">AIGEO</span>
+            </a>
+            
+            <div class="hidden md:flex items-center space-x-8 text-sm font-semibold">
+                <a href="index.html" class="text-slate-600 hover:text-teal-600 transition">Trang chủ</a>
+                <a href="huong-dan-su-dung.html" class="text-slate-600 hover:text-teal-600 transition">Hướng dẫn</a>
+                <a href="client/index.html" class="text-slate-600 hover:text-teal-600 transition">Dùng thử</a>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <a href="auth.html" class="hidden md:block cta-button text-white px-5 py-2.5 rounded-lg text-sm font-semibold">
+                    Đăng nhập
+                </a>
+                <button id="mobile-menu-button" class="md:hidden text-slate-800 p-2">
+                    <i data-feather="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </nav>
+
+        <div id="mobile-menu" class="hidden md:hidden px-6 pt-2 pb-4 space-y-2">
+            <a href="index.html" class="block py-2 text-slate-600 hover:text-teal-600 font-medium">Trang chủ</a>
+            <a href="huong-dan-su-dung.html" class="block py-2 text-slate-600 hover:text-teal-600 font-medium">Hướng dẫn</a>
+            <a href="client/index.html" class="block py-2 text-slate-600 hover:text-teal-600 font-medium">Dùng thử</a>
+            <a href="auth.html" class="block cta-button text-white text-center mt-2 px-5 py-2.5 rounded-lg font-semibold">Đăng nhập</a>
+        </div>
+    </header>
+
+    <div class="flex">
+        <aside class="w-80 h-[calc(100vh-65px)] sticky top-[65px] bg-white border-r p-4 hidden md:flex flex-col">
+            <nav id="sidebar-nav" class="mt-8 space-y-2 flex-grow overflow-y-auto">
+                <div>
+                    <h3 class="sidebar-heading">Mục lục Chương 3</h3>
+                    <a href="#section-3-1" class="sidebar-link active">3.1. Nguyên tắc và yêu cầu</a>
+                    <a href="#section-3-1-1" class="sidebar-link ml-4">3.1.1. Nguyên tắc thiết kế</a>
+                    <a href="#section-3-1-2" class="sidebar-link ml-4">3.1.2. Yêu cầu thiết kế</a>
+                </div>
+                <div>
+                     <a href="#section-3-2" class="sidebar-link">3.2. Công cụ và kiến trúc</a>
+                </div>
+                <div>
+                    <a href="#section-3-3" class="sidebar-link">3.3. Quy trình thiết kế</a>
+                </div>
+                <div>
+                    <a href="#section-3-4" class="sidebar-link">3.4. Kết quả Thiết kế</a>
+                    <a href="#section-3-4-1" class="sidebar-link ml-4">3.4.1. Kiến trúc Ứng dụng</a>
+                    <a href="#section-3-4-2" class="sidebar-link ml-4">3.4.2. Mô hình Dữ liệu</a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="flex-1 p-6 md:p-12">
+            <article class="prose max-w-4xl mx-auto">
+                
+                <section id="title-section" class="reveal">
+                    <h1 class="gradient-text !mb-4">CHƯƠNG 3: THIẾT KẾ HỆ THỐNG NGÂN HÀNG CÂU HỎI SỐ HỖ TRỢ LUYỆN TẬP, LUYỆN THI MÔN ĐỊA LÍ 12</h1>
+                    <p class="!text-lg !mt-0 text-slate-600">Chương này trình bày chi tiết các phương pháp luận, kiến trúc công nghệ và quy trình được áp dụng để thiết kế, hiện thực hóa hệ thống AIGEO. Nội dung chương tập trung vào việc luận giải các quyết định kỹ thuật, từ việc xây dựng mô hình dữ liệu, kiến trúc hệ thống, cho đến việc triển khai các chức năng dựa trên các yêu cầu đã xác định trong chương trước.</p>
+                </section>
+
+                <section id="section-3-1" class="reveal">
+                    <h2><i data-feather="sliders"></i>3.1. Nguyên tắc và yêu cầu</h2>
+                    
+                    <h3 id="section-3-1-1">3.1.1. Nguyên tắc thiết kế</h3>
+                    <p>Quá trình kiến tạo hệ thống AIGEO được định hướng bởi bốn nguyên tắc thiết kế cơ bản, nhằm đảm bảo tính hiệu quả, bền vững và khả năng mở rộng của sản phẩm.</p>
+                    <ul>
+                        <li><strong>Kiến trúc Phân quyền Đa vai trò (Role-Based Access Control - RBAC):</strong> Hệ thống áp dụng mô hình kiểm soát truy cập dựa trên vai trò, định nghĩa rõ ràng bốn nhóm người dùng: Quản trị viên (Admin), Giáo viên (Teacher), Học sinh (Student) và Khách (Client). Cơ chế này được thực thi nghiêm ngặt ở tầng cơ sở dữ liệu thông qua các quy tắc bảo mật của Firebase (Firestore Rules), được định nghĩa trong tệp <code>rule.txt</code>. Điều này đảm bảo tính toàn vẹn và an toàn dữ liệu bằng cách giới hạn quyền đọc/ghi (read/write) trên từng collection tương ứng với vai trò của người dùng truy cập.</li>
+                        <li><strong>Thiết kế Giao diện và Trải nghiệm người dùng (UI/UX) Hướng đối tượng:</strong> Giao diện được phát triển theo triết lý "utility-first" với framework Tailwind CSS, đảm bảo tính nhất quán, khả năng đáp ứng (responsive) trên đa dạng thiết bị. Luồng tác vụ (user flow) được tối ưu hóa theo từng vai trò, giảm thiểu các bước thao tác và nâng cao trải nghiệm người dùng, thể hiện qua các tệp giao diện như <code>student/index.html</code> và <code>teacher/index.html</code>.</li>
+                        <li><strong>Kiến trúc Hướng Module và Khả năng Mở rộng (Modularity and Scalability):</strong> Hệ thống được cấu trúc thành các module độc lập tương ứng với từng vai trò người dùng (<code>/admin</code>, <code>/teacher</code>, <code>/student</code>, <code>/client</code>). Việc lựa chọn nền tảng Backend-as-a-Service (BaaS) của Firebase cho phép hệ thống có khả năng mở rộng linh hoạt về mặt tài nguyên và dễ dàng tích hợp các chức năng mới trong tương lai mà không cần tái cấu trúc hạ tầng.</li>
+                        <li><strong>An toàn và Bảo mật theo Thiết kế (Security by Design):</strong> Nguyên tắc bảo mật được tích hợp ngay từ giai đoạn đầu. Toàn bộ các truy vấn từ phía client đều phải tuân thủ các quy tắc được định nghĩa trên máy chủ Firestore. Cơ chế này loại bỏ nguy cơ giả mạo yêu cầu và truy cập dữ liệu trái phép, như được quy định trong <code>rule.txt</code> rằng chỉ Admin mới có quyền ghi vào <code>system_settings/api_keys</code>.</li>
+                    </ul>
+
+                    <h3 id="section-3-1-2">3.1.2. Yêu cầu thiết kế</h3>
+                    <p>Hệ thống được thiết kế để thỏa mãn các yêu cầu chức năng (functional requirements) và phi chức năng (non-functional requirements) như sau:</p>
+                    
+                    <h4 id="section-3-1-2-1" class="font-semibold text-slate-700 mt-6">3.1.2.1. Yêu cầu chức năng:</h4>
+                    <ul>
+                        <li><strong>R.1 - Quản lý Định danh và Phân quyền:</strong> Hệ thống cung cấp cơ chế xác thực người dùng (tệp <code>auth.html</code>) và phân quyền truy cập tài nguyên dựa trên thuộc tính <code>role</code> trong collection <code>users</code>.</li>
+                        <li><strong>R.2 - Quản lý Cấu trúc Học liệu:</strong> Hệ thống cho phép Quản trị viên kiến tạo và quản lý cây tri thức theo mô hình phân cấp: <code>subjects</code> → <code>lessons</code> (phân loại theo <code>grade</code>).</li>
+                        <li><strong>R.3 - Quản lý Ngân hàng Câu hỏi:</strong> Giáo viên có thể đóng góp câu hỏi (trạng thái <code>pending</code>), và Admin có quyền thực hiện quy trình kiểm duyệt (cập nhật trạng thái thành <code>approved</code> hoặc <code>rejected</code>).</li>
+                        <li><strong>R.4 - Quản lý Lớp học và Khảo thí:</strong> Giáo viên có quyền tạo lớp học, giao bài thi (<code>assignments</code>), và giám sát quá trình làm bài của học sinh qua collection <code>test_sessions</code> trong thời gian thực.</li>
+                        <li><strong>R.5 - Hệ thống Luyện tập và Thi cử:</strong> Học sinh có thể thực hiện các bài thi được giao hoặc tự luyện tập qua các chế độ khác nhau tại <code>practice-hub.html</code>.</li>
+                        <li><strong>R.6 - Phân tích và Phản hồi Thông minh:</strong> Hệ thống sử dụng mô hình ngôn ngữ lớn (LLM) qua API của OpenRouter để phân tích kết quả bài làm và đưa ra nhận xét, thể hiện trong <code>student/result.html</code>.</li>
+                    </ul>
+
+                    <h4 id="section-3-1-2-2" class="font-semibold text-slate-700 mt-6">3.1.2.2. Yêu cầu phi chức năng:</h4>
+                    <ul>
+                        <li><strong>R.7 - Hiệu năng:</strong> Thời gian phản hồi nhanh chóng nhờ vào khả năng đáp ứng thời gian thực của Firestore, đặc biệt trong tính năng giám sát và chatbot.</li>
+                        <li><strong>R.8 - Tính Sẵn sàng:</strong> Hệ thống được triển khai trên nền tảng điện toán đám mây của Google, đảm bảo độ sẵn sàng cao.</li>
+                        <li><strong>R.9 - Tính Tương thích:</strong> Ứng dụng web được xây dựng với Tailwind CSS, đảm bảo tương thích trên các trình duyệt và thiết bị phổ biến.</li>
+                    </ul>
+                </section>
+
+                <section id="section-3-2" class="reveal">
+                    <h2><i data-feather="cpu"></i>3.2. Công cụ và kiến trúc công nghệ</h2>
+                    <p>Hệ thống AIGEO được xây dựng dựa trên kiến trúc client-server hiện đại, trong đó Firebase đóng vai trò là một nền tảng backend không máy chủ (serverless).</p>
+                    
+                    <h3>Công nghệ phía Client (Client-Side):</h3>
+                    <ul>
+                        <li><strong>Nền tảng:</strong> HTML5, CSS3, và JavaScript (ES6 Modules).</li>
+                        <li><strong>Framework CSS:</strong> Tailwind CSS được sử dụng để xây dựng giao diện người dùng một cách nhanh chóng và nhất quán.</li>
+                        <li><strong>Thư viện JavaScript:</strong>
+                            <ul>
+                                <li><strong>Chart.js:</strong> Trực quan hóa dữ liệu thống kê trong trang <code>student/stats.html</code>.</li>
+                                <li><strong>KaTeX:</strong> Hiển thị các công thức toán học phức tạp trong nội dung câu hỏi và giải thích.</li>
+                                <li><strong>Marked.js:</strong> Phân tích và hiển thị văn bản định dạng Markdown từ chatbot AI trong <code>student/chat-bot.html</code>.</li>
+                                <li><strong>Feather Icons và Anime.js:</strong> Nâng cao tính thẩm mỹ và trải nghiệm người dùng.</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h3>Nền tảng phía Server (Server-Side Platform):</h3>
+                    <ul>
+                        <li><strong>Google Firebase:</strong> Được sử dụng làm nền tảng backend toàn diện (BaaS), bao gồm:
+                            <ul>
+                                <li><strong>Firebase Authentication:</strong> Cung cấp dịch vụ xác thực người dùng.</li>
+                                <li><strong>Firestore Database:</strong> Cơ sở dữ liệu NoSQL, hoạt động theo thời gian thực, lưu trữ toàn bộ dữ liệu ứng dụng.</li>
+                                <li><strong>Firebase Storage:</strong> Dịch vụ lưu trữ các tệp media (chưa được sử dụng trong phiên bản hiện tại nhưng đã có kế hoạch).</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h3>Dịch vụ của bên thứ ba (Third-Party Services):</h3>
+                    <ul>
+                        <li><strong>OpenRouter API (DeepSeek Model):</strong> Tích hợp trong <code>student/chat-bot.html</code> và <code>student/result.html</code> để cung cấp các tính năng AI.</li>
+                        <li><strong>ImgBB API:</strong> Tích hợp trong <code>admin/questions.html</code> để hỗ trợ tải lên và lưu trữ hình ảnh cho câu hỏi.</li>
+                    </ul>
+                </section>
+                
+                <section id="section-3-3" class="reveal">
+                    <h2><i data-feather="git-merge"></i>3.3. Quy trình thiết kế và phát triển</h2>
+                    <p>Quy trình thiết kế và phát triển qua 4 giai đoạn cơ bản sau:</p>
+                    <ol>
+                        <li><strong>Giai đoạn 1: Phân tích và Thiết kế Cơ sở dữ liệu:</strong> Dựa trên các yêu cầu chức năng, nhóm đã thiết kế một mô hình dữ liệu NoSQL cho Firestore. Các collection chính được xác định bao gồm: <code>users</code>, <code>subjects</code>, <code>lessons</code>, <code>questions</code>, <code>tests</code>, <code>classrooms</code>, <code>submissions</code>, <code>feedback</code>, <code>system_settings</code>. Mối quan hệ giữa chúng được thiết lập qua ID tham chiếu để tối ưu hóa truy vấn.</li>
+                        <li><strong>Giai đoạn 2: Phát triển Giao diện và Logic phía Client:</strong> Xây dựng các thành phần giao diện cho từng vai trò người dùng bằng HTML và Tailwind CSS. Logic nghiệp vụ được lập trình bằng JavaScript thuần, giao tiếp trực tiếp với Firebase thông qua Firebase SDK (v.11.6.1).</li>
+                        <li><strong>Giai đoạn 3: Xây dựng và Triển khai Quy tắc Bảo mật:</strong> Dựa trên kiến trúc RBAC, các quy tắc bảo mật chi tiết đã được viết trong <code>rule.txt</code> và triển khai trên Firestore để kiểm soát chặt chẽ quyền truy cập dữ liệu, đảm bảo an toàn cho hệ thống.</li>
+                        <li><strong>Giai đoạn 4: Tích hợp và Kiểm thử:</strong> Tích hợp các module chức năng và tiến hành kiểm thử thực tế trên các luồng tác vụ chính như đăng ký, tạo đề, làm bài, và giám sát.</li>
+                    </ol>
+                </section>
+
+                <section id="section-3-4" class="reveal">
+                    <h2><i data-feather="layout"></i>3.4. Kết quả Thiết kế</h2>
+                    
+                    <h3 id="section-3-4-1">3.4.1. Kiến trúc Ứng dụng Web</h3>
+                    <p>Sản phẩm là một ứng dụng web hoàn chỉnh, có kiến trúc được phân tách thành các module chức năng độc lập, tương ứng với từng vai trò, đảm bảo tính dễ bảo trì và mở rộng:</p>
+                    <ul>
+                        <li><code>/admin</code>: Module quản trị hệ thống.</li>
+                        <li><code>/teacher</code>: Module dành cho giáo viên.</li>
+                        <li><code>/student</code>: Module dành cho học sinh.</li>
+                        <li><code>/client</code>: Module cho người dùng vãng lai.</li>
+                        <li><strong>Tệp gốc (<code>/</code>):</strong> Chứa các trang chung như trang chủ (<code>index.html</code>), trang xác thực (<code>auth.html</code>) và tệp cấu hình Firebase (<code>firebase-config.js</code>).</li>
+                    </ul>
+
+                    <h3 id="section-3-4-2">3.4.2. Mô hình Dữ liệu Ngân hàng Câu hỏi</h3>
+                    <p>Ngân hàng câu hỏi, được lưu trữ trong collection <code>questions</code> trên Firestore, là tài sản cốt lõi của hệ thống. Mỗi câu hỏi là một document với cấu trúc như sau:</p>
+                    <ul>
+                        <li><code>content (String)</code>: Nội dung câu hỏi, hỗ trợ định dạng HTML.</li>
+                        <li><code>type (String)</code>: Loại câu hỏi (<code>multiple_choice</code>, <code>true_false_group</code>, <code>short_answer</code>).</li>
+                        <li><code>difficulty (String)</code>: Mức độ nhận thức (<code>nhan_biet</code>, <code>thong_hieu</code>, <code>van_dung</code>).</li>
+                        <li><code>options (Array&lt;String&gt;)</code>: Mảng 4 chuỗi ký tự cho câu hỏi trắc nghiệm.</li>
+                        <li><code>statements (Map)</code>: Đối tượng chứa các mệnh đề cho câu hỏi Đúng/Sai.</li>
+                        <li><code>answers (Map/String)</code>: Đáp án đúng.</li>
+                        <li><code>explanation (String)</code>: Giải thích chi tiết cho đáp án.</li>
+                        <li><code>imageUrl (String)</code>: URL hình ảnh minh họa.</li>
+                        <li><code>lessonId (String)</code>: ID tham chiếu đến collection <code>lessons</code>.</li>
+                        <li><code>authorId (String)</code>: ID tham chiếu đến người tạo câu hỏi trong <code>users</code>.</li>
+                        <li><code>status (String)</code>: Trạng thái kiểm duyệt (<code>pending</code>, <code>approved</code>, <code>rejected</code>).</li>
+                        <li><code>createdAt (Timestamp)</code>: Dấu thời gian tạo.</li>
+                    </ul>
+                    <p>Mô hình dữ liệu này cho phép hệ thống truy vấn và lọc câu hỏi một cách linh hoạt theo nhiều tiêu chí, phục vụ hiệu quả cho việc tạo đề thi tự động và cá nhân hóa lộ trình học tập.</p>
+                </section>
+
+            </article>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            feather.replace();
+
+            // --- Menu Mobile ---
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenuButton) {
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                    const icon = mobileMenuButton.querySelector('i');
+                    icon.setAttribute('data-feather', mobileMenu.classList.contains('hidden') ? 'menu' : 'x');
+                    feather.replace();
+                });
+            }
+
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('#sidebar-nav a');
+
+            // Scroll reveal animation
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.05 }); // Kích hoạt sớm hơn một chút
+            
+            document.querySelectorAll('.reveal').forEach(el => {
+                revealObserver.observe(el);
+            });
+
+            // Active sidebar link on scroll
+            const activeLinkObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        // Tìm link khớp chính xác, hoặc link cha gần nhất
+                        let activeLink = document.querySelector(`#sidebar-nav a[href="#${id}"]`);
+                        
+                        if (!activeLink) {
+                            // Nếu không tìm thấy, thử tìm mục cha
+                            const parentId = id.substring(0, id.lastIndexOf('-'));
+                            if (parentId) {
+                                activeLink = document.querySelector(`#sidebar-nav a[href="#${parentId}"]`);
+                            }
+                        }
+
+                        navLinks.forEach(link => link.classList.remove('active'));
+                        if(activeLink) {
+                            activeLink.classList.add('active');
+                        }
+                    }
+                });
+            }, { rootMargin: "-40% 0px -60% 0px" }); // Kích hoạt khi mục ở giữa màn hình
+
+            sections.forEach(section => {
+                activeLinkObserver.observe(section);
+            });
+            
+            // Kích hoạt link đầu tiên khi tải trang
+            if(navLinks.length > 0) {
+                navLinks.forEach(link => link.classList.remove('active'));
+                navLinks[0].classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>

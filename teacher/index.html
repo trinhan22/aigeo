@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng điều khiển - AIGEO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <style>
+        :root {
+            --primary-teal: #0D9488;
+            --primary-emerald: #10B981;
+        }
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: #f1f5f9;
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .sidebar-link:hover {
+            background-color: #e2e8f0;
+            color: #0f172a;
+        }
+        .sidebar-link.active {
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            color: white; 
+            font-weight: 600; 
+            box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2);
+        }
+        .sidebar-link.active:hover { 
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+        }
+        .sidebar-link.active svg {
+            color: white;
+        }
+        .sidebar-link svg {
+            margin-right: 0.75rem;
+        }
+        .brand-gradient-text {
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .cta-button {
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.2);
+        }
+        .cta-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(13, 148, 136, 0.3);
+        }
+        .skeleton {
+            background-color: #e2e8f0;
+            border-radius: 0.5rem;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            50% { opacity: .6; }
+        }
+        .stat-card { transition: transform 0.25s ease-out, box-shadow 0.25s ease-out; }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px -5px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+        .modal-backdrop { background-color: rgba(0, 0, 0, 0.5); transition: opacity 0.3s ease; }
+        .modal-content { transition: transform 0.3s ease, opacity 0.3s ease; transform: translateY(-20px); }
+        .toast { transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; transform: translateY(100%); opacity: 0; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .anime-title .letter {
+            display: inline-block;
+            line-height: 1em;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body class="flex h-screen">
+
+    <aside class="w-64 bg-white shadow-md flex-shrink-0 flex flex-col">
+        <div class="h-16 flex-shrink-0 flex items-center justify-center border-b px-4">
+            <a href="/index.html" class="flex items-center gap-2">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" alt="AIGEO Logo" class="h-8 w-auto">
+                <span class="text-2xl font-bold brand-gradient-text">AIGEO</span>
+            </a>
+        </div>
+        <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
+            <a href="index.html" class="sidebar-link active">
+                <i data-feather="home"></i>
+                Bảng điều khiển
+            </a>
+            <a href="classrooms.html" class="sidebar-link text-slate-600 nav-link">
+                <i data-feather="users"></i>
+                Quản lý Lớp học
+            </a>
+            <a href="question-bank.html" class="sidebar-link text-slate-600 nav-link">
+                <i data-feather="database"></i>
+                Ngân hàng câu hỏi
+            </a>
+             <a href="tests.html" class="sidebar-link text-slate-600 nav-link">
+                <i data-feather="file-text"></i>
+                Quản lý đề thi
+            </a>
+            <a href="account.html" class="sidebar-link text-slate-600 nav-link">
+                <i data-feather="user"></i>
+                Tài khoản
+            </a>
+        </nav>
+        <div class="p-4 border-t flex-shrink-0">
+             <button id="feedback-btn" class="w-full sidebar-link text-slate-600 text-left mb-2">
+                <i data-feather="message-square"></i>
+                Gửi góp ý
+            </button>
+             <button id="view-feedback-btn" class="w-full sidebar-link text-slate-600 text-left mb-2">
+                <i data-feather="inbox"></i>
+                Xem góp ý đã gửi
+            </button>
+            <button id="logout-btn" class="w-full sidebar-link text-slate-600 text-left">
+                <i data-feather="log-out"></i>
+                Đăng xuất
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <header class="bg-white shadow-sm h-16 flex items-center justify-end px-6">
+             <div class="flex items-center">
+                <span id="user-name" class="font-semibold text-gray-700 mr-4">Đang tải...</span>
+                <img id="user-avatar" class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/40x40/E2E8F0/475569?text=T" alt="Teacher Avatar">
+            </div>
+        </header>
+        
+        <div class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-100 p-8">
+            <div class="max-w-7xl mx-auto">
+                <h1 id="welcome-message" class="text-3xl font-bold text-slate-800 anime-title">Xin chào!</h1>
+                <p class="mt-2 text-slate-600">Chào mừng bạn đến với không gian quản lý của mình.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+                    <div class="stat-card bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
+                        <h3 class="text-sm font-semibold text-slate-500 flex items-center"><i data-feather="users" class="w-4 h-4 mr-2"></i>Tổng số lớp</h3>
+                        <p id="stats-classes" class="text-4xl font-bold text-slate-800 mt-2"><span class="skeleton h-10 w-20 inline-block"></span></p>
+                    </div>
+                    <div class="stat-card bg-white p-6 rounded-xl shadow-sm border-l-4 border-green-500">
+                         <h3 class="text-sm font-semibold text-slate-500 flex items-center"><i data-feather="user" class="w-4 h-4 mr-2"></i>Tổng số học sinh</h3>
+                         <p id="stats-students" class="text-4xl font-bold text-slate-800 mt-2"><span class="skeleton h-10 w-16 inline-block"></span></p>
+                    </div>
+                    <div class="stat-card bg-white p-6 rounded-xl shadow-sm border-l-4 border-orange-500">
+                        <h3 class="text-sm font-semibold text-slate-500 flex items-center"><i data-feather="file-text" class="w-4 h-4 mr-2"></i>Đề thi đã tạo</h3>
+                        <p id="stats-tests" class="text-4xl font-bold text-slate-800 mt-2"><span class="skeleton h-10 w-12 inline-block"></span></p>
+                    </div>
+                </div>
+                
+                <div class="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 space-y-8">
+                        <div class="bg-white rounded-xl shadow-sm">
+                            <div class="p-4 border-b flex justify-between items-center">
+                                <h2 class="font-bold text-slate-700">Lớp học gần đây</h2>
+                                <a href="classrooms.html" class="text-sm font-semibold text-teal-600 hover:underline nav-link">Xem tất cả</a>
+                            </div>
+                            <div id="recent-classrooms-container" class="p-4 space-y-3">
+                                <div class="skeleton h-12 w-full"></div>
+                                <div class="skeleton h-12 w-full"></div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm">
+                            <div class="p-4 border-b flex justify-between items-center">
+                                <h2 class="font-bold text-slate-700">Đề thi gần đây</h2>
+                                <a href="tests.html" class="text-sm font-semibold text-teal-600 hover:underline nav-link">Xem tất cả</a>
+                            </div>
+                            <div id="recent-tests-container" class="p-4 space-y-3">
+                               <div class="skeleton h-12 w-full"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-1">
+                        <div class="bg-white rounded-xl shadow-sm p-6">
+                             <h2 class="font-bold text-slate-700 mb-4">Tác vụ nhanh</h2>
+                             <div class="space-y-3">
+                                 <a href="create-test-teacher.html" class="nav-link bg-teal-50 hover:bg-teal-100 p-4 rounded-lg flex items-center space-x-3 transition-colors">
+                                     <i data-feather="file-plus" class="text-teal-600"></i>
+                                     <span class="font-semibold text-slate-700 text-sm">Tạo Đề thi mới</span>
+                                 </a>
+                                  <a href="classrooms.html" class="nav-link bg-blue-50 hover:bg-blue-100 p-4 rounded-lg flex items-center space-x-3 transition-colors">
+                                     <i data-feather="user-plus" class="text-blue-600"></i>
+                                     <span class="font-semibold text-slate-700 text-sm">Tạo Lớp học mới</span>
+                                 </a>
+                                 <a href="question-bank.html" class="nav-link bg-indigo-50 hover:bg-indigo-100 p-4 rounded-lg flex items-center space-x-3 transition-colors">
+                                     <i data-feather="database" class="text-indigo-600"></i>
+                                     <span class="font-semibold text-slate-700 text-sm">Đóng góp câu hỏi</span>
+                                 </a>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+    
+    <div id="profile-update-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop">
+        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-md modal-content text-center">
+            <i data-feather="user-check" class="w-16 h-16 mx-auto text-teal-500"></i>
+            <h2 class="text-2xl font-bold text-slate-800 mt-4">Hoàn tất hồ sơ của bạn</h2>
+            <p class="mt-2 text-slate-600">Vui lòng cập nhật thông tin trường và môn giảng dạy để sử dụng đầy đủ các tính năng.</p>
+            <div class="flex justify-center space-x-4 mt-8">
+                <button type="button" id="update-later-btn" class="bg-slate-200 text-slate-800 px-6 py-2 rounded-lg hover:bg-slate-300 font-semibold">Để sau</button>
+                <a href="account.html" id="update-now-btn" class="cta-button text-white px-6 py-2 rounded-lg font-semibold nav-link">Cập nhật ngay</a>
+            </div>
+        </div>
+    </div>
+    <div id="feedback-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg modal-content">
+            <h2 class="text-xl font-bold text-slate-800 mb-4">Gửi góp ý của bạn</h2>
+            <p class="text-sm text-slate-500 mb-4">Mọi ý kiến đóng góp của bạn đều quý giá và sẽ được gửi đến quản trị viên để cải thiện hệ thống.</p>
+            <form id="feedback-form">
+                <textarea id="feedback-content" rows="6" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500" placeholder="Nhập nội dung góp ý của bạn ở đây..." required></textarea>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="button" id="feedback-cancel-btn" class="bg-slate-200 text-slate-800 px-4 py-2 rounded-lg hover:bg-slate-300 font-semibold">Hủy</button>
+                    <button type="submit" id="feedback-submit-btn" class="cta-button text-white px-4 py-2 rounded-lg font-semibold">Gửi góp ý</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="view-feedback-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl modal-content flex flex-col max-h-[80vh]">
+            <h2 class="text-xl font-bold text-slate-800 mb-4 flex-shrink-0">Lịch sử góp ý</h2>
+            <div id="feedback-list-container" class="flex-grow overflow-y-auto space-y-4 pr-2"></div>
+            <div class="flex justify-end mt-6 flex-shrink-0 border-t pt-4">
+                <button type="button" id="view-feedback-close-btn" class="bg-slate-200 text-slate-800 px-4 py-2 rounded-lg hover:bg-slate-300 font-semibold">Đóng</button>
+            </div>
+        </div>
+    </div>
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2"></div>
+
+    <script src="../firebase-config.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, query, where, onSnapshot, addDoc, serverTimestamp, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const userNameEl = document.getElementById('user-name');
+        const userAvatarEl = document.getElementById('user-avatar');
+        const welcomeMessageEl = document.getElementById('welcome-message');
+        const logoutBtn = document.getElementById('logout-btn');
+        
+        // >> BỔ SUNG KHAI BÁO CÁC PHẦN TỬ STATS <<
+        const statsClassesEl = document.getElementById('stats-classes');
+        const statsStudentsEl = document.getElementById('stats-students');
+        const statsTestsEl = document.getElementById('stats-tests');
+        
+        const recentClassroomsContainer = document.getElementById('recent-classrooms-container');
+        const recentTestsContainer = document.getElementById('recent-tests-container');
+        
+        // Modals
+        const profileUpdateModal = document.getElementById('profile-update-modal');
+        const updateLaterBtn = document.getElementById('update-later-btn');
+        const feedbackModal = document.getElementById('feedback-modal');
+        const viewFeedbackModal = document.getElementById('view-feedback-modal');
+        
+        // Feedback Elements
+        const feedbackBtn = document.getElementById('feedback-btn');
+        const feedbackCancelBtn = document.getElementById('feedback-cancel-btn');
+        const feedbackForm = document.getElementById('feedback-form');
+        const feedbackContent = document.getElementById('feedback-content');
+        const toastContainer = document.getElementById('toast-container');
+        
+        // View Feedback Elements
+        const viewFeedbackBtn = document.getElementById('view-feedback-btn');
+        const viewFeedbackCloseBtn = document.getElementById('view-feedback-close-btn');
+        const feedbackListContainer = document.getElementById('feedback-list-container');
+
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+            toast.className = `toast show ${bgColor} text-white px-4 py-2 rounded-lg shadow-lg`;
+            toast.textContent = message;
+            toastContainer.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                toast.addEventListener('transitionend', () => toast.remove());
+            }, 3000);
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userDocRef = doc(db, "users", user.uid);
+                try {
+                    const docSnap = await getDoc(userDocRef);
+                    if (docSnap.exists()) {
+                        const userData = docSnap.data();
+                        
+                        if (userData.role !== 'teacher') {
+                           const targetRole = userData.role || 'student';
+                           window.location.href = `../${targetRole}/index.html`;
+                           return;
+                        }
+
+                        userNameEl.textContent = userData.name || 'Giáo viên';
+                        welcomeMessageEl.textContent = `Xin chào, ${userData.name || 'Giáo viên'}!`;
+                        const nameInitial = (userData.name || 'T').charAt(0).toUpperCase();
+                        userAvatarEl.src = `https://placehold.co/40x40/10B981/FFFFFF?text=${nameInitial}`;
+                        
+                        if (!userData.school || !userData.subject) {
+                            profileUpdateModal.classList.remove('hidden');
+                            profileUpdateModal.classList.add('flex');
+                            feather.replace();
+                        }
+
+                        listenForData(user.uid);
+                        setupFeedbackListeners(user, userData);
+                        animateWelcomeMessage();
+
+                    } else {
+                        window.location.href = '../auth.html';
+                    }
+                } catch (error) {
+                    console.error("Error fetching user data:", error);
+                    window.location.href = '../auth.html';
+                }
+            } else {
+                window.location.href = '../auth.html';
+            }
+        });
+
+        function listenForData(teacherId) {
+            const classroomsQuery = query(collection(db, "classrooms"), where("teacherId", "==", teacherId), orderBy("createdAt", "desc"), limit(3));
+            onSnapshot(classroomsQuery, (snapshot) => {
+                const classrooms = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                renderRecentClassrooms(classrooms);
+            });
+
+            const testsQuery = query(collection(db, "tests"), where("authorId", "==", teacherId), orderBy("createdAt", "desc"), limit(3));
+            onSnapshot(testsQuery, (snapshot) => {
+                const tests = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                renderRecentTests(tests);
+            });
+
+            // Listen for overall stats
+            const allClassroomsQuery = query(collection(db, "classrooms"), where("teacherId", "==", teacherId));
+            onSnapshot(allClassroomsQuery, (snapshot) => {
+                const classCount = snapshot.size;
+                let studentCount = 0;
+                snapshot.forEach(doc => {
+                    studentCount += doc.data().students?.length || 0;
+                });
+                statsClassesEl.textContent = classCount;
+                statsStudentsEl.textContent = studentCount;
+            });
+
+            const allTestsQuery = query(collection(db, "tests"), where("authorId", "==", teacherId));
+            onSnapshot(allTestsQuery, (snapshot) => {
+                statsTestsEl.textContent = snapshot.size;
+            });
+        }
+        
+        function renderRecentClassrooms(classrooms) {
+            recentClassroomsContainer.innerHTML = '';
+            if (classrooms.length === 0) {
+                recentClassroomsContainer.innerHTML = `<p class="text-sm text-slate-500 text-center py-4">Chưa có lớp học nào được tạo.</p>`;
+                return;
+            }
+            classrooms.forEach(c => {
+                const card = document.createElement('div');
+                card.className = "flex items-center justify-between p-3 bg-slate-50 rounded-lg";
+                card.innerHTML = `
+                    <div>
+                        <p class="font-semibold text-slate-800">${c.className}</p>
+                        <p class="text-xs text-slate-500">${c.students?.length || 0} học sinh</p>
+                    </div>
+                    <a href="student-progress.html?classId=${c.id}" class="text-sm font-semibold text-teal-600 hover:text-teal-700 nav-link">Xem tiến độ</a>
+                `;
+                recentClassroomsContainer.appendChild(card);
+            });
+        }
+        
+        function renderRecentTests(tests) {
+            recentTestsContainer.innerHTML = '';
+            if (tests.length === 0) {
+                recentTestsContainer.innerHTML = `<p class="text-sm text-slate-500 text-center py-4">Chưa có đề thi nào được tạo.</p>`;
+                return;
+            }
+            tests.forEach(t => {
+                const statusBg = t.status === 'published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+                const statusText = t.status === 'published' ? 'Đã xuất bản' : 'Bản nháp';
+                const card = document.createElement('div');
+                card.className = "flex items-center justify-between p-3 bg-slate-50 rounded-lg";
+                card.innerHTML = `
+                    <div>
+                        <p class="font-semibold text-slate-800">${t.name}</p>
+                        <p class="text-xs text-slate-500">${t.questionIds?.length || 0} câu hỏi</p>
+                    </div>
+                    <span class="text-xs font-semibold px-2 py-1 rounded-full ${statusBg}">${statusText}</span>
+                `;
+                recentTestsContainer.appendChild(card);
+            });
+        }
+
+
+        async function loadAndDisplayFeedback() {
+            feedbackListContainer.innerHTML = `<div class="text-center p-4"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900 mx-auto"></div></div>`;
+            viewFeedbackModal.classList.remove('hidden');
+            viewFeedbackModal.classList.add('flex');
+            
+            try {
+                const q = query(collection(db, "feedback"), where("userId", "==", auth.currentUser.uid), orderBy("createdAt", "desc"));
+                const querySnapshot = await getDocs(q);
+                
+                if (querySnapshot.empty) {
+                    feedbackListContainer.innerHTML = `<p class="text-slate-500 text-center p-4">Bạn chưa gửi góp ý nào.</p>`;
+                    return;
+                }
+
+                feedbackListContainer.innerHTML = '';
+                querySnapshot.forEach(doc => {
+                    const feedback = doc.data();
+                    const date = feedback.createdAt?.toDate().toLocaleDateString('vi-VN') || 'Không rõ';
+                    
+                    const getStatusBadge = (status) => {
+                        switch (status) {
+                            case 'replied': return `<span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Đã trả lời</span>`;
+                            case 'seen': return `<span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">Đã xem</span>`;
+                            default: return `<span class="px-2 py-1 text-xs font-semibold rounded-full bg-slate-100 text-slate-800">Mới</span>`;
+                        }
+                    };
+
+                    const feedbackCard = document.createElement('div');
+                    feedbackCard.className = 'p-4 border rounded-lg bg-slate-50';
+                    feedbackCard.innerHTML = `
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs text-slate-500 font-medium">Gửi ngày: ${date}</span>
+                            ${getStatusBadge(feedback.status)}
+                        </div>
+                        <p class="text-slate-700 whitespace-pre-wrap">${feedback.content}</p>
+                        ${feedback.reply ? `
+                            <div class="mt-3 pt-3 border-t border-slate-200">
+                                <p class="text-sm font-semibold text-teal-700">Phản hồi từ Admin:</p>
+                                <p class="text-sm text-slate-600 mt-1 whitespace-pre-wrap">${feedback.reply}</p>
+                            </div>
+                        ` : ''}
+                    `;
+                    feedbackListContainer.appendChild(feedbackCard);
+                });
+
+            } catch (error) {
+                console.error("Error fetching feedback:", error);
+                feedbackListContainer.innerHTML = `<p class="text-red-500 text-center p-4">Không thể tải lịch sử góp ý.</p>`;
+            }
+        }
+        
+        function setupFeedbackListeners(user, userData) {
+            feedbackBtn.addEventListener('click', () => {
+                feedbackModal.classList.remove('hidden');
+                feedbackModal.classList.add('flex');
+            });
+
+            feedbackCancelBtn.addEventListener('click', () => {
+                feedbackModal.classList.add('hidden');
+                feedbackModal.classList.remove('flex');
+            });
+
+            viewFeedbackBtn.addEventListener('click', loadAndDisplayFeedback);
+            
+            viewFeedbackCloseBtn.addEventListener('click', () => {
+                viewFeedbackModal.classList.add('hidden');
+                viewFeedbackModal.classList.remove('flex');
+            });
+
+            feedbackForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const content = feedbackContent.value.trim();
+                if (!content) {
+                    showToast("Vui lòng nhập nội dung góp ý.", "error");
+                    return;
+                }
+                const submitBtn = document.getElementById('feedback-submit-btn');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Đang gửi...';
+
+                try {
+                    await addDoc(collection(db, "feedback"), {
+                        content: content,
+                        userId: user.uid,
+                        userName: userData.name,
+                        userEmail: user.email,
+                        userRole: 'teacher',
+                        createdAt: serverTimestamp(),
+                        status: 'new'
+                    });
+                    feedbackModal.classList.add('hidden');
+                    feedbackModal.classList.remove('flex');
+                    feedbackForm.reset();
+                    showToast("Cảm ơn bạn! Góp ý của bạn đã được gửi đi.", "success");
+                } catch (error) {
+                    console.error("Error sending feedback: ", error);
+                    showToast("Đã có lỗi xảy ra. Vui lòng thử lại.", "error");
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Gửi góp ý';
+                }
+            });
+        }
+        
+        function animateWelcomeMessage() {
+            const welcomeMsg = document.getElementById('welcome-message');
+            if(welcomeMsg) {
+                welcomeMsg.innerHTML = welcomeMsg.textContent.replace(/(\S)/g, "<span class='letter'>$&</span>");
+                anime.timeline({loop: false})
+                .add({
+                    targets: '#welcome-message .letter',
+                    translateY: ["1.1em", 0],
+                    translateX: ["0.55em", 0],
+                    translateZ: 0,
+                    rotateZ: [180, 0],
+                    opacity: [0, 1],
+                    easing: "easeOutExpo",
+                    duration: 750,
+                    delay: (el, i) => 50 * i
+                });
+            }
+        }
+
+        updateLaterBtn.addEventListener('click', () => {
+            profileUpdateModal.classList.add('hidden');
+            profileUpdateModal.classList.remove('flex');
+        });
+
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.body.style.opacity = '0';
+                setTimeout(() => { window.location.href = this.href; }, 200);
+            });
+        });
+        document.body.style.transition = 'opacity 0.2s ease-in-out';
+
+        logoutBtn.addEventListener('click', () => signOut(auth));
+        
+        feather.replace();
+
+    </script>
+</body>
+</html>

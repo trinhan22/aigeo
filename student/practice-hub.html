@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIGEO - Trung tâm Luyện tập</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #0D9488;
+            --primary-light: #F0FDFA;
+            --secondary: #10B981;
+            --text-main: #1E293B;
+            --text-light: #64748B;
+            --bg-body: #F8FAFC;
+            --primary-gradient: linear-gradient(135deg, #0D9488 0%, #10B981 100%);
+        }
+
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body); color: var(--text-main); overflow: hidden; }
+
+        /* --- SIDEBAR --- */
+        .sidebar { width: 280px; background: white; border-right: 1px solid #E2E8F0; height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; }
+        .nav-group-title { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #94A3B8; padding: 1.5rem 1.5rem 0.5rem; }
+        .sidebar-link { display: flex; align-items: center; padding: 0.8rem 1.5rem; color: var(--text-light); font-weight: 600; font-size: 0.9rem; transition: 0.3s; gap: 12px; }
+        .sidebar-link i { width: 18px; height: 18px; }
+        .sidebar-link:hover { color: var(--primary); background: var(--primary-light); }
+        .sidebar-link.active { background: var(--primary-gradient); color: white; border-radius: 12px; margin: 0 12px; box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.2); }
+
+        /* --- MODERN TAB PILLS --- */
+        .tabs-pill-container { background: #F1F5F9; padding: 6px; border-radius: 100px; display: inline-flex; gap: 4px; margin-bottom: 24px; overflow-x: auto; max-width: 100%; }
+        .tab-button { padding: 10px 20px; border-radius: 100px; font-size: 0.8rem; font-weight: 800; color: var(--text-light); transition: 0.3s; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+        .tab-button.active { background: white; color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
+        /* --- BENTO CARDS --- */
+        .bento-card { background: white; border-radius: 32px; border: 1px solid #E2E8F0; padding: 32px; transition: 0.3s; position: relative; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: slideUp 0.4s ease forwards; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- INPUTS --- */
+        .modern-select { width: 100%; padding: 14px 20px; background: #F8FAFC; border: 2px solid #F1F5F9; border-radius: 16px; font-weight: 700; color: var(--text-main); outline: none; transition: 0.3s; appearance: none; cursor: pointer; }
+        .modern-select:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1); }
+
+        /* --- LESSON CARD --- */
+        .lesson-card { border: 2px solid #F1F5F9; border-radius: 20px; transition: 0.3s; cursor: pointer; position: relative; background: white; }
+        .lesson-card:has(input:checked) { border-color: var(--primary); background: var(--primary-light); }
+        .lesson-check-icon { position: absolute; top: 12px; right: 12px; width: 22px; height: 22px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; opacity: 0; transform: scale(0.5); transition: 0.3s; }
+        .lesson-card:has(input:checked) .lesson-check-icon { opacity: 1; transform: scale(1); }
+
+        /* --- BUTTONS --- */
+        .cta-button { background: var(--primary-gradient); color: white; padding: 14px 32px; border-radius: 16px; font-weight: 800; transition: 0.3s; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 10px 20px rgba(13, 148, 136, 0.15); border: none; cursor: pointer; }
+        .cta-button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(13, 148, 136, 0.25); }
+        .cta-button:disabled { background: #E2E8F0; color: #94A3B8; box-shadow: none; cursor: not-allowed; }
+
+        /* --- RANGE SLIDER --- */
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 8px; background: #E2E8F0; border-radius: 10px; }
+        input[type=range]::-webkit-slider-thumb { height: 22px; width: 22px; border-radius: 50%; background: var(--primary); -webkit-appearance: none; margin-top: -7px; cursor: pointer; box-shadow: 0 4px 10px rgba(13, 148, 136, 0.3); }
+
+        .skeleton { background: #E2E8F0; animation: pulse 2s infinite; border-radius: 12px; }
+        @keyframes pulse { 50% { opacity: .5; } }
+        
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #0D9488; border-radius: 10px; }
+    </style>
+</head>
+<body class="flex h-screen">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="p-8">
+            <a href="/index.html" class="flex items-center gap-3">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" class="h-9 w-auto">
+                <span class="text-xl font-black text-teal-600 tracking-tight">AIGEO</span>
+            </a>
+        </div>
+        <nav class="flex-grow overflow-y-auto">
+            <a href="index.html" class="sidebar-link"><i data-feather="grid"></i> Tổng quan</a>
+            <div class="nav-group-title">Quản lý học tập</div>
+            <a href="classrooms.html" class="sidebar-link"><i data-feather="book-open"></i> Lớp học của tôi</a>
+            <a href="practice-hub.html" class="sidebar-link active"><i data-feather="zap"></i> Luyện tập</a>
+            <a href="stats.html" class="sidebar-link"><i data-feather="bar-chart-2"></i> Thống kê</a>
+            <div class="nav-group-title">Khám phá</div>
+            <a href="chat-bot.html" class="sidebar-link"><i data-feather="message-circle"></i> Chatbot AI</a>
+            <div class="nav-group-title">Cá nhân</div>
+            <a href="account.html" class="sidebar-link"><i data-feather="user"></i> Tài khoản</a>
+        </nav>
+        <div class="p-4 border-t">
+            <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 rounded-xl transition">
+                <i data-feather="log-out"></i> Đăng xuất
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <header class="h-16 bg-white border-b flex items-center justify-between px-8 shrink-0">
+            <div class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                <a href="index.html" class="hover:text-teal-600 transition">Dashboard</a>
+                <span>/</span>
+                <span class="text-slate-800">Practice Center</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="text-right hidden sm:block">
+                    <p id="user-name" class="text-sm font-black text-slate-800 leading-none">Đang tải...</p>
+                    <span class="text-[10px] font-bold text-teal-600 uppercase tracking-tighter">Student Account</span>
+                </div>
+                <img id="user-avatar" class="h-10 w-10 rounded-xl border-2 border-slate-100 object-cover shadow-sm">
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-y-auto bg-slate-50/50 p-8">
+            <div class="max-w-6xl mx-auto space-y-8">
+                <div>
+                    <h1 class="text-4xl font-black text-slate-900 tracking-tight">Trung tâm Luyện tập</h1>
+                    <p class="text-slate-500 font-medium mt-2">Chọn phương thức phù hợp để bắt đầu rèn luyện kiến thức.</p>
+                </div>
+
+                <!-- Tab Pills Navigation -->
+                <div class="tabs-pill-container">
+                    <button class="tab-button active" data-tab="ai-practice"><i data-feather="zap" class="w-3"></i> Đề AI</button>
+                    <button class="tab-button" data-tab="admin-practice"><i data-feather="shield" class="w-3"></i> Luyện Đề</button>
+                    <button class="tab-button" data-tab="lesson-practice"><i data-feather="target" class="w-3"></i> Theo Bài</button>
+                    <button class="tab-button" data-tab="comprehensive-practice"><i data-feather="list" class="w-3"></i> Tổng hợp</button>
+                </div>
+
+                <!-- Content Area -->
+                <div class="space-y-6 pb-20">
+                    
+                    <!-- Tab 1: AI Generated -->
+                    <div id="ai-practice" class="tab-content active">
+                        <div class="bento-card border-l-4 border-l-teal-500">
+                            <h2 class="text-2xl font-black text-slate-800 mb-2">Đề ôn tập theo năng lực</h2>
+                            <p class="text-slate-500 text-sm mb-8">Hệ thống AI phân tích lỗ hổng kiến thức từ lịch sử bài làm để tạo đề củng cố riêng cho bạn.</p>
+                            <div id="ai-practice-content">
+                                <div class="skeleton h-24 w-full"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: Admin Published Tests -->
+                    <div id="admin-practice" class="tab-content">
+                        <div class="bento-card border-l-4 border-l-indigo-500">
+                            <h2 class="text-2xl font-black text-slate-800 mb-6">Đề thi hệ thống</h2>
+                            <div id="admin-tests-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="skeleton h-32 w-full"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Lesson Based -->
+                    <div id="lesson-practice" class="tab-content">
+                        <div class="bento-card border-l-4 border-l-sky-500">
+                            <h2 class="text-2xl font-black text-slate-800 mb-6">Luyện tập theo từng bài</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                                <select id="filter-subject-lesson" class="modern-select"></select>
+                                <select id="filter-grade-lesson" class="modern-select" disabled></select>
+                            </div>
+                            <div id="lesson-list-container-lesson" class="min-h-[150px] border-2 border-dashed border-slate-200 rounded-3xl flex items-center justify-center p-8 mb-8 text-slate-400 font-bold">Vui lòng chọn môn học và khối lớp.</div>
+                            
+                            <div id="question-count-wrapper-lesson" class="hidden bg-teal-50/50 p-8 rounded-3xl mb-8">
+                                <div class="flex justify-between mb-6">
+                                    <label class="font-black text-teal-900">Số lượng câu hỏi</label>
+                                    <span id="question-count-label-lesson" class="bg-teal-600 text-white px-5 py-1.5 rounded-full font-black text-sm">10</span>
+                                </div>
+                                <input id="question-count-slider-lesson" type="range" min="5" max="50" value="10">
+                            </div>
+                            <div class="flex justify-end">
+                                <button id="start-lesson-practice-btn" class="cta-button" disabled>Bắt đầu luyện tập</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 4: Comprehensive -->
+                    <div id="comprehensive-practice" class="tab-content">
+                        <div class="bento-card border-l-4 border-l-amber-500">
+                            <h2 class="text-2xl font-black text-slate-800 mb-6">Luyện tập tổng hợp</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                                <select id="filter-subject-comprehensive" class="modern-select"></select>
+                                <select id="filter-grade-comprehensive" class="modern-select" disabled></select>
+                            </div>
+                            <div id="lesson-list-container-comprehensive" class="min-h-[150px] border-2 border-dashed border-slate-200 rounded-3xl p-8 mb-8 text-slate-400 font-bold text-center">Vui lòng chọn môn học.</div>
+                            
+                            <!-- Advanced Filters (Original Logic) -->
+                            <div id="filter-options-wrapper-comprehensive" class="hidden grid grid-cols-1 md:grid-cols-2 gap-8 p-8 bg-amber-50/50 rounded-3xl mb-8 border border-amber-100">
+                                <div>
+                                    <label class="block text-xs font-black text-amber-900 uppercase tracking-widest mb-4">Dạng thức câu hỏi</label>
+                                    <div id="question-type-wrapper-comprehensive" class="space-y-2"></div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-black text-amber-900 uppercase tracking-widest mb-4">Mức độ nhận thức</label>
+                                    <div id="question-difficulty-wrapper-comprehensive" class="space-y-2"></div>
+                                </div>
+                            </div>
+
+                            <div id="question-count-wrapper-comprehensive" class="hidden bg-amber-50 p-8 rounded-3xl mb-8">
+                                <div class="flex justify-between mb-4">
+                                    <label class="font-black text-amber-900">Tổng số câu hỏi</label>
+                                    <span id="question-count-label-comprehensive" class="bg-amber-600 text-white px-5 py-1.5 rounded-full font-black text-sm">20</span>
+                                </div>
+                                <input id="question-count-slider-comprehensive" type="range" min="10" max="50" value="20">
+                            </div>
+                            <div class="flex justify-end">
+                                <button id="start-comprehensive-practice-btn" class="cta-button" style="background: #D97706;" disabled>Bắt đầu (0 câu)</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast-container" class="fixed bottom-10 right-10 z-50 flex flex-col gap-3"></div>
+
+    <!-- Firebase Scripts (Giữ nguyên logic của bạn) -->
+    <script src="../firebase-config.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, getDocs, query, where, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+
+            // --- DOM ELEMENTS ---
+            const userNameEl = document.getElementById('user-name');
+            const userAvatarEl = document.getElementById('user-avatar');
+            const toastContainer = document.getElementById('toast-container');
+            const tabsContainer = document.querySelector('.tabs-pill-container');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            const aiPracticeContent = document.getElementById('ai-practice-content');
+            const adminTestsContainer = document.getElementById('admin-tests-container');
+            
+            const filtersLesson = { subject: document.getElementById('filter-subject-lesson'), grade: document.getElementById('filter-grade-lesson') };
+            const lessonListContainerLesson = document.getElementById('lesson-list-container-lesson');
+            const startLessonPracticeBtn = document.getElementById('start-lesson-practice-btn');
+
+            const filtersComp = { subject: document.getElementById('filter-subject-comprehensive'), grade: document.getElementById('filter-grade-comprehensive') };
+            const lessonListContainerComp = document.getElementById('lesson-list-container-comprehensive');
+            const startCompPracticeBtn = document.getElementById('start-comprehensive-practice-btn');
+
+            let currentUser = null;
+            let userData = {};
+            let allDataCache = { subjects: [], lessons: [], tests: [], submissions: [], questions: [], users: [] };
+
+            const cleanPrefix = (t) => t ? t.replace(/^(Câu|Bài|Phần|Mục)\s*\d+\s*[:.]?\s*/i, '').trim() : '';
+
+            // --- AUTH & INITIAL LOAD ---
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    currentUser = user;
+                    const docSnap = await getDoc(doc(db, "users", user.uid));
+                    if (docSnap.exists() && docSnap.data().role === 'student') {
+                        userData = docSnap.data();
+                        userNameEl.textContent = userData.name;
+                        userAvatarEl.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=0D9488&color=fff&bold=true`;
+                        
+                        await loadInitialData();
+                        initializeTabs();
+                    } else { window.location.href = '../auth.html'; }
+                } else { window.location.href = '../auth.html'; }
+            });
+
+            async function loadInitialData() {
+                try {
+                    const [sSnap, lSnap, tSnap, subSnap, qSnap, uSnap] = await Promise.all([
+                        getDocs(collection(db, "subjects")),
+                        getDocs(collection(db, "lessons")),
+                        getDocs(query(collection(db, "tests"), where("status", "==", "published"))),
+                        getDocs(query(collection(db, "submissions"), where("studentId", "==", currentUser.uid))),
+                        getDocs(query(collection(db, "questions"), where("status", "==", "approved"))),
+                        getDocs(collection(db, "users"))
+                    ]);
+                    allDataCache.subjects = sSnap.docs.map(d => ({id: d.id, ...d.data()}));
+                    allDataCache.lessons = lSnap.docs.map(d => ({id: d.id, ...d.data()}));
+                    allDataCache.tests = tSnap.docs.map(d => ({id: d.id, ...d.data()}));
+                    allDataCache.submissions = subSnap.docs.map(d => ({id: d.id, ...d.data()}));
+                    allDataCache.questions = qSnap.docs.map(d => ({id: d.id, ...d.data()}));
+                    allDataCache.users = uSnap.docs.map(d => ({id: d.id, ...d.data()}));
+                    
+                    populateSelect(filtersLesson.subject, allDataCache.subjects, 'Chọn Môn học');
+                    populateSelect(filtersComp.subject, allDataCache.subjects, 'Chọn Môn học');
+                } catch (e) { showToast("Lỗi kết nối dữ liệu", "error"); }
+            }
+
+            // --- RENDER FUNCTIONS ---
+            function renderLessonList(container, subjectId, grade, inputType) {
+                const lessons = allDataCache.lessons.filter(l => l.subjectId === subjectId && l.grade == grade).sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity));
+                if (lessons.length === 0) {
+                    container.innerHTML = '<p class="text-slate-400 font-bold p-10 text-center col-span-full">Không có bài học phù hợp.</p>';
+                    return;
+                }
+                container.innerHTML = '';
+                container.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left p-2';
+                lessons.forEach(lesson => {
+                    const qCount = allDataCache.questions.filter(q => q.lessonId === lesson.id).length;
+                    const card = document.createElement('div');
+                    card.className = `lesson-card p-5 ${qCount === 0 ? 'opacity-50 grayscale cursor-not-allowed' : ''}`;
+                    card.innerHTML = `
+                        <input id="${lesson.id}-${inputType}" type="${inputType}" data-lesson-id="${lesson.id}" name="lesson-selection-${inputType}" class="hidden" ${qCount === 0 ? 'disabled' : ''}>
+                        <div class="lesson-check-icon"><i data-feather="check" class="w-4 text-white"></i></div>
+                        <label for="${lesson.id}-${inputType}" class="cursor-pointer">
+                            <span class="text-[10px] font-black uppercase text-teal-600 bg-teal-50 px-2 py-1 rounded">${qCount} câu hỏi</span>
+                            <h4 class="mt-3 font-bold text-slate-800 text-sm leading-snug">${cleanPrefix(lesson.name)}</h4>
+                        </label>`;
+                    container.appendChild(card);
+                });
+                feather.replace();
+            }
+
+            function renderTestsList(tests, container) {
+                container.innerHTML = tests.map(test => {
+                    const subject = allDataCache.subjects.find(s => s.id === test.subjectId);
+                    const submission = allDataCache.submissions.find(s => s.testId === test.id);
+                    // ĐÃ FIX: Hiển thị đúng số câu
+                    const qCount = (test.questionIds?.length) || (test.questions?.length) || 0;
+                    
+                    return `
+                        <div class="bg-white border border-slate-100 p-6 rounded-3xl flex items-center justify-between hover:border-teal-500 transition shadow-sm">
+                            <div class="flex items-center gap-4 overflow-hidden">
+                                <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center shrink-0"><i data-feather="file-text"></i></div>
+                                <div class="overflow-hidden">
+                                    <h3 class="font-black text-slate-800 truncate">${test.name}</h3>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase">${subject?.name || 'Chung'} • ${qCount} câu</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <a href="practice-test.html?testId=${test.id}" class="p-3 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition shadow-lg shadow-teal-600/20"><i data-feather="play" class="w-4"></i></a>
+                            </div>
+                        </div>`;
+                }).join('');
+                feather.replace();
+            }
+
+            // --- TAB LOGIC ---
+            function initializeTabs() {
+                tabsContainer.onclick = (e) => {
+                    const btn = e.target.closest('.tab-button');
+                    if (!btn) return;
+                    document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    btn.classList.add('active');
+                    const id = btn.dataset.tab;
+                    document.getElementById(id).classList.add('active');
+                    
+                    if (id === 'ai-practice') loadAiPracticeTab();
+                    if (id === 'admin-practice') loadAdminPracticeTab();
+                };
+                loadAiPracticeTab();
+                setupEventListeners();
+            }
+
+            // --- ĐỀ AI (Đã sửa logic click) ---
+            async function loadAiPracticeTab() {
+                aiPracticeContent.innerHTML = `<div class="skeleton h-20 w-full"></div>`;
+                const incorrectQuestions = allDataCache.submissions.flatMap(r => r.incorrectQuestions || []);
+                
+                if (incorrectQuestions.length === 0) {
+                    aiPracticeContent.innerHTML = `<div class="text-center py-10"><i data-feather="award" class="w-12 h-12 mx-auto text-green-500 mb-4"></i><p class="font-bold text-slate-700">Tuyệt vời!</p><p class="text-sm text-slate-400">Bạn chưa có lỗi sai nào cần ôn tập.</p></div>`;
+                    feather.replace(); return;
+                }
+
+                const weakLessons = [...new Set(incorrectQuestions.map(q => q.lessonId).filter(Boolean))];
+                aiPracticeContent.innerHTML = '<div class="space-y-3"></div>';
+                
+                const subjectGroups = {};
+                weakLessons.forEach(lId => {
+                    const lesson = allDataCache.lessons.find(l => l.id === lId);
+                    if(lesson) {
+                        if(!subjectGroups[lesson.subjectId]) subjectGroups[lesson.subjectId] = [];
+                        subjectGroups[lesson.subjectId].push(lId);
+                    }
+                });
+
+                for (const sId in subjectGroups) {
+                    const subject = allDataCache.subjects.find(s => s.id === sId);
+                    const qPool = allDataCache.questions.filter(q => subjectGroups[sId].includes(q.lessonId)).map(q => q.id);
+                    if (qPool.length === 0) continue;
+
+                    const card = document.createElement('div');
+                    card.className = "p-4 bg-slate-50 rounded-2xl flex justify-between items-center border border-slate-100";
+                    card.innerHTML = `
+                        <div><p class="font-black text-slate-800">${subject.name}</p><p class="text-[10px] font-bold text-slate-400 uppercase">${subjectGroups[sId].length} chủ đề yếu</p></div>
+                        <button class="bg-teal-600 text-white px-5 py-2 rounded-xl font-black text-xs shadow-lg btn-ai-start" data-sid="${sId}" data-pool='${JSON.stringify(qPool)}'>TẠO ĐỀ NGAY</button>
+                    `;
+                    aiPracticeContent.querySelector('.space-y-3').appendChild(card);
+                }
+                
+                // Gán sự kiện cho nút AI
+                aiPracticeContent.querySelectorAll('.btn-ai-start').forEach(btn => {
+                    btn.onclick = () => {
+                        const pool = JSON.parse(btn.dataset.pool);
+                        const final = pool.sort(() => 0.5 - Math.random()).slice(0, 20);
+                        sessionStorage.setItem('practiceTestQuestions', JSON.stringify(final));
+                        sessionStorage.setItem('practiceContext', JSON.stringify({ 
+                            type: 'ai_generated', 
+                            subjectId: btn.dataset.sid,
+                            testName: 'Đề ôn tập Năng lực AI' 
+                        }));
+                        window.location.href = 'practice-test.html'; // ĐÃ FIX TÊN FILE
+                    };
+                });
+                feather.replace();
+            }
+
+            function loadAdminPracticeTab() {
+                renderTestsList(allDataCache.tests, adminTestsContainer);
+            }
+
+            function setupEventListeners() {
+                // Theo bài
+                filtersLesson.subject.onchange = () => populateGrades(filtersLesson, filtersLesson.subject.value);
+                filtersLesson.grade.onchange = () => renderLessonList(lessonListContainerLesson, filtersLesson.subject.value, filtersLesson.grade.value, 'radio');
+                
+                lessonListContainerLesson.onchange = () => {
+                    const sel = lessonListContainerLesson.querySelector('input:checked');
+                    document.getElementById('question-count-wrapper-lesson').classList.toggle('hidden', !sel);
+                    startLessonPracticeBtn.disabled = !sel;
+                };
+
+                // Tổng hợp
+                filtersComp.subject.onchange = () => populateGrades(filtersComp, filtersComp.subject.value);
+                filtersComp.grade.onchange = () => renderLessonList(lessonListContainerComp, filtersComp.subject.value, filtersComp.grade.value, 'checkbox');
+
+                lessonListContainerComp.onchange = () => {
+                    const count = lessonListContainerComp.querySelectorAll('input:checked').length;
+                    document.getElementById('question-count-wrapper-comprehensive').classList.toggle('hidden', count === 0);
+                    startCompPracticeBtn.disabled = count === 0;
+                    startCompPracticeBtn.innerText = `Bắt đầu (${count} bài đã chọn)`;
+                };
+
+                // Slider update
+                document.getElementById('question-count-slider-lesson').oninput = (e) => document.getElementById('question-count-label-lesson').textContent = e.target.value;
+                document.getElementById('question-count-slider-comprehensive').oninput = (e) => document.getElementById('question-count-label-comprehensive').textContent = e.target.value;
+
+                // Nút Bắt đầu - ĐÃ FIX CHUYỂN HƯỚNG VÀ DỮ LIỆU
+                startLessonPracticeBtn.onclick = () => {
+                    const selInput = lessonListContainerLesson.querySelector('input:checked');
+                    const lessonId = selInput.dataset.lessonId;
+                    const count = parseInt(document.getElementById('question-count-slider-lesson').value);
+                    const pool = allDataCache.questions.filter(q => q.lessonId === lessonId).map(q => q.id);
+                    const final = pool.sort(() => 0.5 - Math.random()).slice(0, count);
+                    
+                    sessionStorage.setItem('practiceTestQuestions', JSON.stringify(final));
+                    sessionStorage.setItem('practiceContext', JSON.stringify({ 
+                        type: 'lesson_practice', 
+                        subjectId: filtersLesson.subject.value,
+                        testName: 'Luyện tập theo bài' 
+                    }));
+                    window.location.href = 'practice-test.html'; // ĐÃ FIX TÊN FILE
+                };
+
+                startCompPracticeBtn.onclick = () => {
+                    const checked = Array.from(lessonListContainerComp.querySelectorAll('input:checked')).map(i => i.dataset.lessonId);
+                    const count = parseInt(document.getElementById('question-count-slider-comprehensive').value);
+                    const pool = allDataCache.questions.filter(q => checked.includes(q.lessonId)).map(q => q.id);
+                    const final = pool.sort(() => 0.5 - Math.random()).slice(0, count);
+                    
+                    sessionStorage.setItem('practiceTestQuestions', JSON.stringify(final));
+                    sessionStorage.setItem('practiceContext', JSON.stringify({ 
+                        type: 'comprehensive_practice', 
+                        subjectId: filtersComp.subject.value,
+                        testName: 'Luyện tập tổng hợp' 
+                    }));
+                    window.location.href = 'practice-test.html'; // ĐÃ FIX TÊN FILE
+                };
+
+                document.getElementById('logout-btn').onclick = () => signOut(auth);
+            }
+
+            // Helpers
+            function populateSelect(el, data, placeholder) {
+                el.innerHTML = `<option value="">${placeholder}</option>` + data.map(i => `<option value="${i.id}">${i.name}</option>`).join('');
+            }
+
+            function populateGrades(group, sId) {
+                const grades = [...new Set(allDataCache.lessons.filter(l => l.subjectId === sId).map(l => l.grade))].sort((a,b) => a-b);
+                group.grade.innerHTML = `<option value="">Chọn Lớp</option>` + grades.map(g => `<option value="${g}">Lớp ${g}</option>`).join('');
+                group.grade.disabled = !sId;
+            }
+
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = `toast show ${type === 'success' ? 'bg-slate-900' : 'bg-red-500'} text-white px-6 py-3 rounded-2xl shadow-2xl font-bold text-sm`;
+                toast.textContent = message;
+                toastContainer.appendChild(toast);
+                setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>

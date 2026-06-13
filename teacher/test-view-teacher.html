@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xem trước Đề thi - AIGEO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+    <style>
+        :root {
+            --primary-teal: #0D9488;
+            --primary-emerald: #10B981;
+        }
+        html { scroll-behavior: smooth; }
+        body { 
+            font-family: 'Be Vietnam Pro', sans-serif; 
+            background-color: #f1f5f9; 
+        }
+        .sidebar-link { display: flex; align-items: center; padding: 0.75rem 1rem; border-radius: 0.5rem; transition: background-color 0.2s, color 0.2s; }
+        .sidebar-link:hover { background-color: #e2e8f0; color: #0f172a; }
+        .sidebar-link.active { 
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            color: white; 
+            font-weight: 600; 
+            box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2);
+        }
+        .sidebar-link.active:hover { background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald)); }
+        .sidebar-link.active svg { color: white; }
+        .sidebar-link svg { margin-right: 0.75rem; }
+        
+        .brand-gradient-text {
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .cta-button {
+            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.2);
+        }
+        .cta-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(13, 148, 136, 0.3);
+        }
+        .prose { max-width: none; }
+        .answer-option.correct { background-color: #dcfce7 !important; border-color: #22c55e !important; color: #15803d; font-weight: 600; }
+        .answer-option-tf.correct { background-color: #dcfce7; border-color: #22c55e; }
+        .answer-option-tf.incorrect { background-color: #fee2e2; border-color: #ef4444; }
+
+        .toast { transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; transform: translateY(100%); opacity: 0; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        
+        .modal-backdrop { background-color: rgba(0, 0, 0, 0.5); }
+        .modal-content { transition: transform 0.3s ease, opacity 0.3s ease; transform: translateY(-20px); }
+        .question-section:not(:last-child) {
+            border-bottom: 2px dashed #cbd5e1;
+            padding-bottom: 2rem;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body class="flex h-screen">
+    
+    <aside class="w-64 bg-white shadow-md flex-shrink-0 flex flex-col">
+        <div class="h-16 flex-shrink-0 flex items-center justify-center border-b px-4">
+            <a href="/index.html" class="flex items-center gap-2">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" alt="AIGEO Logo" class="h-8 w-auto">
+                <span class="text-2xl font-bold brand-gradient-text">AIGEO</span>
+            </a>
+        </div>
+        <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
+            <a href="index.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="home"></i>Bảng điều khiển</a>
+            <a href="classrooms.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="users"></i>Quản lý Lớp học</a>
+            <a href="question-bank.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="database"></i>Ngân hàng câu hỏi</a>
+            <a href="tests.html" class="sidebar-link active"><i data-feather="file-text"></i>Quản lý đề thi</a>
+            <a href="account.html" class="sidebar-link text-slate-600 nav-link"><i data-feather="user"></i>Tài khoản</a>
+        </nav>
+        <div class="p-4 border-t flex-shrink-0"><button id="logout-btn" class="w-full sidebar-link text-slate-600 text-left"><i data-feather="log-out"></i>Đăng xuất</button></div>
+    </aside>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <header class="bg-white shadow-md h-16 w-full flex-shrink-0 flex items-center justify-between px-6 z-20">
+             <div class="flex items-center space-x-4">
+                 <a href="tests.html" class="p-2 rounded-md hover:bg-slate-100 nav-link"><i data-feather="arrow-left" class="w-6 h-6 text-slate-600"></i></a>
+                 <h1 id="test-name-header" class="text-2xl font-bold text-slate-800">Đang tải đề thi...</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a id="edit-btn" href="#" class="nav-link bg-slate-100 text-slate-700 font-semibold px-4 py-2 rounded-lg hover:bg-slate-200 flex items-center">
+                    <i data-feather="edit" class="w-4 h-4 mr-2"></i>Chỉnh sửa
+                </a>
+                <button id="assign-btn" class="cta-button text-white font-semibold px-4 py-2 rounded-lg flex items-center">
+                    <i data-feather="send" class="w-4 h-4 mr-2"></i>Giao bài
+                </button>
+                <div class="flex items-center border-l pl-4 ml-2">
+                    <span id="user-name" class="font-semibold text-gray-700 mr-4">Đang tải...</span>
+                    <img id="user-avatar" class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/40x40/E2E8F0/475569?text=T" alt="Teacher Avatar">
+                </div>
+            </div>
+        </header>
+
+        <div class="flex-1 flex overflow-hidden">
+            <main id="main-content-scroll" class="flex-1 p-4 md:p-8 overflow-y-auto">
+                <div class="max-w-4xl mx-auto">
+                    <div id="main-content-area" class="space-y-8">
+                        </div>
+                </div>
+            </main>
+
+            <aside id="question-map" class="w-72 bg-white border-l p-4 flex-shrink-0 flex flex-col overflow-y-auto">
+                <h2 class="font-bold mb-4">Danh sách câu hỏi</h2>
+                <div id="question-grid" class="grid grid-cols-5 gap-2"></div>
+                <div class="mt-auto pt-4 space-y-2">
+                    <button id="show-answer-btn" class="w-full bg-amber-500 text-white font-bold py-3 rounded-lg hover:bg-amber-600">Xem đáp án</button>
+                </div>
+            </aside>
+        </div>
+    </div>
+    
+    <div id="assign-confirm-modal" class="fixed inset-0 z-40 items-center justify-center hidden modal-backdrop">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg modal-content">
+            <h2 class="text-xl font-bold">Giao bài cho lớp</h2>
+            <p id="assign-modal-test-name" class="mt-2 text-gray-600"></p>
+            <div id="classrooms-list" class="mt-4 max-h-60 overflow-y-auto space-y-2 border p-3 rounded-md">
+                <p class="text-slate-500">Đang tải danh sách lớp...</p>
+            </div>
+            <div class="flex justify-end space-x-3 mt-6">
+                <button type="button" id="assign-cancel-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 font-semibold">Hủy</button>
+                <button type="button" id="assign-confirm-btn" class="cta-button text-white px-4 py-2 rounded-lg font-semibold">Xác nhận Giao bài</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 w-80"></div>
+    
+    <script src="../firebase-config.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, getDocs, collection, query, where, updateDoc, arrayUnion, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+
+            // --- DOM Elements & State ---
+            const mainContentArea = document.getElementById('main-content-area');
+            const testNameHeader = document.getElementById('test-name-header');
+            const questionGridEl = document.getElementById('question-grid');
+            const showAnswerBtn = document.getElementById('show-answer-btn');
+            const assignBtn = document.getElementById('assign-btn');
+            const userNameEl = document.getElementById('user-name');
+            const userAvatarEl = document.getElementById('user-avatar');
+            const toastContainer = document.getElementById('toast-container');
+            const assignConfirmModal = document.getElementById('assign-confirm-modal');
+            const assignCancelBtn = document.getElementById('assign-cancel-btn');
+            const assignConfirmBtn = document.getElementById('assign-confirm-btn');
+            const classroomsListEl = document.getElementById('classrooms-list');
+            const assignModalTestName = document.getElementById('assign-modal-test-name');
+            
+            let currentUser = null;
+            let currentTestId = null;
+            let questions = [];
+            let testToAssign = null;
+
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+                toast.className = `toast show ${bgColor} text-white px-4 py-2 rounded-lg shadow-lg`;
+                toast.textContent = message;
+                toastContainer.appendChild(toast);
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    toast.addEventListener('transitionend', () => toast.remove());
+                }, 3000);
+            }
+             function cleanPrefix(text) {
+                if (!text) return '';
+                return text.replace(/^(Câu|Bài|Phần|Mục)\s*[\dIVXLC]+\s*[:.]?\s*/i, '').trim();
+            }
+
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    currentUser = user;
+                    const docSnap = await getDoc(doc(db, "users", user.uid));
+                    if (docSnap.exists() && docSnap.data().role === 'teacher') {
+                        const userData = docSnap.data();
+                        userNameEl.textContent = userData.name || 'Giáo viên';
+                        const nameInitial = (userData.name || 'T').charAt(0).toUpperCase();
+                        userAvatarEl.src = `https://placehold.co/40x40/10B981/FFFFFF?text=${nameInitial}`;
+                        initTestView();
+                    } else {
+                        const userRole = docSnap.data()?.role;
+                        window.location.href = userRole ? `../${userRole}/index.html` : '../auth.html';
+                    }
+                } else {
+                    window.location.href = '../auth.html';
+                }
+            });
+            
+            async function initTestView() {
+                const urlParams = new URLSearchParams(window.location.search);
+                currentTestId = urlParams.get('testId');
+                if (!currentTestId) {
+                    window.location.href = 'tests.html';
+                    return;
+                }
+
+                try {
+                    const testDocSnap = await getDoc(doc(db, "tests", currentTestId));
+                    if (!testDocSnap.exists()) throw new Error("Đề thi không tồn tại.");
+                    
+                    const testData = testDocSnap.data();
+                    testNameHeader.textContent = testData.name;
+
+                    if (testData.status === 'published') {
+                        assignBtn.disabled = true;
+                        assignBtn.innerHTML = '<i data-feather="check-circle" class="w-4 h-4 mr-2"></i>Đã giao bài';
+                        feather.replace();
+                    }
+
+                    if (testData.questionIds && testData.questionIds.length > 0) {
+                        const questionIds = testData.questionIds;
+                        const fetchedQuestions = [];
+                        for (let i = 0; i < questionIds.length; i += 30) {
+                            const chunk = questionIds.slice(i, i + 30);
+                            const questionsQuery = query(collection(db, "questions"), where("__name__", "in", chunk));
+                            const questionsSnap = await getDocs(questionsQuery);
+                            questionsSnap.forEach(d => fetchedQuestions.push({id: d.id, ...d.data()}));
+                        }
+                        questions = fetchedQuestions.sort((a, b) => questionIds.indexOf(a.id) - questionIds.indexOf(b.id));
+                    } else if (testData.questions && testData.questions.length > 0) {
+                        questions = testData.questions.map((q, i) => ({...q, id: `embedded_${i}`}));
+                    } else {
+                        mainContentArea.innerHTML = `<p class="text-center text-slate-500">Đề thi này chưa có câu hỏi nào.</p>`;
+                        return;
+                    }
+
+                    renderFullTest();
+                    renderQuestionMap();
+                    setupEventListeners();
+                } catch (error) {
+                    console.error("Error loading test:", error);
+                }
+            }
+
+            function getQuestionHTML(question, questionNumber) {
+                let answerHTML = '';
+                if (question.type === 'multiple_choice') {
+                    answerHTML = (question.options || []).map((option, i) => {
+                        const optionLetter = String.fromCharCode(65 + i);
+                        return `<div class="answer-option border-2 border-slate-200 p-4 rounded-lg mt-2 flex items-start" data-answer="${optionLetter}">
+                                    <span class="font-bold mr-2">${optionLetter}.</span> <div>${option}</div>
+                                </div>`;
+                    }).join('');
+                } else if (question.type === 'true_false_group' || question.type === 'true_false') {
+                    const statements = question.statements || (Array.isArray(question.statements) ? [] : {});
+                    let counter = 0;
+                    if(Array.isArray(statements)) {
+                        answerHTML = statements.map((stmt, i) => {
+                            if (!stmt.statement) return '';
+                            counter++;
+                            return `<div class="answer-option-tf border-2 border-slate-200 p-4 rounded-lg mt-2" data-statement-key="${i}">
+                                        <p class="mb-2"><span class="font-bold mr-2">${counter})</span> ${stmt.statement}</p>
+                                    </div>`;
+                        }).join('');
+                    } else {
+                        answerHTML = Object.keys(statements).map(key => {
+                            if (!statements[key]) return '';
+                            counter++;
+                            return `<div class="answer-option-tf border-2 border-slate-200 p-4 rounded-lg mt-2" data-statement-key="${key}">
+                                        <p class="mb-2"><span class="font-bold mr-2">${counter})</span> ${statements[key]}</p>
+                                    </div>`;
+                        }).join('');
+                    }
+                } else if (question.type === 'short_answer') {
+                     answerHTML = `<div class="mt-2 text-sm text-slate-500"><i>(Câu trả lời ngắn)</i></div>`;
+                }
+
+                const imageHTML = question.imageUrl 
+                    ? `<div class="my-4"><img src="${question.imageUrl}" alt="Hình ảnh câu hỏi" class="max-w-full h-auto rounded-lg mx-auto border"></div>` 
+                    : '';
+
+                return `
+                    <div id="question-${question.id}" class="bg-white p-6 rounded-xl shadow-sm">
+                        <p class="font-semibold text-slate-600">Câu ${questionNumber}</p>
+                        ${imageHTML}
+                        <div class="prose mt-4 text-lg">${question.content}</div>
+                        <div class="mt-6 space-y-3">${answerHTML}</div>
+                    </div>
+                `;
+            }
+            
+            function renderFullTest() {
+                const questionsByType = {
+                    multiple_choice: [],
+                    true_false: [],
+                    true_false_group: [],
+                    short_answer: []
+                };
+                questions.forEach(q => {
+                    if (questionsByType[q.type]) {
+                        questionsByType[q.type].push(q);
+                    }
+                });
+
+                let fullTestHTML = '';
+                let questionCounter = 0;
+
+                const renderSection = (title, questionsOfType) => {
+                    if (questionsOfType.length === 0) return '';
+                    let sectionHTML = `<div class="question-section">
+                        <h2 class="text-2xl font-bold text-slate-800 pb-2 mb-6 border-b-2 border-slate-200">${title}</h2>
+                        <div class="space-y-8">`;
+
+                    questionsOfType.forEach(q => {
+                        questionCounter++;
+                        sectionHTML += getQuestionHTML(q, questionCounter);
+                    });
+
+                    sectionHTML += `</div></div>`;
+                    return sectionHTML;
+                };
+                
+                fullTestHTML += renderSection('I. TRẮC NGHIỆM NHIỀU LỰA CHỌN', questionsByType.multiple_choice);
+                const allTrueFalse = [...questionsByType.true_false, ...questionsByType.true_false_group];
+                fullTestHTML += renderSection('II. TRẮC NGHIỆM ĐÚNG/SAI', allTrueFalse);
+                fullTestHTML += renderSection('III. TRẢ LỜI NGẮN', questionsByType.short_answer);
+                
+                mainContentArea.innerHTML = fullTestHTML;
+                renderMathWithKaTeX(mainContentArea);
+            }
+
+            function renderQuestionMap() {
+                questionGridEl.innerHTML = '';
+                questions.forEach((q, index) => {
+                     const btn = document.createElement('a');
+                     btn.href = `#question-${q.id}`;
+                     btn.className = 'question-grid-btn border-2 rounded-md p-2 font-semibold transition-colors flex items-center justify-center';
+                     btn.textContent = index + 1;
+                     questionGridEl.appendChild(btn);
+                });
+            }
+
+            function setupEventListeners() {
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        document.body.style.opacity = '0';
+                        setTimeout(() => { window.location.href = this.href; }, 200);
+                    });
+                });
+                document.body.style.transition = 'opacity 0.2s ease-in-out';
+                
+                showAnswerBtn.addEventListener('click', checkAllAnswers);
+                
+                assignBtn.addEventListener('click', showAssignModal);
+                assignCancelBtn.addEventListener('click', hideAssignModal);
+                assignConfirmBtn.addEventListener('click', handleAssignTest);
+                
+                document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+            }
+
+            function checkAllAnswers() {
+                questions.forEach(question => {
+                    const questionCard = document.getElementById(`question-${question.id}`);
+                    if (!questionCard) return;
+
+                    switch(question.type) {
+                        case 'multiple_choice':
+                            questionCard.querySelectorAll('.answer-option').forEach(opt => {
+                                if (opt.dataset.answer === question.correctAnswer) {
+                                    opt.classList.add('correct');
+                                }
+                            });
+                            break;
+                        case 'short_answer':
+                            const saAnswerDiv = document.createElement('div');
+                            saAnswerDiv.className = "mt-4 p-3 bg-green-50 border border-green-200 rounded-lg text-sm";
+                            saAnswerDiv.innerHTML = `<strong>Đáp án đúng:</strong> <span class="font-mono text-green-800">${question.correctAnswer}</span>`;
+                            questionCard.querySelector('.mt-6').appendChild(saAnswerDiv);
+                            break;
+                        case 'true_false': // Array format from Admin
+                            (question.statements || []).forEach((stmt, i) => {
+                                const wrapper = questionCard.querySelector(`[data-statement-key="${i}"]`);
+                                if (wrapper) {
+                                    const correctAnswer = stmt.answer;
+                                    const answerText = `<strong class="${correctAnswer ? 'text-green-700' : 'text-red-700'}">${correctAnswer ? 'Đúng' : 'Sai'}</strong>`;
+                                    wrapper.classList.add(correctAnswer ? 'correct' : 'incorrect');
+                                    wrapper.innerHTML += `<div class="mt-2 text-sm">Đáp án: ${answerText}</div>`;
+                                }
+                            });
+                            break;
+                        case 'true_false_group': // Object format from Teacher
+                             Object.keys(question.statements || {}).forEach(key => {
+                                const wrapper = questionCard.querySelector(`[data-statement-key="${key}"]`);
+                                 if (wrapper) {
+                                    const correctAnswer = question.answers[key];
+                                    const answerText = `<strong class="${correctAnswer ? 'text-green-700' : 'text-red-700'}">${correctAnswer ? 'Đúng' : 'Sai'}</strong>`;
+                                    wrapper.classList.add(correctAnswer ? 'correct' : 'incorrect');
+                                    wrapper.innerHTML += `<div class="mt-2 text-sm">Đáp án: ${answerText}</div>`;
+                                }
+                            });
+                            break;
+                    }
+                });
+                showAnswerBtn.disabled = true;
+                showToast("Đã hiển thị tất cả đáp án.", "success");
+            }
+            
+            async function showAssignModal() {
+                testToAssign = { id: currentTestId, name: testNameHeader.textContent };
+                assignModalTestName.textContent = `Giao bài: "${testToAssign.name}"`;
+                
+                const q = query(collection(db, "classrooms"), where("teacherId", "==", currentUser.uid));
+                const snapshot = await getDocs(q);
+                classroomsListEl.innerHTML = '';
+                if (snapshot.empty) {
+                    classroomsListEl.innerHTML = `<p class="text-slate-500 text-sm">Bạn chưa có lớp học nào.</p>`;
+                } else {
+                    snapshot.forEach(doc => {
+                        const classroom = {id: doc.id, ...doc.data()};
+                        classroomsListEl.innerHTML += `
+                            <label class="flex items-center space-x-3 p-2 rounded-md hover:bg-slate-100 cursor-pointer">
+                                <input type="checkbox" value="${classroom.id}" name="assign-classroom" class="h-4 w-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500">
+                                <span class="text-sm text-slate-700">${classroom.className}</span>
+                            </label>
+                        `;
+                    });
+                }
+                assignConfirmModal.classList.remove('hidden');
+                assignConfirmModal.classList.add('flex');
+            }
+
+            function hideAssignModal() {
+                 assignConfirmModal.classList.add('hidden');
+                 assignConfirmModal.classList.remove('flex');
+            }
+            
+            async function handleAssignTest() {
+                const selectedClassroomIds = Array.from(document.querySelectorAll('input[name="assign-classroom"]:checked')).map(cb => cb.value);
+                if (selectedClassroomIds.length === 0) {
+                    showToast("Vui lòng chọn ít nhất một lớp học.", "error");
+                    return;
+                }
+                
+                assignConfirmBtn.disabled = true;
+                assignConfirmBtn.textContent = 'Đang giao...';
+
+                try {
+                    const batch = writeBatch(db);
+                    
+                    const testRef = doc(db, "tests", testToAssign.id);
+                    batch.update(testRef, { status: "published" });
+
+                    const assignment = { testId: testToAssign.id, assignedAt: new Date() };
+                    selectedClassroomIds.forEach(classId => {
+                        const classRef = doc(db, "classrooms", classId);
+                        batch.update(classRef, {
+                            assignments: arrayUnion(assignment)
+                        });
+                    });
+                    
+                    await batch.commit();
+
+                    showToast(`Đã xuất bản và giao bài thành công cho ${selectedClassroomIds.length} lớp!`, "success");
+                    hideAssignModal();
+                    assignBtn.disabled = true;
+                    assignBtn.innerHTML = '<i data-feather="check-circle" class="w-4 h-4 mr-2"></i>Đã giao bài';
+                    feather.replace();
+                } catch (error) {
+                    console.error("Error assigning test:", error);
+                    showToast("Đã có lỗi xảy ra khi giao bài.", "error");
+                } finally {
+                    assignConfirmBtn.disabled = false;
+                    assignConfirmBtn.textContent = 'Xác nhận Giao bài';
+                }
+            }
+            
+            function renderMathWithKaTeX(elem) {
+                if (window.renderMathInElement) {
+                    window.renderMathInElement(elem, { delimiters: [{left: "$$", right: "$$", display: true}, {left: "$", right: "$", display: false}] });
+                }
+            }
+            
+            feather.replace();
+        });
+    </script>
+</body>
+</html>
