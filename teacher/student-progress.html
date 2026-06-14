@@ -80,6 +80,71 @@
             transform: scale(1.1);
         }
 
+        /* --- STUDENT CARD STYLE (Unified) --- */
+        .student-card {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #E2E8F0;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            position: relative; /* Để nút con bám theo */
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+        }
+
+        /* Hiệu ứng hover cho cả cái card */
+        .student-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 15px 30px -10px rgba(13, 148, 136, 0.1);
+        }
+
+        /* Nút xoá nằm TRONG card */
+        .kick-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 28px;
+            height: 28px;
+            background: #F1F5F9; /* Màu xám nhạt trung tính khi bình thường */
+            color: #94A3B8;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+            z-index: 10;
+            opacity: 0; /* Ẩn đi */
+            transform: scale(0.8);
+        }
+
+        /* Khi hover vào card thì nút xoá hiện lên bên trong */
+        .student-card:hover .kick-btn {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Khi di chuột trực tiếp vào nút xoá */
+        .kick-btn:hover {
+            background: #FEE2E2 !important;
+            color: #EF4444 !important;
+            transform: scale(1.1) !important;
+        }
+
+        /* Phần link bao phủ diện tích card trừ nút xoá */
+        .card-link {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-grow: 1;
+            text-decoration: none;
+            color: inherit;
+        }
+
         /* --- SCROLLBAR --- */
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
@@ -118,11 +183,11 @@
         <!-- Header -->
         <header class="h-16 bg-white border-b flex items-center justify-between px-8 shrink-0">
             <div class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">
-                <a href="index.html" class="hover:text-teal-600">Dashboard</a>
+                <a href="index.html" class="hover:text-teal-600">Tổng Quan</a>
                 <span>/</span>
-                <a href="classrooms.html" class="hover:text-teal-600">Classrooms</a>
+                <a href="classrooms.html" class="hover:text-teal-600">Quản Lý Lớp Học</a>
                 <span>/</span>
-                <span class="text-slate-800">Student progress</span>
+                <span class="text-slate-800">Danh Sách Học Sinh</span>
             </div>
             <div class="flex items-center gap-4">
                 <div class="text-right hidden sm:block">
@@ -164,10 +229,10 @@
     <div id="toast-container" class="fixed bottom-10 right-10 z-50 flex flex-col gap-3"></div>
 
     <script src="../firebase-config.js"></script>
-    <script type="module">
+<script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, query, where, getDocs, updateDoc, arrayRemove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         document.addEventListener('DOMContentLoaded', () => {
             const app = initializeApp(firebaseConfig);
@@ -180,7 +245,7 @@
             const classNameHeader = document.getElementById('class-name-header');
             const classSubjectHeader = document.getElementById('class-subject-header');
 
-            // --- AUTH LOGIC (GIỮ NGUYÊN) ---
+            // --- 1. AUTH LOGIC ---
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
                     currentUser = user;
@@ -194,8 +259,43 @@
                 } else { window.location.href = '../auth.html'; }
             });
 
-            // --- OVERRIDE RENDER STUDENT LIST (Giao diện Profile Card Pro) ---
-            window.renderStudentList = (students) => {
+            // --- 2. HÀM ĐUỔI HỌC SINH ---
+            function setupKickLogic() {
+                document.querySelectorAll('.kick-btn').forEach(btn => {
+                    btn.onclick = async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation(); // Chặn click nhảy vào trang student.html
+
+                        const studentId = btn.getAttribute('data-id');
+                        const studentName = btn.getAttribute('data-name');
+
+                        if (confirm(`Bạn có chắc chắn muốn mời học sinh "${studentName}" ra khỏi lớp không?`)) {
+                            try {
+                                btn.disabled = true;
+                                btn.innerHTML = `<i class="animate-spin" data-feather="loader"></i>`;
+                                feather.replace();
+
+                                const classDocRef = doc(db, "classrooms", currentClassId);
+                                await updateDoc(classDocRef, {
+                                    students: arrayRemove(studentId)
+                                });
+
+                                alert("Đã xóa học sinh thành công!");
+                                initPage(); // Tải lại danh sách học sinh
+
+                            } catch (error) {
+                                console.error("Lỗi xóa:", error);
+                                alert("Đã có lỗi xảy ra.");
+                                btn.disabled = false;
+                                btn.innerHTML = `<i data-feather="user-x"></i>`;
+                                feather.replace();
+                            }
+                        }
+                    };
+                });
+            }
+
+            function renderStudentList(students) {
                 if (students.length === 0) {
                     progressArea.innerHTML = `<div class="col-span-full py-20 text-center"><p class="text-slate-400 font-bold uppercase tracking-widest text-xs">Lớp học chưa có học sinh</p></div>`;
                     return;
@@ -206,58 +306,63 @@
 
                 students.sort((a, b) => (a.name || '').localeCompare(b.name || '')).forEach((student) => {
                     const initial = (student.name || 'S').charAt(0).toUpperCase();
-                    const card = document.createElement('a');
-                    card.href = `student.html?studentId=${student.id}&studentName=${encodeURIComponent(student.name)}&classId=${currentClassId}`;
-                    card.className = "student-card nav-link";
                     
+                    const card = document.createElement('div');
+                    card.className = "student-card"; // Khối trắng bao quanh tất cả
+
                     card.innerHTML = `
-                        <div class="avatar-initial shadow-sm">${initial}</div>
-                        <div class="overflow-hidden">
-                            <p class="font-black text-slate-800 truncate text-sm">${student.name}</p>
-                            <p class="text-[10px] font-bold text-slate-400 truncate uppercase tracking-tighter">${student.email || 'N/A'}</p>
-                        </div>
+                        <!-- Nút xoá: Nằm trong Card nhưng tách biệt với Link -->
+                        <button class="kick-btn" data-id="${student.id}" data-name="${student.name}" title="Xoá học sinh">
+                            <i data-feather="x" class="w-3 h-3"></i>
+                        </button>
+
+                        <!-- Link chi tiết: Bao phủ avatar và text -->
+                        <a href="student.html?studentId=${student.id}&studentName=${encodeURIComponent(student.name)}&classId=${currentClassId}" class="card-link nav-link">
+                            <div class="avatar-initial shadow-sm">${initial}</div>
+                            <div class="overflow-hidden">
+                                <p class="font-black text-slate-800 truncate text-sm">${student.name}</p>
+                                <p class="text-[10px] font-bold text-slate-400 truncate uppercase tracking-tighter">${student.email || 'N/A'}</p>
+                            </div>
+                        </a>
                     `;
                     progressArea.appendChild(card);
                 });
+
                 feather.replace();
-                attachNavLinkLogic(); // Gán lại hiệu ứng chuyển trang
+                setupKickLogic(); 
+                attachNavLinkLogic(); 
             }
 
+            // --- 4. TẢI DỮ LIỆU ---
             async function initPage() {
                 const urlParams = new URLSearchParams(window.location.search);
                 currentClassId = urlParams.get('classId');
-                if (!currentClassId) {
-                    progressArea.innerHTML = `<p class="p-8 text-center text-red-600">Thông tin không hợp lệ. Vui lòng quay lại.</p>`;
-                    return;
-                }
-                progressArea.innerHTML = `<p class="p-8 text-center text-slate-500">Đang tải dữ liệu tiến độ...</p>`;
+                if (!currentClassId) return;
+
                 try {
                     const classDocRef = doc(db, "classrooms", currentClassId);
                     const classDocSnap = await getDoc(classDocRef);
-                    if (!classDocSnap.exists() || classDocSnap.data().teacherId !== currentUser.uid) {
-                        throw new Error("Không tìm thấy lớp học hoặc bạn không có quyền truy cập.");
+                    
+                    if (classDocSnap.exists()) {
+                        const classroomData = classDocSnap.data();
+                        
+                        // Lấy tên môn học
+                        const subjectDocSnap = await getDoc(doc(db, "subjects", classroomData.subjectId));
+                        const subjectName = subjectDocSnap.exists() ? subjectDocSnap.data().name : "Địa lý";
+                        
+                        classNameHeader.textContent = `Danh sách học sinh lớp: ${classroomData.className}`;
+                        classSubjectHeader.textContent = `${subjectName} - Lớp ${classroomData.grade}`;
+                        
+                        const studentIds = classroomData.students || [];
+                        if (studentIds.length === 0) {
+                             progressArea.innerHTML = `<div class="col-span-full py-20 text-center"><p class="text-slate-400 font-bold uppercase text-xs">Lớp chưa có học sinh</p></div>`;
+                             return;
+                        }
+                        
+                        const studentDocs = await fetchDocsInChunks(collection(db, "users"), "__name__", studentIds);
+                        renderStudentList(studentDocs);
                     }
-                    const classroomData = { id: classDocSnap.id, ...classDocSnap.data() };
-                    
-                    const subjectDocSnap = await getDoc(doc(db, "subjects", classroomData.subjectId));
-                    const subjectName = subjectDocSnap.exists() ? subjectDocSnap.data().name : "Không rõ";
-                    
-                    classNameHeader.textContent = `Danh sách học sinh lớp: ${classroomData.className}`;
-                    classSubjectHeader.textContent = `${subjectName} - Lớp ${classroomData.grade}`;
-                    
-                    const studentIds = classroomData.students || [];
-                    if (studentIds.length === 0) {
-                         progressArea.innerHTML = `<p class="p-8 text-center text-slate-500">Lớp học này chưa có học sinh nào.</p>`;
-                         return;
-                    }
-                    
-                    const studentDocs = await fetchDocsInChunks(collection(db, "users"), "__name__", studentIds);
-                    renderStudentList(studentDocs);
-
-                } catch (error) {
-                    console.error("Error loading student progress:", error);
-                    progressArea.innerHTML = `<p class="p-8 text-center text-red-600">${error.message}</p>`;
-                }
+                } catch (error) { console.error(error); }
             }
             
             async function fetchDocsInChunks(collectionRef, field, ids) {
@@ -265,48 +370,13 @@
                 const allDocsData = [];
                 for (let i = 0; i < ids.length; i += 30) {
                     const chunk = ids.slice(i, i + 30);
-                    if (chunk.length > 0) {
-                        const q = query(collectionRef, where(field, "in", chunk));
-                        const snapshot = await getDocs(q);
-                        snapshot.forEach(doc => allDocsData.push({id: doc.id, ...doc.data()}));
-                    }
+                    const q = query(collectionRef, where(field, "in", chunk));
+                    const snapshot = await getDocs(q);
+                    snapshot.forEach(doc => allDocsData.push({id: doc.id, ...doc.data()}));
                 }
                 return allDocsData;
             }
 
-            function renderStudentList(students) {
-                progressArea.innerHTML = '';
-                progressArea.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6';
-
-                students.sort((a, b) => (a.name || '').localeCompare(b.name || '')).forEach((student) => {
-                    const nameInitial = (student.name || 'S').charAt(0).toUpperCase();
-                    const studentCard = document.createElement('a');
-                    // *** SỬA LỖI: Thêm classId vào href ***
-                    studentCard.href = `student.html?studentId=${student.id}&studentName=${encodeURIComponent(student.name)}&classId=${currentClassId}`;
-                    studentCard.className = "nav-link bg-white p-5 rounded-xl shadow-sm flex items-center space-x-4 transition-transform transform hover:-translate-y-1 hover:shadow-lg";
-                    
-                    studentCard.innerHTML = `
-                        <div class="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600 flex-shrink-0">
-                            ${nameInitial}
-                        </div>
-                        <div class="overflow-hidden">
-                            <p class="font-bold text-slate-800 truncate">${student.name}</p>
-                            <p class="text-sm text-slate-500 truncate">${student.email || 'N/A'}</p>
-                        </div>
-                    `;
-                    progressArea.appendChild(studentCard);
-                });
-            }
-            
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    document.body.style.opacity = '0';
-                    setTimeout(() => { window.location.href = this.href; }, 200);
-                });
-            });
-            document.body.style.transition = 'opacity 0.2s ease-in-out';
-            
             function attachNavLinkLogic() {
                 document.querySelectorAll('.nav-link').forEach(link => {
                     link.onclick = (e) => {
@@ -318,7 +388,6 @@
             }
 
             document.getElementById('logout-btn').onclick = () => signOut(auth);
-            document.body.style.transition = 'opacity 0.2s ease-in-out';
             feather.replace();
         });
     </script>
