@@ -117,41 +117,10 @@
             transform: translateY(0);
         }
 
-        /* --- GLOBAL SCROLLBAR STYLE --- */
-
-        /* 1. Thiết lập độ rộng/cao của thanh trượt */
-        ::-webkit-scrollbar {
-            width: 10px;  /* Độ rộng cho thanh dọc */
-            height: 10px; /* Độ cao cho thanh ngang */
-        }
-
-        /* 2. Thiết lập rãnh trượt (Track) - Nền chìm */
-        ::-webkit-scrollbar-track {
-            background: rgba(80, 255, 197, 0.05);
-            border-radius: 10px;
-        }
-
-        /* 3. Thiết lập tay nắm (Thumb) - Phần di chuyển */
-        ::-webkit-scrollbar-thumb {
-            background-color: #0D9488;
-            border-radius: 10px; /* Bo tròn mềm mại */
-            
-            /* Mẹo: Tạo viền trong suốt để thanh trượt trông nhỏ hơn và "lơ lửng" */
-            border: 2px solid transparent;
-            background-clip: content-box;
-            transition: background-color 0.3s ease;
-        }
-
-        /* 4. Hiệu ứng khi di chuột vào (Hover) */
-        ::-webkit-scrollbar-thumb:hover {
-            background-color: #0F766E;
-            border: 1px solid transparent;
-        }
-
-        /* 5. (Tùy chọn) Ẩn nút mũi tên 2 đầu (nếu trình duyệt hiển thị) */
-        ::-webkit-scrollbar-button {
-            display: none;
-        }
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0D9488; }
     </style>
 </head>
 <body class="antialiased">

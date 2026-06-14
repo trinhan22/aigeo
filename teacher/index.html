@@ -45,7 +45,8 @@
 
         /* --- SCROLLBAR --- */
         ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: #0D9488; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0D9488; }
 
         .anime-title .letter { display: inline-block; opacity: 0; }
         .skeleton { background: #E2E8F0; animation: pulse 2s infinite; border-radius: 8px; }
@@ -96,7 +97,7 @@
     <main class="flex-1 flex flex-col overflow-hidden">
         <!-- Header -->
         <header class="h-16 bg-white border-b flex items-center justify-between px-8 shrink-0">
-            <h2 id="welcome-header" class="text-sm font-bold text-slate-400 uppercase tracking-widest">Đang tải dữ liệu...</h2>
+            <h2 id="welcome-header" class="text-sm font-bold text-slate-400 uppercase tracking-widest">Xin chào!</h2>
             <div class="flex items-center gap-4">
                 <div class="text-right hidden sm:block">
                     <p id="user-name" class="text-sm font-black text-slate-800 leading-none">Đang tải...</p>
@@ -112,10 +113,10 @@
                 <!-- Welcome Title -->
                 <div>
                     <!-- Thêm mb-3 (margin-bottom) để đẩy dòng dưới xuống, tạo độ thoáng -->
-                    <h1 id="welcome-message" class="text-4xl font-black text-slate-900 tracking-tight anime-title mb-3">
+                    <h1 id="welcome-message" class="text-4xl font-black mb-4 anime-title">
                         Chào mừng trở lại!
                     </h1>
-                    <p class="text-base text-slate-500 font-medium">
+                    <p class="text-slate-500 font-medium">
                         Chào mừng bạn quay lại với không gian quản lý AIGEO.
                     </p>
                 </div>
@@ -334,19 +335,38 @@
         });
 
         function listenForData(teacherId) {
-            const classroomsQuery = query(collection(db, "classrooms"), where("teacherId", "==", teacherId), orderBy("createdAt", "desc"), limit(3));
+            // 1. Lấy tất cả lớp học của giáo viên này (không dùng orderBy ở query)
+            const classroomsQuery = query(
+                collection(db, "classrooms"), 
+                where("teacherId", "==", teacherId)
+            );
+
             onSnapshot(classroomsQuery, (snapshot) => {
-                const classrooms = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
-                renderRecentClassrooms(classrooms);
+                let classrooms = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                
+                // 2. Sắp xếp thủ công bằng code JS (giả sử bạn có trường createdAt)
+                classrooms.sort((a, b) => {
+                    const timeA = a.createdAt?.seconds || 0;
+                    const timeB = b.createdAt?.seconds || 0;
+                    return timeB - timeA; // Mới nhất lên đầu
+                });
+
+                // 3. Chỉ lấy 3 cái đầu tiên
+                renderRecentClassrooms(classrooms.slice(0, 3));
             });
 
-            const testsQuery = query(collection(db, "tests"), where("authorId", "==", teacherId), orderBy("createdAt", "desc"), limit(3));
+            // Tương tự cho phần Tests
+            const testsQuery = query(
+                collection(db, "tests"), 
+                where("authorId", "==", teacherId)
+            );
             onSnapshot(testsQuery, (snapshot) => {
-                const tests = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
-                renderRecentTests(tests);
+                let tests = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                tests.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+                renderRecentTests(tests.slice(0, 3));
             });
 
-            // Listen for overall stats
+            // --- Phần Stats giữ nguyên vì nó không có orderBy nên nó chạy đúng ---
             const allClassroomsQuery = query(collection(db, "classrooms"), where("teacherId", "==", teacherId));
             onSnapshot(allClassroomsQuery, (snapshot) => {
                 const classCount = snapshot.size;

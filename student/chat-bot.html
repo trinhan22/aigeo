@@ -165,9 +165,12 @@
 
         /* --- SCROLLBAR --- */
         ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: #0D9488; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0D9488; }
 
         .prose p { margin-bottom: 0.5rem; }
+
+        .modal-backdrop { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); }
     </style>
 </head>
 <body class="flex h-screen">
@@ -191,9 +194,15 @@
             <div class="nav-group-title">Cá nhân</div>
             <a href="account.html" class="sidebar-link"><i data-feather="user"></i> Tài khoản</a>
         </nav>
-        <div class="p-4 border-t">
-            <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 rounded-xl transition">
-                <i data-feather="log-out"></i> Đăng xuất
+        <div class="p-4 border-t space-y-2">
+            <button id="feedback-btn" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-50 rounded-xl transition">
+                <i data-feather="message-square" class="w-4"></i> Góp ý
+            </button>
+            <button id="view-feedback-btn" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-50 rounded-xl transition">
+                <i data-feather="inbox" class="w-4"></i> Lịch sử góp ý
+            </button>
+            <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-red-500 hover:bg-red-50 rounded-xl transition">
+                <i data-feather="log-out" class="w-4"></i> Đăng xuất
             </button>
         </div>
     </aside>
@@ -245,12 +254,36 @@
         </div>
     </main>
 
+    <!-- Feedback Modal -->
+    <div id="feedback-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop p-4">
+        <div class="bg-white rounded-3xl p-8 w-full max-w-lg shadow-2xl">
+            <h2 class="text-2xl font-black text-slate-800 mb-2">Gửi góp ý</h2>
+            <p class="text-sm text-slate-500 mb-6">Ý kiến của bạn giúp AIGEO hoàn thiện hơn mỗi ngày.</p>
+            <form id="feedback-form">
+                <textarea id="feedback-content" rows="5" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-teal-500 outline-none transition font-medium" placeholder="Bạn muốn chúng tôi cải thiện điều gì?" required></textarea>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" id="feedback-cancel-btn" class="px-6 py-2.5 font-bold text-slate-400">Hủy</button>
+                    <button type="submit" id="feedback-submit-btn" class="bg-teal-600 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-teal-600/20">Gửi ngay</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- History Feedback Modal -->
+    <div id="view-feedback-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop p-4">
+        <div class="bg-white rounded-3xl p-8 w-full max-w-2xl shadow-2xl max-h-[80vh] flex flex-col">
+            <h2 class="text-2xl font-black text-slate-800 mb-6">Lịch sử góp ý</h2>
+            <div id="feedback-list-container" class="flex-grow overflow-y-auto space-y-4 pr-2"></div>
+            <button id="view-feedback-close-btn" class="mt-6 w-full py-3 font-bold bg-slate-100 text-slate-600 rounded-xl">Đóng</button>
+        </div>
+    </div>
+
     <script src="../firebase-config.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, serverTimestamp, updateDoc, deleteField } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        
+        import { getFirestore, doc, getDoc, setDoc, serverTimestamp, updateDoc, deleteField, addDoc, orderBy, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+                
         document.addEventListener('DOMContentLoaded', () => {
             const app = initializeApp(firebaseConfig);
             const auth = getAuth(app);
@@ -278,27 +311,97 @@
             const typingIndicator = document.getElementById('typing-indicator-container');
             const clearChatBtn = document.getElementById('clear-chat-btn');
         
+            // --- THÊM HÀM NÀY VÀO TRƯỚC onAuthStateChanged ---
+            function showToast(msg, type = 'success') {
+                const toastContainer = document.getElementById('toast-container');
+                if(!toastContainer) return;
+                const toast = document.createElement('div');
+                toast.className = `toast show ${type === 'success' ? 'bg-slate-900' : 'bg-red-500'} text-white px-6 py-3 rounded-2xl shadow-2xl font-bold text-sm mb-3`;
+                toast.textContent = msg;
+                toastContainer.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            }
+
             onAuthStateChanged(auth, async (user) => {
                 if (!user) { window.location.href = '../auth.html'; return; }
                 currentUser = user;
                 const userDocSnap = await getDoc(doc(db, "users", user.uid));
+                
                 if (userDocSnap.exists() && userDocSnap.data().role === 'student') {
                     const userData = userDocSnap.data();
                     userName = userData.name || 'Học sinh';
-                    nameInitial = (userData.name || 'S').charAt(0).toUpperCase();
+                    // ... (các dòng set UI cũ giữ nguyên) ...
                     userNameEl.textContent = userName;
                     userAvatarEl.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=0D9488&color=fff&bold=true`;
                     
                     await loadApiKeys();
                     await loadChatHistory();
                     setupEventListeners();
+                    
+                    // --- FEEDBACK LOGIC (ĐÃ FIX LỖI) ---
+                    const feedbackModal = document.getElementById('feedback-modal');
+                    const viewFeedbackModal = document.getElementById('view-feedback-modal');
+                    const feedbackForm = document.getElementById('feedback-form');
 
-                    // FIX: HIỂN THỊ CÂU CHÀO MỞ ĐẦU NẾU LỊCH SỬ TRỐNG
+                    document.getElementById('feedback-btn').onclick = () => feedbackModal.classList.replace('hidden', 'flex');
+                    document.getElementById('feedback-cancel-btn').onclick = () => feedbackModal.classList.replace('flex', 'hidden');
+
+                    feedbackForm.onsubmit = async (e) => {
+                        e.preventDefault();
+                        const btn = document.getElementById('feedback-submit-btn');
+                        btn.disabled = true; btn.textContent = "Đang gửi...";
+                        try {
+                            await addDoc(collection(db, "feedback"), {
+                                content: document.getElementById('feedback-content').value,
+                                userId: currentUser.uid,
+                                userName: userData.name || "Học sinh",
+                                createdAt: serverTimestamp(),
+                                status: 'new'
+                            });
+                            feedbackModal.classList.replace('flex', 'hidden');
+                            feedbackForm.reset();
+                            showToast("Gửi góp ý thành công!");
+                        } catch (e) { 
+                            console.error(e);
+                            showToast("Lỗi gửi góp ý", "error"); 
+                        } finally { 
+                            btn.disabled = false; btn.textContent = "Gửi ngay"; 
+                        }
+                    };
+
+                    document.getElementById('view-feedback-btn').onclick = async () => {
+                        const container = document.getElementById('feedback-list-container');
+                        container.innerHTML = '<div class="text-center py-10 animate-pulse font-bold text-slate-300">Đang tải...</div>';
+                        viewFeedbackModal.classList.replace('hidden', 'flex');
+                        try {
+                            // Dùng các hàm đã import: query, collection, where, orderBy, getDocs
+                            const q = query(collection(db, "feedback"), where("userId", "==", currentUser.uid), orderBy("createdAt", "desc"));
+                            const snap = await getDocs(q);
+                            
+                            if (snap.empty) {
+                                container.innerHTML = '<p class="text-center py-10 font-bold text-slate-400">Chưa có góp ý nào.</p>';
+                            } else {
+                                container.innerHTML = snap.docs.map(doc => {
+                                    const f = doc.data();
+                                    return `
+                                        <div class="p-5 bg-slate-50 rounded-2xl border border-slate-100 text-left mb-4">
+                                            <span class="text-[10px] font-black text-slate-400 uppercase">${f.createdAt?.toDate().toLocaleDateString('vi-VN')}</span>
+                                            <p class="text-sm font-bold text-slate-700 mt-1">${f.content}</p>
+                                            ${f.reply ? `<div class="mt-3 p-3 bg-teal-50 border-l-4 border-teal-500 rounded-r-xl"><p class="text-[10px] font-black text-teal-600 uppercase">Admin:</p><p class="text-sm text-teal-800">${f.reply}</p></div>` : ''}
+                                        </div>`;
+                                }).join('');
+                            }
+                        } catch (e) { 
+                            console.error(e);
+                            container.innerHTML = '<p class="text-red-500 text-center font-bold">Lỗi tải dữ liệu. Vui lòng thử lại sau.</p>'; 
+                        }
+                    };
+
+                    document.getElementById('view-feedback-close-btn').onclick = () => viewFeedbackModal.classList.replace('flex', 'hidden');
+
                     if (chatHistory.length === 0) {
-                        addMessage("Chào bạn, tôi là trợ lý AI của AIGEO. Tôi chỉ có thể trả lời các câu hỏi liên quan đến Địa lý. Tôi có thể giúp gì cho bạn?", "assistant");
+                        addMessage("Chào bạn, tôi là trợ lý AI của AIGEO. Tôi có thể giúp gì cho bạn về Địa lý?", "assistant");
                     }
-                } else {
-                     window.location.href = `../${userDocSnap.data()?.role || 'auth'}/index.html`;
                 }
             });
             
