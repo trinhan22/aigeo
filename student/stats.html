@@ -39,16 +39,91 @@
         
         .stat-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
 
-        /* --- TABLE STYLE --- */
-        .modern-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-        .modern-table th { padding: 16px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #94A3B8; border-bottom: 1px solid #F1F5F9; }
-        .modern-table td { padding: 16px; vertical-align: middle; border-bottom: 1px solid #F1F5F9; }
-        .modern-table tr:last-child td { border-bottom: none; }
+        /* --- GIAO DIỆN LỊCH SỬ TINH TẾ (SOFT UI) --- */
+        #history-table-container {
+            padding: 24px;
+            background: white;
+        }
 
-        .score-badge { font-weight: 800; padding: 4px 12px; border-radius: 100px; font-size: 0.75rem; }
-        .score-good { background: #DCFCE7; color: #166534; }
-        .score-avg { background: #FEF9C3; color: #854D0E; }
-        .score-bad { background: #FEE2E2; color: #991B1B; }
+        .history-header-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 100px;
+            padding: 12px 20px;
+            background: #F8FAFC;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .header-label {
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #94A3B8;
+            letter-spacing: 0.1em;
+        }
+
+        .history-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 100px;
+            padding: 20px;
+            align-items: center;
+            border-radius: 16px;
+            transition: 0.3s;
+            border-bottom: 1px solid #F8FAFC;
+        }
+
+        .history-row:hover {
+            background: #F0FDFA; /* Màu xanh teal cực nhẹ */
+            transform: scale(1.01);
+        }
+
+        .test-name {
+            font-weight: 700;
+            color: #1E293B;
+            font-size: 0.9rem;
+        }
+
+        .subject-tag {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #64748B;
+            background: #F1F5F9;
+            padding: 4px 10px;
+            border-radius: 8px;
+            width: fit-content;
+        }
+
+        .score-value {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 800;
+            font-size: 1rem;
+        }
+
+        .score-good { color: #0D9488; }
+        .score-avg { color: #D97706; }
+        .score-bad { color: #E11D48; }
+
+        .date-text {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #94A3B8;
+        }
+
+        .btn-view {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            justify-content: flex-end;
+        }
+
+        .btn-view:hover {
+            gap: 8px;
+            transition: 0.3s;
+        }
 
         /* --- SCROLLBAR --- */
         ::-webkit-scrollbar { width: 5px; }
@@ -59,6 +134,7 @@
         @keyframes pulse { 50% { opacity: .5; } }
 
         .modal-backdrop { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); }
+        
     </style>
 </head>
 <body class="flex h-screen">
@@ -106,7 +182,7 @@
             <div class="flex items-center gap-4">
                 <div class="text-right hidden sm:block">
                     <p id="user-name" class="text-sm font-black text-slate-800 leading-none">Đang tải...</p>
-                    <span class="text-[10px] font-bold text-teal-600 uppercase tracking-tighter">Student Account</span>
+                    <span class="text-[10px] font-bold text-teal-600 uppercase">Student Account</span>
                 </div>
                 <img id="user-avatar" class="h-10 w-10 rounded-xl border-2 border-slate-100 object-cover shadow-sm">
             </div>
@@ -284,41 +360,6 @@
                 } else { window.location.href = '../auth.html'; }
             });
 
-            // Override hàm renderHistoryTable để đẹp hơn
-            window.renderHistoryTable = (results, subjects) => {
-                let tableHTML = `
-                    <table class="modern-table">
-                        <thead>
-                            <tr>
-                                <th>Tên bài làm</th>
-                                <th>Môn học</th>
-                                <th class="text-center">Điểm</th>
-                                <th class="text-center">Ngày làm</th>
-                                <th class="text-right">Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody>`;
-                
-                results.forEach(result => {
-                    const subject = subjects.find(s => s.id === result.subjectId);
-                    const percentage = (result.score / result.totalQuestions) * 100;
-                    let scoreClass = percentage >= 80 ? 'score-good' : (percentage < 50 ? 'score-bad' : 'score-avg');
-                    const date = result.completedAt.toDate().toLocaleDateString('vi-VN');
-
-                    tableHTML += `
-                        <tr class="hover:bg-slate-50 transition">
-                            <td class="font-bold text-slate-800">${result.testName}</td>
-                            <td class="text-slate-500 font-medium">${subject?.name || 'N/A'}</td>
-                            <td class="text-center"><span class="score-badge ${scoreClass}">${result.score}/${result.totalQuestions}</span></td>
-                            <td class="text-center text-slate-400 font-bold text-xs">${date}</td>
-                            <td class="text-right">
-                                <a href="result.html" data-result-id="${result.id}" class="view-result-btn text-teal-600 font-black text-xs hover:tracking-widest transition-all">XEM LẠI →</a>
-                            </td>
-                        </tr>`;
-                });
-                tableHTML += `</tbody></table>`;
-                historyTableContainer.innerHTML = tableHTML;
-            }
 
             async function listenForResults() {
                 try {
@@ -439,41 +480,66 @@
                 statWorstSubject.textContent = worstSubject.name;
             }
             
-            function renderHistoryTable(results, subjects) {
-                let tableHTML = `<table class="w-full text-sm text-left text-slate-500">
-                    <thead class="text-xs text-slate-700 uppercase bg-slate-50">
-                        <tr>
-                            <th scope="col" class="px-6 py-3">Tên bài làm</th>
-                            <th scope="col" class="px-6 py-3">Môn học</th>
-                            <th scope="col" class="px-6 py-3 text-center">Điểm</th>
-                            <th scope="col" class="px-6 py-3 text-center">Ngày làm</th>
-                            <th scope="col" class="px-6 py-3 text-right"></th>
-                        </tr>
-                    </thead><tbody>`;
-                
+            window.renderHistoryTable = (results, subjects) => {
+                if (!results || results.length === 0) {
+                    historyTableContainer.innerHTML = `
+                        <div class="py-20 text-center text-slate-400 font-bold uppercase text-xs tracking-widest">
+                            Chưa có dữ liệu làm bài
+                        </div>`;
+                    return;
+                }
+
+                let html = `
+                    <div class="history-header-grid">
+                        <div class="header-label">Tên bài làm</div>
+                        <div class="header-label">Môn học</div>
+                        <div class="header-label text-center">Điểm số</div>
+                        <div class="header-label text-center">Ngày thực hiện</div>
+                        <div class="header-label text-right">Thao tác</div>
+                    </div>
+                    <div class="space-y-1">
+                `;
+
                 results.forEach(result => {
                     const subject = subjects.find(s => s.id === result.subjectId);
-                    const score = result.score;
-                    const total = result.totalQuestions;
-                    const percentage = (score / total) * 100;
-                    let scoreClass = percentage >= 80 ? 'score-good' : (percentage < 50 ? 'score-bad' : 'score-avg');
-                    const date = result.completedAt.toDate().toLocaleDateString('vi-VN');
+                    const percentage = (result.score / result.totalQuestions) * 100;
+                    
+                    let scoreClass = 'score-avg';
+                    if (percentage >= 80) scoreClass = 'score-good';
+                    else if (percentage < 50) scoreClass = 'score-bad';
 
-                    tableHTML += `
-                        <tr class="bg-white border-b hover:bg-slate-50">
-                            <th scope="row" class="px-6 py-4 font-medium text-slate-900">${result.testName}</th>
-                            <td class="px-6 py-4">${subject?.name || 'N/A'}</td>
-                            <td class="px-6 py-4 text-center"><span class="score ${scoreClass}">${score}/${total}</span></td>
-                            <td class="px-6 py-4 text-center">${date}</td>
-                            <td class="px-6 py-4 text-right">
-                                <a href="result.html" data-result-id="${result.id}" class="view-result-btn font-medium text-teal-600 hover:underline">Xem lại</a>
-                            </td>
-                        </tr>
+                    const date = result.completedAt?.toDate().toLocaleDateString('vi-VN', {
+                        day: '2-digit', month: '2-digit', year: 'numeric'
+                    });
+
+                    html += `
+                        <div class="history-row">
+                            <div class="test-name truncate pr-4">${result.testName}</div>
+                            
+                            <div>
+                                <span class="subject-tag">${subject?.name || 'Địa lý'}</span>
+                            </div>
+
+                            <div class="text-center">
+                                <span class="score-value ${scoreClass}">${result.score}</span>
+                                <span class="text-slate-300 font-bold">/</span>
+                                <span class="text-slate-400 font-bold text-sm">${result.totalQuestions}</span>
+                            </div>
+
+                            <div class="date-text text-center">${date}</div>
+
+                            <div class="text-right">
+                                <a href="result.html" data-result-id="${result.id}" class="btn-view view-result-btn">
+                                    Xem lại <i data-feather="chevron-right" class="w-4 h-4"></i>
+                                </a>
+                            </div>
+                        </div>
                     `;
                 });
 
-                tableHTML += `</tbody></table>`;
-                historyTableContainer.innerHTML = tableHTML;
+                html += '</div>';
+                historyTableContainer.innerHTML = html;
+                feather.replace();
             }
 
             historyTableContainer.addEventListener('click', (e) => {

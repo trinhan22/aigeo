@@ -120,7 +120,7 @@
             <div class="flex items-center gap-4">
                 <div class="text-right hidden sm:block">
                     <p id="user-name" class="text-sm font-black text-slate-800 leading-none">Đang tải...</p>
-                    <span class="text-[10px] font-bold text-teal-600 uppercase tracking-tighter">Student Account</span>
+                    <span class="text-[10px] font-bold text-teal-600 uppercase">Student Account</span>
                 </div>
                 <img id="user-avatar" class="h-10 w-10 rounded-xl border-2 border-slate-100 object-cover shadow-sm">
             </div>
@@ -159,7 +159,8 @@
                     <!-- Tab 2: Admin Published Tests -->
                     <div id="admin-practice" class="tab-content">
                         <div class="bento-card border-l-4 border-l-indigo-500">
-                            <h2 class="text-2xl font-black text-slate-800 mb-6">Luyện Đề từ Ngân hàng chung</h2>
+                            <h2 class="text-2xl font-black text-slate-800 mb-2">Luyện Đề từ Ngân hàng chung</h2>
+                            <p class="text-slate-500 text-sm mb-8">Đây là danh sách các đề thi đã được xuất bản, phù hợp cho việc ôn tập và củng cố kiến thức tổng quát.</p>
                             <div id="admin-tests-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="skeleton h-32 w-full"></div>
                             </div>
@@ -169,7 +170,8 @@
                     <!-- Tab 3: Lesson Based -->
                     <div id="lesson-practice" class="tab-content">
                         <div class="bento-card border-l-4 border-l-sky-500">
-                            <h2 class="text-2xl font-black text-slate-800 mb-6">Luyện tập theo bài</h2>
+                            <h2 class="text-2xl font-black text-slate-800 mb-2">Luyện tập theo bài</h2>
+                            <p class="text-slate-500 text-sm mb-8">Chọn Môn học và một bài học cụ thể để tạo đề ngẫu nhiên, giúp nắm vững kiến thức từng phần.</p>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                                 <select id="filter-subject-lesson" class="modern-select"></select>
                                 <select id="filter-grade-lesson" class="modern-select" disabled></select>
@@ -192,7 +194,8 @@
                     <!-- Tab 4: Comprehensive -->
                     <div id="comprehensive-practice" class="tab-content">
                         <div class="bento-card border-l-4 border-l-amber-500">
-                            <h2 class="text-2xl font-black text-slate-800 mb-6">Luyện tập tổng hợp</h2>
+                            <h2 class="text-2xl font-black text-slate-800 mb-2">Luyện tập tổng hợp</h2>
+                            <p class="text-slate-500 text-sm mb-8">Chọn Môn học, sau đó chọn nhiều bài học để hệ thống tạo đề tổng hợp, cân đối các dạng câu hỏi.</p>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                                 <select id="filter-subject-comprehensive" class="modern-select"></select>
                                 <select id="filter-grade-comprehensive" class="modern-select" disabled></select>
@@ -219,7 +222,7 @@
                                 <input id="question-count-slider-comprehensive" type="range" min="10" max="50" value="20">
                             </div>
                             <div class="flex justify-end">
-                                <button id="start-comprehensive-practice-btn" class="cta-button" style="background: #D97706;" disabled>Bắt đầu (0 câu)</button>
+                                <button id="start-comprehensive-practice-btn" class="cta-button" disabled>Bắt đầu (0 câu)</button>
                             </div>
                         </div>
                     </div>
