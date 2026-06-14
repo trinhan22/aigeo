@@ -4,515 +4,442 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AIGEO - Đăng nhập & Đăng ký</title>
+    <title>AIGEO - Đăng Nhập & Đăng Ký</title>
+    
+    <!-- SEO & Metadata -->
+    <meta property="og:title" content="AIGEO - Nền Tảng Học Địa Lý Thông Minh" />
+    <meta property="og:description" content="Khám phá tri thức Địa lý cùng AI – hỗ trợ học tập, luyện thi và phân tích dữ liệu hiệu quả." />
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/feather-icons"></script>
 
     <style>
-        :root {
-            --primary: #0D9488;
-            --primary-dark: #0F766E;
+        :root { 
+            --primary: #0D9488; 
+            --primary-dark: #0F766E; 
             --secondary: #10B981;
-            --text-main: #1E293B;
-            --text-light: #64748B;
-            --primary-gradient: linear-gradient(135deg, #0D9488 0%, #10B981 100%);
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         
-        body { background-color: #F8FAFC; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow-x: hidden; }
-
-        /* --- BACKGROUND DECOR --- */
-        .auth-bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; background: #f1f5f9; }
-        .blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.3; animation: float 15s infinite alternate; }
-        .blob-1 { width: 600px; height: 600px; background: #99F6E4; top: -10%; left: -10%; }
-        .blob-2 { width: 500px; height: 500px; background: #BBF7D0; bottom: -10%; right: -10%; animation-delay: -5s; }
-        @keyframes float { 0% { transform: translate(0, 0); } 100% { transform: translate(50px, 80px); } }
-
-        /* --- AUTH CARD --- */
-        .auth-card {
-            width: 100%; max-width: 1000px; background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(24px); border-radius: 32px; border: 1px solid rgba(255, 255, 255, 0.5);
-            display: grid; grid-template-columns: 1fr 1.1fr; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
-        }
-
-        /* --- LEFT SIDE (Info) --- */
-        .auth-side-info { background: var(--primary-gradient); padding: 50px; color: white; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; }
-        .info-logo { display: flex; align-items: center; gap: 12px; z-index: 10; }
-        .info-logo img { width: 44px; height: 44px; background: white; padding: 6px; border-radius: 12px; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F0FDFA; }
         
-        /* --- INPUT FIELD --- */
-        .input-group { position: relative; margin-bottom: 20px; }
-        .input-group i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #94A3B8; z-index: 10; }
-        .input-field {
-            width: 100%; padding: 14px 16px 14px 48px; background: #F1F5F9; border: 2px solid transparent;
-            border-radius: 14px; font-size: 0.95rem; font-weight: 600; transition: all 0.3s; color: var(--text-main);
-        }
-        .input-field:focus { background: white; border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1); }
-        .input-label { position: absolute; top: -10px; left: 14px; font-size: 11px; font-weight: 800; color: var(--primary); background: white; padding: 0 8px; border-radius: 4px; z-index: 20; border: 1px solid #E2E8F0; }
+        /* --- BACKGROUND EFFECTS --- */
+        .background-blobs { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; pointer-events: none; }
+        .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; animation: floatBlob 12s infinite alternate; }
+        .blob-1 { width: 500px; height: 500px; background: #99F6E4; top: -100px; left: -100px; }
+        .blob-2 { width: 400px; height: 400px; background: #BBF7D0; bottom: -50px; right: -50px; animation-delay: -5s; }
+        .blob-3 { width: 300px; height: 300px; background: #CCFBF1; top: 40%; left: 40%; animation-delay: -2s; }
+        @keyframes floatBlob { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(40px, 60px) scale(1.1); } }
 
-        /* --- TABS --- */
-        .auth-tabs { display: flex; background: #F1F5F9; padding: 5px; border-radius: 16px; margin-bottom: 30px; }
-        .tab-btn { flex: 1; padding: 12px; border-radius: 12px; font-weight: 800; font-size: 0.9rem; transition: 0.3s; border: none; cursor: pointer; color: var(--text-light); }
-        .tab-btn.active { background: white; color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        /* --- UI COMPONENTS --- */
+        .input-field { transition: all 0.3s ease; }
+        .input-field:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.15); }
+        
+        .btn-gradient { background: linear-gradient(135deg, #0D9488 0%, #10B981 100%); transition: all 0.3s ease; }
+        .btn-gradient:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(13, 148, 136, 0.3); }
+        .btn-gradient:disabled { opacity: 0.7; transform: none; cursor: not-allowed; }
 
-        /* --- PILL BUTTONS --- */
-        .btn-modern { width: 100%; padding: 14px; border-radius: 14px; font-weight: 800; font-size: 0.95rem; border: none; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-primary { background: var(--primary-gradient); color: white; box-shadow: 0 10px 20px rgba(13, 148, 136, 0.2); }
-        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(13, 148, 136, 0.3); }
-        .btn-google { background: white; color: var(--text-main); border: 1px solid #E2E8F0; }
+        .tab-btn { position: relative; transition: 0.3s; color: #94A3B8; }
+        .tab-btn.active { color: var(--primary); }
+        .tab-btn.active::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 3px; background: var(--primary); border-radius: 10px; }
 
-        /* --- FORM STEPS --- */
-        .form-step { display: none; }
-        .form-step.active { display: block; animation: slideIn 0.4s ease forwards; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        .left-panel-gradient { background: linear-gradient(135deg, #0D9488 0%, #10B981 100%); position: relative; overflow: hidden; }
+        .left-pattern { position: absolute; inset: 0; opacity: 0.1; background-image: radial-gradient(#fff 1.5px, transparent 1.5px); background-size: 24px 24px; }
 
-        /* --- ROLE CARDS --- */
-        .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
-        .role-card { border: 2px solid #F1F5F9; border-radius: 16px; padding: 24px 10px; text-align: center; cursor: pointer; transition: 0.3s; }
-        .role-card i { font-size: 1.5rem; margin-bottom: 10px; color: #94A3B8; }
-        .role-card.selected { border-color: var(--primary); background: #F0FDFA; }
-        .role-card.selected i { color: var(--primary); }
+        /* --- MODALS --- */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.3s; }
+        .modal-overlay.show { opacity: 1; visibility: visible; }
+        .modal-content { background: white; padding: 32px; border-radius: 32px; text-align: center; transform: scale(0.9); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2); max-width: 420px; width: 90%; }
+        .modal-overlay.show .modal-content { transform: scale(1); }
 
-        .progress-bar-container { height: 6px; background: #E2E8F0; border-radius: 10px; margin-bottom: 30px; overflow: hidden; }
-        #register-progress-bar { height: 100%; background: var(--primary-gradient); transition: 0.4s; }
+        .alert-icon { width: 64px; height: 64px; border-radius: 22px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 20px; }
+        .alert-error .alert-icon { background: #FEE2E2; color: #EF4444; }
+        .alert-success .alert-icon { background: #DCFCE7; color: #10B981; }
 
-        @media (max-width: 850px) {
-            .auth-card { grid-template-columns: 1fr; margin: 15px; }
-            .auth-side-info { display: none; }
-        }
+        /* --- ANIMATIONS --- */
+        .animate-fade-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- SCROLLBAR --- */
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #F1F5F9; }
+        ::-webkit-scrollbar-thumb { background: #0D948844; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #0D9488; }
     </style>
 </head>
-<body>
+<body class="flex items-center justify-center min-h-screen p-4">
 
-    <div class="auth-bg">
+    <div class="background-blobs">
         <div class="blob blob-1"></div>
         <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
     </div>
 
-    <!-- Initial Loading -->
-    <div id="loading-overlay" class="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center">
-        <div class="w-12 h-12 border-4 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
-        <p class="mt-4 font-bold text-slate-500">Đang khởi tạo AIGEO...</p>
-    </div>
-
-    <!-- Auth Card -->
-    <main id="main-auth-card" class="hidden w-full max-w-[1000px] px-4">
-        <div class="auth-card">
+    <!-- Main Container -->
+    <div class="bg-white/80 rounded-[40px] shadow-2xl overflow-hidden w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 min-h-[650px] animate-fade-up border border-white/50 backdrop-blur-2xl">
+        
+        <!-- Left Panel: Info -->
+        <div class="left-panel-gradient hidden md:flex flex-col justify-between p-12 text-white">
+            <div class="left-pattern"></div>
+            <div class="relative z-10 flex items-center gap-4">
+                <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-lg border border-white/30">
+                    <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" class="w-8 h-8 object-contain">
+                </div>
+                <div>
+                    <h2 class="font-black text-2xl tracking-tight leading-none">AIGEO</h2>
+                    <p class="text-teal-100 text-[10px] font-bold tracking-widest mt-1 opacity-80 uppercase">AI Learning Platform</p>
+                </div>
+            </div>
             
-            <!-- Left: Branding -->
-            <div class="auth-side-info">
-                <a href="/" class="info-logo">
-                    <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" alt="Logo">
-                    <span class="font-black">AIGEO</span>
-                </a>
-                <div class="z-10">
-                    <h2 class="text-4xl font-black leading-tight mb-4 text-white">Chào mừng đến với AIGEO</h2>
-                    <p class="text-teal-50 font-medium opacity-90">Khám phá tri thức theo cách của riêng bạn.</p>
-                </div>
-                <p class="text-xs text-teal-100/50 z-10">&copy; 2025 AIGEO. All rights reserved.</p>
+            <div class="relative z-10 mb-8">
+                <h2 class="text-5xl font-black mb-6 leading-tight">Chinh phục <br><span class="text-teal-200">Địa lý 4.0</span></h2>
+                <p class="text-teal-50 font-medium text-lg opacity-90 max-w-md leading-relaxed">Khám phá thế giới qua lăng kính công nghệ AI, giúp việc học tập trở nên sinh động và hiệu quả hơn bao giờ hết.</p>
             </div>
 
-            <!-- Right: Forms -->
-            <div class="p-8 md:p-12">
-                <div class="auth-tabs">
-                    <button id="login-tab" class="tab-btn active">Đăng nhập</button>
-                    <button id="register-tab" class="tab-btn">Đăng ký</button>
-                </div>
-
-                <div id="message-display" class="hidden p-4 rounded-xl text-xs font-bold mb-6 text-center"></div>
-
-                <div id="form-wrapper">
-                    <!-- Login Section -->
-                    <div id="login-form-container">
-                        <form id="login-form" class="space-y-4" novalidate>
-                            <div class="input-group">
-                                <span class="input-label">Email tài khoản</span>
-                                <i class="fas fa-envelope"></i>
-                                <input id="login-email" type="email" class="input-field" placeholder="vidu@email.com" required>
-                            </div>
-                            <div class="input-group">
-                                <span class="input-label">Mật khẩu</span>
-                                <i class="fas fa-lock"></i>
-                                <input id="login-password" type="password" class="input-field" placeholder="••••••••" required>
-                                <button type="button" class="password-toggle absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" data-for="login-password">
-                                    <i data-feather="eye-off" class="w-4 h-4"></i>
-                                </button>
-                            </div>
-                            <div class="flex justify-end">
-                                <a href="#" id="forgot-password-link" class="text-xs font-bold text-teal-600 hover:underline">Quên mật khẩu?</a>
-                            </div>
-                            <button type="submit" class="btn-modern btn-primary mt-4">Đăng nhập</button>
-                        </form>
-
-                        <div class="flex items-center my-8 gap-4">
-                            <div class="flex-1 h-[1px] bg-slate-200"></div>
-                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hoặc đăng nhập bằng</span>
-                            <div class="flex-1 h-[1px] bg-slate-200"></div>
-                        </div>
-
-                        <button id="google-login-btn" class="btn-modern btn-google">
-                            <svg class="w-5 h-5 mr-3" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"></path><path fill="#FF3D00" d="m6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"></path><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"></path><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C41.383 34.613 44 29.833 44 24c0-1.341-.138-2.65-.389-3.917z"></path></svg>
-                            <span class="font-bold">Đăng nhập bằng Google</span>
-                        </button>
-                    </div>
-
-                    <!-- Register Section (Multi-step) -->
-                    <div id="register-form-container" class="hidden">
-                        <div class="progress-bar-container">
-                            <div id="register-progress-bar" style="width: 25%;"></div>
-                        </div>
-
-                        <form id="register-form" novalidate>
-                            <!-- Step 1: Info -->
-                            <div id="step-1" class="form-step active space-y-4">
-                                <div class="input-group">
-                                    <span class="input-label">Họ và tên</span>
-                                    <i class="fas fa-user"></i>
-                                    <input id="register-name" type="text" class="input-field" placeholder="Nguyễn Văn A">
-                                </div>
-                                <div class="input-group">
-                                    <span class="input-label">Địa chỉ Email</span>
-                                    <i class="fas fa-envelope"></i>
-                                    <input id="register-email" type="email" class="input-field" placeholder="Email của bạn">
-                                </div>
-                                <button type="button" data-next="2" class="btn-modern btn-primary next-btn">Tiếp tục <i class="fas fa-arrow-right"></i></button>
-                            </div>
-
-                            <!-- Step 2: Password -->
-                            <div id="step-2" class="form-step space-y-4">
-                                <div class="input-group">
-                                    <span class="input-label">Mật khẩu mới</span>
-                                    <i class="fas fa-lock"></i>
-                                    <input id="register-password" type="password" class="input-field" placeholder="••••••••">
-                                    <button type="button" class="password-toggle absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" data-for="register-password"><i data-feather="eye-off" class="w-4 h-4"></i></button>
-                                </div>
-                                
-                                <div id="password-strength-indicator" class="h-1.5 w-full bg-slate-100 rounded-full hidden overflow-hidden">
-                                    <div id="password-strength-bar" class="h-full w-0 transition-all duration-300"></div>
-                                </div>
-
-                                <div class="input-group">
-                                    <span class="input-label">Xác nhận mật khẩu</span>
-                                    <i class="fas fa-check-double"></i>
-                                    <input id="register-password-confirm" type="password" class="input-field" placeholder="Nhập lại mật khẩu">
-                                </div>
-                                <div class="flex gap-3">
-                                    <button type="button" data-prev="1" class="btn-modern bg-slate-100 text-slate-600 prev-btn">Quay lại</button>
-                                    <button type="button" data-next="3" class="btn-modern btn-primary next-btn">Tiếp tục</button>
-                                </div>
-                            </div>
-
-                            <!-- Step 3: Role -->
-                            <div id="step-3" class="form-step">
-                                <p class="text-center font-black text-slate-800 mb-2">Bạn đăng ký với tư cách là...</p>
-                                <div class="role-grid">
-                                    <div class="role-card selected" data-role="student">
-                                        <i class="fas fa-user-graduate"></i>
-                                        <div class="text-sm font-black">Học sinh</div>
-                                    </div>
-                                    <div class="role-card" data-role="teacher">
-                                        <i class="fas fa-chalkboard-teacher"></i>
-                                        <div class="text-sm font-black">Giáo viên</div>
-                                    </div>
-                                </div>
-                                <input type="hidden" id="role-input" value="student">
-                                <div class="flex gap-3 mt-8">
-                                    <button type="button" data-prev="2" class="btn-modern bg-slate-100 text-slate-600 prev-btn">Quay lại</button>
-                                    <button type="button" data-next="4" class="btn-modern btn-primary next-btn">Tiếp tục</button>
-                                </div>
-                            </div>
-
-                            <!-- Step 4: Details -->
-                            <div id="step-4" class="form-step space-y-4">
-                                <div id="student-fields" class="space-y-4">
-                                    <div class="input-group">
-                                        <span class="input-label">Trường học</span>
-                                        <i class="fas fa-school"></i>
-                                        <input id="register-school-student" type="text" class="input-field" placeholder="Tên trường của bạn">
-                                    </div>
-                                    <div class="input-group">
-                                        <span class="input-label">Khối lớp</span>
-                                        <i class="fas fa-layer-group"></i>
-                                        <select id="register-grade" class="input-field appearance-none">
-                                            <option value="" disabled selected>Chọn khối lớp</option>
-                                            <option value="10">Lớp 10</option>
-                                            <option value="11">Lớp 11</option>
-                                            <option value="12">Lớp 12</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div id="teacher-fields" class="hidden space-y-4">
-                                    <div class="input-group">
-                                        <span class="input-label">Trường công tác</span>
-                                        <i class="fas fa-briefcase"></i>
-                                        <input id="register-school-teacher" type="text" class="input-field" placeholder="Tên cơ quan">
-                                    </div>
-                                    <div class="input-group">
-                                        <span class="input-label">Môn giảng dạy</span>
-                                        <i class="fas fa-book"></i>
-                                        <select id="register-subject" class="input-field appearance-none">
-                                            <option value="" disabled selected>Chọn môn học</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="flex gap-3">
-                                    <button type="button" data-prev="3" class="btn-modern bg-slate-100 text-slate-600 prev-btn">Quay lại</button>
-                                    <button type="submit" class="btn-modern btn-primary">Hoàn tất <i class="fas fa-check"></i></button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+            <div class="relative z-10 text-xs font-bold opacity-60 flex items-center gap-2">
+                <div class="h-px w-8 bg-white/50"></div>&copy; 2025 AIGEO. All Rights Reserved.
             </div>
         </div>
-    </main>
 
-    <!-- Modal: Bảo trì / Admin (Giữ cấu trúc để Javascript hoạt động) -->
-    <div id="maintenance-modal" class="fixed inset-0 z-[110] bg-slate-900/90 backdrop-blur-xl hidden items-center justify-center p-6">
-        <div class="bg-white p-10 rounded-[32px] text-center max-w-lg shadow-2xl">
-            <i class="fas fa-tools text-5xl text-amber-500 mb-6"></i>
-            <h2 class="text-2xl font-black text-slate-900 mb-4">Hệ thống đang bảo trì</h2>
-            <p id="maintenance-reason" class="text-slate-500 mb-8 font-medium"></p>
-            <button onclick="window.location.reload()" class="btn-modern btn-primary">Thử lại</button>
-        </div>
-    </div>
+        <!-- Right Panel: Auth Forms -->
+        <div class="p-8 md:p-14 flex flex-col justify-center bg-white/40 relative">
+            
+            <!-- Mobile Logo -->
+            <div class="text-center mb-8 md:hidden">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" class="w-14 h-14 mx-auto mb-2">
+                <h3 class="font-black text-2xl text-slate-800">AIGEO</h3>
+            </div>
 
-    <!-- Quên mật khẩu Modal -->
-    <div id="forgot-password-modal" class="fixed inset-0 z-[120] bg-black/50 backdrop-blur-md hidden items-center justify-center p-6">
-        <div class="bg-white p-8 rounded-[32px] w-full max-w-md shadow-2xl">
-            <h3 class="text-xl font-black text-slate-900 mb-2">Quên mật khẩu?</h3>
-            <p class="text-sm text-slate-500 mb-6">Chúng tôi sẽ gửi liên kết đặt lại vào email của bạn.</p>
-            <div id="forgot-password-message" class="hidden p-3 rounded-lg mb-4 text-xs font-bold text-center"></div>
-            <form id="forgot-password-form">
-                <div class="input-group">
-                    <i class="fas fa-envelope"></i>
-                    <input id="forgot-email" type="email" class="input-field" placeholder="Email của bạn">
+            <div class="flex border-b border-slate-100 mb-8">
+                <button id="tab-login" class="flex-1 pb-4 text-center font-extrabold text-sm tab-btn active uppercase tracking-widest">Đăng nhập</button>
+                <button id="tab-register" class="flex-1 pb-4 text-center font-extrabold text-sm tab-btn uppercase tracking-widest">Đăng ký</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1 tracking-widest">Email tài khoản</label>
+                    <div class="relative">
+                        <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="email" id="login-email" class="input-field w-full pl-12 pr-4 py-4 bg-slate-100/50 border border-transparent rounded-2xl outline-none font-bold text-slate-700" placeholder="yourname@gmail.com" required>
+                    </div>
                 </div>
-                <div class="flex gap-3">
-                    <button type="button" id="forgot-password-cancel" class="btn-modern bg-slate-100 text-slate-600">Hủy</button>
-                    <button type="submit" id="forgot-password-submit" class="btn-modern btn-primary">Gửi yêu cầu</button>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1 tracking-widest">Mật khẩu</label>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="password" id="login-password" class="input-field w-full pl-12 pr-12 py-4 bg-slate-100/50 border border-transparent rounded-2xl outline-none font-bold text-slate-700" placeholder="••••••••" required>
+                        <i class="fas fa-eye absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 cursor-pointer hover:text-teal-600 transition toggle-pass"></i>
+                    </div>
                 </div>
+                <div class="flex justify-between items-center text-xs font-bold text-slate-500 pt-2">
+                    <label class="flex items-center gap-2 cursor-pointer hover:text-teal-600 transition"><input type="checkbox" id="remember-me" class="accent-teal-600 w-4 h-4"> Ghi nhớ</label>
+                    <a href="#" id="btn-forgot" class="text-teal-600 hover:underline">Quên mật khẩu?</a>
+                </div>
+                <button type="submit" class="w-full py-4 rounded-2xl text-white font-black btn-gradient shadow-lg shadow-teal-600/30 mt-4 uppercase tracking-widest">Đăng nhập</button>
             </form>
+
+            <!-- Register Form -->
+            <form id="register-form" class="space-y-4 hidden">
+                <!-- Role Selector -->
+                <div class="flex p-1 bg-slate-100 rounded-2xl mb-4 relative">
+                    <div id="role-indicator" class="absolute top-1 left-1 w-[calc(50%-4px)] h-[calc(100%-8px)] bg-white rounded-xl shadow-sm transition-all duration-300"></div>
+                    <button type="button" id="btn-role-student" class="flex-1 py-3 text-[10px] font-black uppercase tracking-widest relative z-10 text-teal-600 transition-colors">Học sinh</button>
+                    <button type="button" id="btn-role-teacher" class="flex-1 py-3 text-[10px] font-black uppercase tracking-widest relative z-10 text-slate-400 transition-colors">Giáo viên</button>
+                    <input type="hidden" id="reg-role" value="student">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" id="reg-name" class="input-field w-full px-5 py-4 bg-slate-100/50 border border-transparent rounded-2xl outline-none font-bold text-sm" placeholder="Họ và tên" required>
+                    <input type="email" id="reg-email" class="input-field w-full px-5 py-4 bg-slate-100/50 border border-transparent rounded-2xl outline-none font-bold text-sm" placeholder="Email" required>
+                </div>
+
+                <div id="student-fields" class="grid grid-cols-2 gap-4">
+                    <input type="text" id="reg-school-student" class="input-field w-full px-5 py-4 bg-slate-100/50 border border-transparent rounded-2xl outline-none font-bold text-sm" placeholder="Trường học">
+                    <select id="reg-grade" class="input-field w-full px-5 py-4 bg-slate-100/50 border border-transparent rounded-2xl outline-none font-bold text-sm">
+                        <option value="10">Lớp 10</option><option value="11">Lớp 11</option><option value="12">Lớp 12</option>
+                    </select>
+                </div>
+
+                <div id="teacher-fields" class="grid grid-cols-2 gap-4 hidden">
+                    <input type="text" id="reg-school-teacher" class="input-field w-full px-5 py-4 bg-slate-100/50 border border-transparent rounded-2xl outline-none font-bold text-sm" placeholder="Nơi công tác">
+                    <input type="text" id="reg-subject" class="input-field w-full px-5 py-4 bg-slate-100/50 border border-transparent rounded-2xl outline-none font-bold text-sm" placeholder="Môn dạy">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="password" id="reg-pass" class="input-field w-full px-5 py-4 bg-slate-100/50 border border-transparent rounded-2xl outline-none font-bold text-sm" placeholder="Mật khẩu" required>
+                    <input type="password" id="reg-confirm" class="input-field w-full px-5 py-4 bg-slate-100/50 border border-transparent rounded-2xl outline-none font-bold text-sm" placeholder="Xác nhận" required>
+                </div>
+
+                <button type="submit" class="w-full py-4 rounded-2xl text-white font-black btn-gradient shadow-lg shadow-teal-600/30 mt-2 uppercase tracking-widest">Tạo tài khoản</button>
+            </form>
+
+            <!-- Social Auth -->
+            <div class="relative my-8 text-center">
+                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-100"></div></div>
+                <span class="relative bg-white/0 px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Hoặc tiếp tục với</span>
+            </div>
+
+            <button id="google-login-btn" class="w-full py-4 rounded-2xl border-2 border-slate-100 bg-white text-slate-700 font-bold hover:bg-slate-50 transition flex justify-center items-center gap-3">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5"><span>Google Account</span>
+            </button>
+
+            <!-- Loading Overlay -->
+            <div id="loading-overlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col justify-center items-center z-50 hidden rounded-[40px]">
+                <div class="w-12 h-12 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                <p class="text-xs font-black text-teal-600 uppercase tracking-widest animate-pulse">Đang kết nối đến máy chủ...</p>
+            </div>
         </div>
     </div>
 
-    <button id="admin-login-button" class="hidden fixed bottom-6 right-6 z-50 bg-slate-900 text-white p-4 rounded-2xl shadow-xl"><i class="fas fa-user-shield"></i></button>
+    <!-- Modals -->
+    <!-- Forgot Password Modal -->
+    <div id="forgot-modal" class="modal-overlay">
+        <div class="modal-content text-left">
+            <div id="forgot-input-section">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-black text-slate-800 tracking-tight">Quên mật khẩu?</h3>
+                    <button class="close-modal text-slate-300 hover:text-red-500"><i class="fas fa-times"></i></button>
+                </div>
+                <p class="text-sm text-slate-500 mb-6 font-medium">Đừng lo! Nhập email của bạn và chúng tôi sẽ gửi liên kết đặt lại mật khẩu.</p>
+                <form id="forgot-form" class="space-y-4">
+                    <input type="email" id="forgot-email" class="input-field w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none font-bold text-sm" placeholder="Nhập email của bạn..." required>
+                    <button type="submit" id="forgot-btn" class="w-full py-4 rounded-2xl text-white font-black btn-gradient shadow-lg shadow-teal-600/20 uppercase tracking-widest">Gửi liên kết</button>
+                </form>
+            </div>
+            <div id="forgot-success-section" class="hidden text-center py-6">
+                <div class="w-20 h-20 bg-teal-50 text-teal-600 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">
+                    <i class="fas fa-paper-plane"></i>
+                </div>
+                <h3 class="text-xl font-black text-slate-800 mb-2">Đã gửi Email!</h3>
+                <p class="text-sm text-slate-500 mb-8 font-medium">Vui lòng kiểm tra hộp thư đến (hoặc thư rác) để hoàn tất việc đặt lại mật khẩu.</p>
+                <button class="close-modal w-full py-3.5 rounded-2xl bg-slate-100 text-slate-600 font-black uppercase text-xs tracking-widest">Đóng cửa sổ</button>
+            </div>
+        </div>
+    </div>
 
+    <!-- Confirm Role Modal -->
+    <div id="confirm-role-modal" class="modal-overlay">
+        <div class="modal-content !p-0 overflow-hidden max-w-sm">
+            <div class="h-2 w-full bg-teal-500"></div>
+            <div class="p-10">
+                <div class="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center mb-6 mx-auto text-3xl text-teal-600 border border-teal-100">
+                    <i id="confirm-icon" class="fas fa-user-graduate"></i>
+                </div>
+                <h3 class="text-xl font-black text-slate-800 mb-2">Xác nhận vai trò</h3>
+                <p class="text-sm text-slate-500 mb-6">Bạn đang đăng ký với vai trò <br><span id="confirm-role-text" class="text-teal-600 font-black text-lg">HỌC SINH</span></p>
+                <div class="p-4 bg-amber-50 rounded-2xl border border-amber-100 text-left flex gap-3">
+                    <i class="fas fa-exclamation-triangle text-amber-500 mt-1"></i>
+                    <p class="text-[10px] text-amber-700 font-bold leading-relaxed uppercase">Lưu ý: Vai trò này không thể thay đổi sau khi tạo tài khoản!</p>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mt-8">
+                    <button class="close-modal py-4 font-black text-slate-400 uppercase text-[10px] tracking-widest">Hủy</button>
+                    <button id="btn-confirm-register" class="py-4 rounded-xl bg-teal-600 text-white font-black shadow-lg shadow-teal-600/30 uppercase text-[10px] tracking-widest">Xác nhận</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Alert Modal -->
+    <div id="alert-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div id="alert-icon-container" class="alert-icon mb-4"><i class="fas fa-info"></i></div>
+            <h3 id="alert-title" class="text-xl font-black text-slate-800 mb-2">Thông báo</h3>
+            <p id="alert-message" class="text-sm text-slate-500 font-medium mb-8"></p>
+            <button class="close-modal w-full py-4 rounded-2xl bg-slate-100 text-slate-600 font-black uppercase text-xs tracking-widest">Đã hiểu</button>
+        </div>
+    </div>
+
+    <!-- Firebase Logic -->
     <script src="firebase-config.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, onAuthStateChanged, signOut, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            const app = initializeApp(firebaseConfig);
-            const auth = getAuth(app);
-            const db = getFirestore(app);
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, updateProfile, setPersistence, browserLocalPersistence, browserSessionPersistence, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-            feather.replace();
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-            // --- CÁC DOM ELEMENTS ---
-            const mainAuthCard = document.getElementById('main-auth-card');
-            const loginTab = document.getElementById('login-tab');
-            const registerTab = document.getElementById('register-tab');
-            const loginFormContainer = document.getElementById('login-form-container');
-            const registerFormContainer = document.getElementById('register-form-container');
-            const messageDisplay = document.getElementById('message-display');
-            const loadingOverlay = document.getElementById('loading-overlay');
-            const googleLoginBtn = document.getElementById('google-login-btn');
+        let isProcessing = false;
+        let pendingRegisterData = null;
 
-            // --- HELPER HIỂN THỊ THÔNG BÁO ---
-            const showMessage = (msg, isError = true) => {
-                messageDisplay.textContent = msg;
-                messageDisplay.className = `p-4 rounded-xl text-xs font-bold mb-6 text-center ${isError ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`;
-                messageDisplay.classList.remove('hidden');
-                setTimeout(() => messageDisplay.classList.add('hidden'), 5000);
+        // --- UI HELPERS ---
+        const setLoading = (isLoading) => {
+            document.getElementById('loading-overlay').classList.toggle('flex', isLoading);
+            document.getElementById('loading-overlay').classList.toggle('hidden', !isLoading);
+        };
+
+        window.showAlert = (msg, type = 'error') => {
+            const modal = document.getElementById('alert-modal');
+            const title = document.getElementById('alert-title');
+            const message = document.getElementById('alert-message');
+            const iconBox = modal.querySelector('.modal-content');
+            
+            message.innerText = msg;
+            iconBox.className = `modal-content ${type === 'error' ? 'alert-error' : 'alert-success'}`;
+            title.innerText = type === 'error' ? "Rất tiếc!" : "Tuyệt vời!";
+            document.getElementById('alert-icon-container').innerHTML = type === 'error' ? '<i class="fas fa-times"></i>' : '<i class="fas fa-check"></i>';
+            modal.classList.add('show');
+        };
+
+        // --- AUTH TABS & ROLE ---
+        const switchTab = (tab) => {
+            document.getElementById('login-form').classList.toggle('hidden', tab === 'register');
+            document.getElementById('register-form').classList.toggle('hidden', tab === 'login');
+            document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+            document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+        };
+
+        document.getElementById('tab-login').onclick = () => switchTab('login');
+        document.getElementById('tab-register').onclick = () => switchTab('register');
+
+        const setRole = (role) => {
+            document.getElementById('reg-role').value = role;
+            document.getElementById('role-indicator').style.left = role === 'student' ? '4px' : 'calc(50% - 0px)';
+            document.getElementById('btn-role-student').classList.toggle('text-teal-600', role === 'student');
+            document.getElementById('btn-role-teacher').classList.toggle('text-teal-600', role === 'teacher');
+            document.getElementById('student-fields').classList.toggle('hidden', role !== 'student');
+            document.getElementById('teacher-fields').classList.toggle('hidden', role === 'student');
+        };
+
+        document.getElementById('btn-role-student').onclick = () => setRole('student');
+        document.getElementById('btn-role-teacher').onclick = () => setRole('teacher');
+
+        // --- LOGIN LOGIC ---
+        document.getElementById('login-form').onsubmit = async (e) => {
+            e.preventDefault();
+            setLoading(true);
+            try {
+                const remember = document.getElementById('remember-me').checked;
+                await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
+                await signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-password').value);
+            } catch (err) {
+                setLoading(false);
+                showAlert("Email hoặc mật khẩu không chính xác.");
+            }
+        };
+
+        // --- REGISTER LOGIC ---
+        document.getElementById('register-form').onsubmit = (e) => {
+            e.preventDefault();
+            const pass = document.getElementById('reg-pass').value;
+            const confirm = document.getElementById('reg-confirm').value;
+            const role = document.getElementById('reg-role').value;
+
+            if (pass !== confirm) return showAlert("Mật khẩu xác nhận không khớp.");
+            if (pass.length < 6) return showAlert("Mật khẩu phải có ít nhất 6 ký tự.");
+
+            pendingRegisterData = {
+                name: document.getElementById('reg-name').value,
+                email: document.getElementById('reg-email').value,
+                pass: pass,
+                role: role,
+                school: role === 'student' ? document.getElementById('reg-school-student').value : document.getElementById('reg-school-teacher').value,
+                grade: document.getElementById('reg-grade').value,
+                subject: document.getElementById('reg-subject').value
             };
 
-            // --- TAB SWITCH LOGIC ---
-            loginTab.onclick = () => {
-                loginTab.classList.add('active'); registerTab.classList.remove('active');
-                loginFormContainer.classList.remove('hidden'); registerFormContainer.classList.add('hidden');
-            };
-            registerTab.onclick = () => {
-                registerTab.classList.add('active'); loginTab.classList.remove('active');
-                registerFormContainer.classList.remove('hidden'); loginFormContainer.classList.add('hidden');
-            };
+            document.getElementById('confirm-role-text').innerText = role === 'student' ? "HỌC SINH" : "GIÁO VIÊN";
+            document.getElementById('confirm-icon').className = role === 'student' ? "fas fa-user-graduate" : "fas fa-chalkboard-teacher";
+            document.getElementById('confirm-role-modal').classList.add('show');
+        };
 
-            // --- FIREBASE GOOGLE LOGIN (LẤY TỪ CODE CŨ CỦA BẠN) ---
-            googleLoginBtn.onclick = async () => {
-                const provider = new GoogleAuthProvider();
-                try {
-                    await setPersistence(auth, browserSessionPersistence);
-                    await signInWithPopup(auth, provider);
-                    sessionStorage.setItem('isNewAuth', 'true');
-                } catch (error) {
-                    if (error.code !== 'auth/popup-closed-by-user') {
-                        showMessage("Lỗi đăng nhập Google: " + error.message);
-                    }
-                }
-            };
-
-            // --- MULTI-STEP LOGIC ---
-            let currentStep = 1;
-            const showStep = (num) => {
-                document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
-                document.getElementById(`step-${num}`).classList.add('active');
-                document.getElementById('register-progress-bar').style.width = (num * 25) + '%';
-                currentStep = num;
-            };
-
-            document.querySelectorAll('.next-btn').forEach(btn => {
-                btn.onclick = () => {
-                    // Logic validate đơn giản trước khi qua bước
-                    if(currentStep === 1 && (!document.getElementById('register-name').value || !document.getElementById('register-email').value)) {
-                        return showMessage("Vui lòng điền tên và email.");
-                    }
-                    showStep(parseInt(btn.dataset.next));
-                };
-            });
-            document.querySelectorAll('.prev-btn').forEach(btn => {
-                btn.onclick = () => showStep(parseInt(btn.dataset.prev));
-            });
-
-            // --- ROLE SELECTION ---
-            document.querySelectorAll('.role-card').forEach(card => {
-                card.onclick = () => {
-                    document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
-                    card.classList.add('selected');
-                    const role = card.dataset.role;
-                    document.getElementById('role-input').value = role;
-                    document.getElementById('student-fields').classList.toggle('hidden', role !== 'student');
-                    document.getElementById('teacher-fields').classList.toggle('hidden', role === 'student');
-                };
-            });
-
-            // --- LOGIN FORM SUBMIT ---
-            document.getElementById('login-form').onsubmit = async (e) => {
-                e.preventDefault();
-                const email = document.getElementById('login-email').value;
-                const pass = document.getElementById('login-password').value;
-                try {
-                    await setPersistence(auth, browserSessionPersistence);
-                    await signInWithEmailAndPassword(auth, email, pass);
-                    sessionStorage.setItem('isNewAuth', 'true');
-                } catch (e) { showMessage("Sai email hoặc mật khẩu."); }
-            };
-
-            // --- REGISTER FORM SUBMIT ---
-            document.getElementById('register-form').onsubmit = async (e) => {
-                e.preventDefault();
-                const role = document.getElementById('role-input').value;
-                const name = document.getElementById('register-name').value;
-                const email = document.getElementById('register-email').value;
-                const pass = document.getElementById('register-password').value;
-                const passConfirm = document.getElementById('register-password-confirm').value;
-
-                if(pass !== passConfirm) return showMessage("Mật khẩu không khớp.");
+        document.getElementById('btn-confirm-register').onclick = async () => {
+            document.getElementById('confirm-role-modal').classList.remove('show');
+            setLoading(true);
+            isProcessing = true;
+            try {
+                const { name, email, pass, role, school, grade, subject } = pendingRegisterData;
+                const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+                await updateProfile(userCred.user, { displayName: name });
                 
-                try {
-                    await setPersistence(auth, browserSessionPersistence);
-                    const userCred = await createUserWithEmailAndPassword(auth, email, pass);
-                    const userData = {
-                        uid: userCred.user.uid,
-                        name: name,
-                        email: email,
-                        role: role,
-                        createdAt: serverTimestamp(),
-                        school: role === 'student' ? document.getElementById('register-school-student').value : document.getElementById('register-school-teacher').value,
-                        ...(role === 'student' && { grade: document.getElementById('register-grade').value }),
-                        ...(role === 'teacher' && { subject: document.getElementById('register-subject').value })
-                    };
-                    await setDoc(doc(db, "users", userCred.user.uid), userData);
-                    sessionStorage.setItem('isNewAuth', 'true');
-                } catch (e) { showMessage("Email đã tồn tại hoặc lỗi đăng ký."); }
-            };
-
-            // --- REDIRECT LOGIC & AUTH STATE ---
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    try {
-                        const userSnap = await getDoc(doc(db, "users", user.uid));
-                        if (!userSnap.exists()) {
-                            // Tạo tài khoản Google mới nếu chưa có trong Firestore
-                            await setDoc(doc(db, "users", user.uid), { uid: user.uid, name: user.displayName, email: user.email, role: "student", createdAt: serverTimestamp() });
-                        }
-                        const role = userSnap.exists() ? userSnap.data().role : "student";
-                        const dest = role === 'admin' ? '/admin/index.html' : (role === 'teacher' ? '/teacher/index.html' : '/student/index.html');
-                        window.location.href = dest;
-                    } catch (e) { console.error(e); }
-                } else {
-                    loadingOverlay.classList.add('hidden');
-                    mainAuthCard.classList.remove('hidden');
-                }
-            });
-
-            // Password eye toggle
-            document.querySelectorAll('.password-toggle').forEach(btn => {
-                btn.onclick = () => {
-                    const input = document.getElementById(btn.dataset.for);
-                    input.type = input.type === 'password' ? 'text' : 'password';
-                    btn.querySelector('i').setAttribute('data-feather', input.type === 'password' ? 'eye-off' : 'eye');
-                    feather.replace();
+                const userData = {
+                    uid: userCred.user.uid, name, email, role, school,
+                    createdAt: serverTimestamp(),
+                    ...(role === 'student' ? { grade: parseInt(grade) } : { subject })
                 };
-            });
+                await setDoc(doc(db, "users", userCred.user.uid), userData);
+                window.location.href = `/${role}/index.html`;
+            } catch (err) {
+                setLoading(false);
+                isProcessing = false;
+                showAlert(err.code === 'auth/email-already-in-use' ? "Email này đã được sử dụng." : "Lỗi đăng ký.");
+            }
+        };
 
-            // Subjects load
-            getDocs(collection(db, "subjects")).then(snap => {
-                const sel = document.getElementById('register-subject');
-                snap.forEach(d => sel.add(new Option(d.data().name, d.data().name)));
-            });
+        // --- GOOGLE LOGIN ---
+        document.getElementById('google-login-btn').onclick = async () => {
+            const provider = new GoogleAuthProvider();
+            try {
+                setLoading(true);
+                isProcessing = true;
+                const result = await signInWithPopup(auth, provider);
+                const userDoc = await getDoc(doc(db, "users", result.user.uid));
+                if (!userDoc.exists()) {
+                    await setDoc(doc(db, "users", result.user.uid), {
+                        uid: result.user.uid, name: result.user.displayName, email: result.user.email,
+                        role: "student", school: "Chưa cập nhật", grade: 10, createdAt: serverTimestamp()
+                    });
+                }
+                const role = userDoc.exists() ? userDoc.data().role : "student";
+                window.location.href = `/${role}/index.html`;
+            } catch (err) {
+                setLoading(false);
+                isProcessing = false;
+                if (err.code !== 'auth/popup-closed-by-user') showAlert("Lỗi đăng nhập Google.");
+            }
+        };
+
+        // --- FORGOT PASSWORD ---
+        document.getElementById('btn-forgot').onclick = (e) => {
+            e.preventDefault();
+            document.getElementById('forgot-modal').classList.add('show');
+        };
+
+        document.getElementById('forgot-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('forgot-btn');
+            btn.disabled = true; btn.innerText = "Đang gửi...";
+            try {
+                await sendPasswordResetEmail(auth, document.getElementById('forgot-email').value);
+                document.getElementById('forgot-input-section').classList.add('hidden');
+                document.getElementById('forgot-success-section').classList.remove('hidden');
+            } catch (err) {
+                showAlert(err.code === 'auth/user-not-found' ? "Email chưa được đăng ký." : "Lỗi gửi email.");
+            } finally {
+                btn.disabled = false; btn.innerText = "Gửi liên kết";
+            }
+        };
+
+        // --- SHARED MODAL LOGIC ---
+        document.querySelectorAll('.close-modal').forEach(btn => {
+            btn.onclick = () => document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('show'));
+        });
+
+        // --- AUTH REDIRECT ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user && !isProcessing) {
+                setLoading(true);
+                const docSnap = await getDoc(doc(db, "users", user.uid));
+                if (docSnap.exists()) {
+                    const role = docSnap.data().role;
+                    window.location.href = `/${role === 'admin' ? 'admin' : role}/index.html`;
+                }
+            } else if (!user) {
+                setLoading(false);
+            }
+        });
+
+        // Toggle Pass
+        document.querySelectorAll('.toggle-pass').forEach(icon => {
+            icon.onclick = () => {
+                const input = icon.previousElementSibling;
+                input.type = input.type === 'password' ? 'text' : 'password';
+                icon.classList.toggle('fa-eye'); icon.classList.toggle('fa-eye-slash');
+            };
         });
     </script>
-
-<script type="text/javascript">
-    // 1. Chặn Chuột phải (Để ẩn menu "Inspect/Kiểm tra" và "View Source/Xem nguồn")
-    document.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-        // Không hiện thông báo gì cả để trải nghiệm mượt mà hơn
-    });
-
-    // 2. Chặn các phím tắt Developer Tools
-    document.addEventListener('keydown', function(e) {
-        // Chặn F12
-        if (e.key === 'F12' || e.keyCode === 123) {
-            e.preventDefault();
-            return false;
-        }
-
-        // Chặn các tổ hợp phím Ctrl + ...
-        if (e.ctrlKey) {
-            switch (e.key.toLowerCase()) {
-                case 'u': // Chặn Ctrl + U (Xem source code)
-                case 's': // Chặn Ctrl + S (Lưu trang web)
-                case 'p': // Chặn Ctrl + P (In trang web - thường hiện code)
-                // Lưu ý: KHÔNG chặn 'c' (Copy) và 'a' (Select All)
-                    e.preventDefault();
-                    return false;
-            }
-
-            // Chặn Ctrl + Shift + ... (Các phím mở DevTools)
-            if (e.shiftKey) {
-                switch (e.key.toLowerCase()) {
-                    case 'i': // Inspect Element
-                    case 'j': // Console
-                    case 'c': // Element Inspector
-                        e.preventDefault();
-                        return false;
-                }
-            }
-        }
-    });
-</script>
 </body>
 </html>
