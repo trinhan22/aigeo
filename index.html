@@ -61,6 +61,43 @@
         .badge-2 { bottom: 30px; left: -30px; animation-delay: 2s; }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
+        /* Social Icons */
+        .social-links { display: flex; gap: 12px; margin-top: 25px; }
+        .social-item {
+            width: 40px; height: 40px; background: #f8fafc; color: #64748b; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; transition: 0.3s;
+            text-decoration: none; border: 1px solid #f1f5f9;
+        }
+        .social-item:hover { background: var(--primary); color: white; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255, 143, 80, 0.2); }
+        
+        /* NÚT DOWNLOAD: CHỮ TRẮNG & HOVER CHỈ TRANSLATE Y */
+        .download-container { display: flex; flex-direction: column; gap: 12px; }
+        .btn-app {
+            display: flex; align-items: center; gap: 12px;
+            background: #1e293b; /* Nền xanh đen slate */
+            padding: 12px 22px; border-radius: 16px;
+            text-decoration: none; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255,255,255,0.1);
+            width: fit-content; min-width: 190px;
+        }
+        
+        .btn-app:hover {
+            background: #0f172a;
+            transform: translateY(-3px); /* Cả card bay lên */
+            border-color: var(--primary);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+
+        /* Chữ và Icon bên trong chỉ bay lên theo card, không lệch trái */
+        .btn-app i { font-size: 1.7rem; color: #ffffff; transition: 0.4s; }
+        .btn-app:hover i { transform: translateY(-2px); }
+
+        .btn-app .app-text { text-align: left; line-height: 1.3; transition: 0.4s; }
+        .btn-app:hover .app-text { transform: translateY(-2px); }
+        
+        .btn-app .app-sub { font-size: 0.65rem; color: rgba(255,255,255,0.75); display: block; font-weight: 500; }
+        .btn-app .app-title { font-size: 1rem; color: #ffffff; font-weight: 800; display: block; }
+
         /* --- BENTO GRID V2 --- */
         .bento-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 24px; }
         .bento-card { border-radius: 32px; padding: 35px; position: relative; overflow: hidden; display: flex; flex-direction: column; transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; text-decoration: none; }
@@ -75,7 +112,7 @@
         .step-card:hover { border-color: var(--primary); transform: translateY(-5px); }
         .step-num { width: 50px; height: 50px; border-radius: 50%; background: var(--primary-gradient); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(13, 148, 136, 0.3); }
 
-        /* --- ABOUT TABS (Phong cách HopVan) --- */
+        /* --- ABOUT TABS --- */
         .about-compact-card { display: flex; background: white; border-radius: 32px; border: 1px solid #E2E8F0; overflow: hidden; min-height: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         .about-menu { width: 300px; background: #F8FAFC; padding: 30px 20px; display: flex; flex-direction: column; gap: 10px; border-right: 1px solid #E2E8F0; }
         .about-tab-btn { display: flex; align-items: center; gap: 12px; padding: 15px; border-radius: 15px; border: none; background: transparent; cursor: pointer; transition: 0.3s; text-align: left; }
@@ -171,6 +208,245 @@
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #0D9488; }
+
+
+        /* ============================================================
+        AIGEO MOBILE OPTIMIZATION - CHI TIẾT & CHUYÊN NGHIỆP
+        ============================================================ */
+
+        @media (max-width: 768px) {
+            /* 1. Tổng quan & Layout */
+            body {
+                background-attachment: scroll; /* Tối ưu hiệu năng cho điện thoại */
+            }
+            
+            .container {
+                padding-left: 20px !important;
+                padding-right: 20px !important;
+            }
+
+            /* 2. Header (Pill Style Mobile) */
+            header {
+                top: 10px;
+                width: 95%;
+                padding: 8px 16px;
+                border-radius: 25px; /* Thu gọn pill */
+            }
+
+            header .logo span {
+                font-size: 1.2rem; /* Giảm cỡ chữ logo */
+            }
+
+            header .logo img {
+                height: 32px;
+                width: 32px;
+            }
+
+            .btn-modern {
+                padding: 10px 20px;
+                font-size: 0.85rem;
+            }
+
+            /* 3. Hero Section */
+            .hero {
+                min-height: auto;
+                padding-top: 120px; /* Tránh bị Header che */
+                padding-bottom: 40px;
+                grid-template-columns: 1fr !important;
+                gap: 30px;
+            }
+
+            .hero-text h1 {
+                font-size: 2.2rem !important; /* Cỡ chữ tiêu đề chính mobile */
+                line-height: 1.2;
+                text-align: center;
+            }
+
+            .hero-text p {
+                font-size: 0.95rem;
+                text-align: center;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .hero-text .flex {
+                justify-content: center; /* Căn giữa các nút bấm */
+            }
+
+            .main-card {
+                border-radius: 24px;
+                padding: 8px;
+            }
+
+            .hero-image {
+                order: -1; /* Đưa ảnh lên trên tiêu đề trên mobile nếu muốn, hoặc giữ nguyên tùy ý */
+                margin-bottom: 20px;
+            }
+
+            /* 4. Bento Grid (Chuyển về 1 cột hoặc 2 cột nhỏ) */
+            .bento-grid {
+                grid-template-columns: 1fr !important; /* Ép về 1 cột dọc */
+                gap: 16px;
+            }
+
+            .bento-card {
+                padding: 24px !important;
+                grid-column: span 1 !important; /* Reset lại tất cả col-span */
+            }
+
+            .bento-card h3 {
+                font-size: 1.2rem;
+            }
+
+            .bc-icon-wrap {
+                width: 44px;
+                height: 44px;
+                margin-bottom: 16px;
+            }
+
+            .bc-watermark {
+                font-size: 5rem; /* Thu nhỏ logo chìm */
+                right: -10px;
+                bottom: -10px;
+            }
+
+            /* 5. Section Titles */
+            section[id] {
+                padding-top: 60px !important;
+                padding-bottom: 60px !important;
+            }
+
+            h2.text-3xl, h2.text-4xl {
+                font-size: 1.8rem !important;
+                line-height: 1.3;
+            }
+
+            /* 6. Step / Roadmap */
+            .step-card {
+                padding: 24px;
+            }
+
+            .step-num {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            /* 7. About Tabs (Tối ưu hóa tab menu mobile) */
+            .about-compact-card {
+                flex-direction: column;
+                border-radius: 24px;
+            }
+
+            .about-menu {
+                width: 100%;
+                padding: 12px;
+                flex-direction: row; /* Chuyển menu sang dạng cuộn ngang */
+                overflow-x: auto;
+                white-space: nowrap;
+                gap: 8px;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .about-menu::-webkit-scrollbar {
+                display: none; /* Ẩn thanh cuộn cho thẩm mỹ */
+            }
+
+            .about-tab-btn {
+                padding: 10px 16px;
+                font-size: 0.8rem;
+                flex: 0 0 auto;
+            }
+
+            .about-content-area {
+                padding: 24px;
+            }
+
+            .about-content-area h3 {
+                font-size: 1.4rem;
+            }
+
+            /* 8. Testimonials (Carousel cảm giác) */
+            #testimonials .grid {
+                display: flex;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                gap: 16px;
+                padding-bottom: 20px;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            #testimonials .glass {
+                flex: 0 0 85%; /* Hiện 1 card và 1 phần card tiếp theo */
+                scroll-snap-align: start;
+                padding: 24px;
+            }
+
+            /* 9. CTA Card */
+            .mb-24 {
+                margin-bottom: 40px !important;
+            }
+
+            .bg-slate-900.rounded-\[40px\] {
+                border-radius: 30px;
+                padding: 40px 20px !important;
+            }
+
+            .bg-slate-900 h2 {
+                font-size: 1.75rem !important;
+            }
+
+            .btn-white-glow {
+                width: 100%;
+                padding: 16px;
+                font-size: 1rem;
+            }
+
+            /* 10. Footer */
+            footer {
+                padding-top: 40px;
+                text-align: center;
+            }
+
+            footer .grid {
+                gap: 40px;
+            }
+
+            footer .logo {
+                justify-content: center;
+            }
+
+            footer ul {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+
+            footer ul li {
+                margin: 0 !important;
+            }
+
+            footer .flex-col {
+                align-items: center; /* Căn giữa các nút tải App */
+            }
+
+            /* Fix Background Blobs on Mobile */
+            .blob-1 { width: 300px; height: 300px; }
+            .blob-2 { width: 250px; height: 250px; }
+        }
+
+        /* Fix cho các màn hình cực nhỏ (iPhone SE/5) */
+        @media (max-width: 380px) {
+            .hero-text h1 {
+                font-size: 1.8rem !important;
+            }
+            
+            .btn-modern {
+                padding: 8px 14px;
+                font-size: 0.75rem;
+            }
+        }
 
     </style>
 </head>
@@ -474,6 +750,11 @@
                     <span>AIGEO</span>
                 </a>
                 <p class="text-slate-500 text-sm">Nền tảng học tập Địa lý ứng dụng AI tiên phong, đồng hành cùng sĩ tử chinh phục ước mơ.</p>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/hopvanapp" target="_blank" class="social-item"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.facebook.com/hopvanapp" target="_blank" class="social-item"><i class="fab fa-tiktok"></i></a>
+                    <a href="https://www.facebook.com/hopvanapp" target="_blank" class="social-item"><i class="fab fa-youtube"></i></a>
+                </div>
             </div>
             <div>
                 <h4 class="font-bold mb-6">Khám phá</h4>
@@ -495,14 +776,21 @@
             </div>
             <div>
                 <h4 class="font-bold mb-6">Tải ứng dụng</h4>
-                <div class="flex flex-col gap-3">
-                    <a href="#" class="flex items-center gap-3 bg-slate-900 text-white p-3 rounded-xl hover:scale-105 transition">
-                        <i class="fab fa-apple text-2xl"></i>
-                        <div><div class="text-[10px] opacity-60">Download on the</div><div class="text-sm font-bold">App Store</div></div>
+                <div class="download-container">
+                    <a class='btn-app' href='https://apps.apple.com/us/app/aigeo/id1863080069' target="_blank">
+                        <i class="fab fa-apple"></i>
+                        <div class="app-text">
+                            <span class="app-sub">Download on the</span>
+                            <span class="app-title">App Store</span>
+                        </div>
                     </a>
-                    <a href="#" class="flex items-center gap-3 bg-slate-900 text-white p-3 rounded-xl hover:scale-105 transition">
-                        <i class="fab fa-google-play text-2xl"></i>
-                        <div><div class="text-[10px] opacity-60">Get it on</div><div class="text-sm font-bold">Google Play</div></div>
+
+                    <a class='btn-app' href='https://play.google.com/store/apps/details?id=com.aigeo&hl=vi' target="_blank">
+                        <i class="fab fa-google-play"></i>
+                        <div class="app-text">
+                            <span class="app-sub">Get it on</span>
+                            <span class="app-title">Google Play</span>
+                        </div>
                     </a>
                 </div>
             </div>

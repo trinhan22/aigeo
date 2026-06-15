@@ -137,6 +137,160 @@
         @media (max-width: 768px) {
             #question-map { position: fixed; right: 0; top: 72px; bottom: 0; transform: translateX(100%); z-index: 100; transition: 0.4s; }
         }
+
+/* ============================================================
+   AIGEO TEST PAGE MOBILE OPTIMIZATION - APP STYLE
+   ============================================================ */
+
+@media (max-width: 768px) {
+    /* 1. Reset Body & Layout */
+    body {
+        overflow: hidden; /* Giữ scroll bên trong main */
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* 2. HEADER - Thu gọn */
+    header {
+        height: 64px !important;
+        padding: 0 16px !important;
+    }
+
+    #user-avatar {
+        height: 32px !important;
+        width: 32px !important;
+        border-radius: 8px;
+    }
+
+    #test-name-header {
+        font-size: 0.9rem !important;
+        max-width: 150px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .timer-pill {
+        padding: 6px 12px !important;
+        font-size: 0.8rem !important;
+    }
+
+    /* 3. MAIN CONTENT - Tối ưu thẻ câu hỏi */
+    .content-scroll {
+        padding: 20px 16px !important;
+    }
+
+    .question-card {
+        padding: 20px !important; /* Giảm padding cho đỡ chiếm diện tích */
+        border-radius: 20px !important;
+        margin-bottom: 24px !important;
+    }
+
+    .question-card span.bg-teal-600 {
+        font-size: 9px !important;
+    }
+
+    .prose.text-lg {
+        font-size: 1rem !important; /* Giảm nhẹ cỡ chữ câu hỏi */
+        line-height: 1.5;
+    }
+
+    /* Tối ưu các lựa chọn trả lời */
+    .answer-option {
+        padding: 12px 16px !important;
+        border-radius: 14px !important;
+    }
+
+    .option-letter {
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 0.8rem !important;
+    }
+
+    /* Đúng/Sai Group */
+    .tf-btn {
+        padding: 12px !important;
+        font-size: 0.85rem !important;
+    }
+
+    /* 4. QUESTION MAP - Chuyển thành Side Drawer */
+    #question-map {
+        position: fixed !important;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 80% !important; /* Chiếm 80% chiều ngang */
+        max-width: 320px;
+        height: 100vh !important;
+        z-index: 100 !important;
+        border-left: 1px solid #E2E8F0;
+        background: rgba(255, 255, 255, 0.98) !important;
+        backdrop-filter: blur(15px);
+        transform: translateX(100%); /* Ẩn đi mặc định */
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+        padding: 80px 20px 30px 20px !important; /* Padding top để tránh đè Header */
+    }
+
+    /* Khi Checkbox được check thì hiện Drawer */
+    #question-map-toggle:checked ~ #question-map {
+        transform: translateX(0);
+    }
+
+    /* Lớp phủ mờ nền khi mở Drawer */
+    #question-map-toggle:checked ~ main::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.4);
+        backdrop-filter: blur(4px);
+        z-index: 90;
+    }
+
+    /* Grid câu hỏi trên mobile */
+    .question-grid {
+        grid-template-columns: repeat(4, 1fr) !important; /* 4 cột thay vì 5 */
+        gap: 8px !important;
+    }
+
+    .q-map-btn {
+        height: 45px !important; /* Dễ chạm hơn bằng ngón tay */
+        width: 45px !important;
+        font-size: 0.9rem !important;
+    }
+
+    /* 5. NÚT NỘP BÀI - Cố định dưới Drawer */
+    .btn-submit {
+        margin-top: 20px !important;
+        padding: 14px !important;
+        font-size: 0.9rem !important;
+        border-radius: 14px !important;
+    }
+
+    /* 6. TOAST - Thông báo */
+    #toast-container {
+        bottom: 20px !important;
+        left: 20px !important;
+        right: 20px !important;
+    }
+
+    /* Touch Feedback (Rung nhẹ khi chạm) */
+    .answer-option:active, .tf-btn:active, .q-map-btn:active {
+        transform: scale(0.96);
+        background: #F0FDFA;
+    }
+}
+
+/* Fix cho thiết bị siêu nhỏ */
+@media (max-width: 360px) {
+    #test-name-header {
+        max-width: 100px;
+    }
+    .question-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
     </style>
 </head>
 <body>
@@ -181,6 +335,9 @@
         <!-- Right Sidebar: Question Map -->
         <input type="checkbox" id="question-map-toggle" class="hidden">
         <aside id="question-map">
+            <label for="question-map-toggle" class="md:hidden absolute top-5 left-5 w-10 h-10 flex items-center justify-center bg-slate-100 rounded-full">
+                <i data-feather="x" class="w-5 h-5"></i>
+            </label>
             <div class="mb-6 flex justify-between items-center">
                 <h2 class="font-black text-slate-800">Danh sách câu hỏi</h2>
                 <span id="progress-text" class="text-[10px] font-black bg-teal-50 text-teal-600 px-2 py-1 rounded">0/0</span>
@@ -493,6 +650,13 @@
                 ).join('');
                 document.getElementById('progress-text').textContent = `0/${questions.length}`;
             }
+
+            document.getElementById('question-grid').addEventListener('click', (e) => {
+                if (window.innerWidth <= 768) {
+                    const toggle = document.getElementById('question-map-toggle');
+                    if (toggle) toggle.checked = false;
+                }
+            });
 
             // Override updateProgressBar
             window.updateProgressBar = () => {
