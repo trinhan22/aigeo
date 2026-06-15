@@ -262,7 +262,17 @@
         }
         .user-pill:hover { border-color: var(--primary); transform: translateY(-2px); }
         .user-pill img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-light); }
-        .user-pill span { font-size: 0.85rem; font-weight: 800; color: var(--text-main); }
+        .user-pill span { 
+            font-size: 0.85rem; 
+            font-weight: 800; 
+            color: var(--text-main); 
+            
+            /* THÊM CÁC DÒNG DƯỚI ĐÂY ĐỂ XỬ LÝ TÊN DÀI */
+            max-width: 150px;       /* Giới hạn độ rộng tối đa cho tên */
+            white-space: nowrap;    /* Không cho xuống dòng */
+            overflow: hidden;       /* Ẩn phần thừa */
+            text-overflow: ellipsis; /* Hiện dấu ... nếu tên quá dài */
+        }
 
         .auth-dropdown {
             position: absolute; top: calc(100% + 15px); right: 0;
@@ -399,6 +409,10 @@
                 font-size: 0.85rem;
             }
 
+            .user-pill span {
+                max-width: 100px;
+            }
+            
             /* 3. Hero Section */
             .hero {
                 min-height: auto;
@@ -1027,8 +1041,9 @@
                         const role = userData.role || 'student';
                         
                         // Hiển thị thông tin
-                        document.getElementById('user-name-header').textContent = userData.name.split(' ').pop();
-                        document.getElementById('user-avatar-header').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=0D9488&color=fff&bold=true`;
+                        const fullName = userData.name || "Người dùng";
+                        document.getElementById('user-name-header').textContent = fullName;
+                        document.getElementById('user-avatar-header').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=0D9488&color=fff&bold=true`;
                         
                         // Cập nhật link Dashboard
                         if(dashboardLink) dashboardLink.href = `/${role}/index.html`;
