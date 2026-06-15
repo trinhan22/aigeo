@@ -16,13 +16,14 @@
     <style>
         :root {
             --primary: #0D9488;
-            --primary-dark: #0F766E;
+            --primary-light: #F0FDFA;
             --secondary: #10B981;
             --text-main: #1E293B;
             --text-light: #64748B;
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.8);
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.5);
             --primary-gradient: linear-gradient(135deg, #0D9488 0%, #10B981 100%);
+            --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -45,21 +46,116 @@
         .logo span { font-size: 1.5rem; font-weight: 900; color: var(--primary); letter-spacing: -0.5px; }
         
         /* --- HERO AREA --- */
-        .hero { min-height: 100vh; display: grid; grid-template-columns: 1.2fr 0.8fr; align-items: center; gap: 40px; padding-top: 80px; position: relative; }
-        .hero-text h1 { font-size: 3.5rem; line-height: 1.1; font-weight: 800; margin-bottom: 20px; color: var(--text-main); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        /* --- ĐIỀU CHỈNH HERO SECTION GIỐNG HOPVAN --- */
+        .hero { 
+            min-height: 100vh; 
+            display: grid; 
+            /* CỘT TRÁI 1.15 (Chữ to) - CỘT PHẢI 0.85 (Video nhỏ) */
+            grid-template-columns: 1fr 1fr; 
+            align-items: center; 
+            gap: 50px; /* Tăng khoảng cách cho thoáng */
+            padding-top: 80px; 
+            padding-bottom: 50px;
+        }
+
+        .hero-text {
+            text-align: left;
+        }
+
+        /* Đảm bảo các section khác cũng tuân thủ container này */
+        section {
+            width: 100%;
+            clear: both;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 992px) {
+            .hero { 
+                grid-template-columns: 1fr; /* Chuyển về 1 cột trên mobile */
+                text-align: center;
+                padding-top: 140px;
+                gap: 40px;
+            }
+            .hero-text {
+                text-align: center;
+            }
+        }
+        
+        .hero-text h1 { 
+            /* Tăng cỡ chữ lên lại */
+            font-size: 3.2rem; 
+            line-height: 1.15; 
+            margin-bottom: 15px; 
+            letter-spacing: -1px; 
+            font-weight: 800; 
+            color: var(--text-main); 
+        }
+        
         .highlight { color: var(--primary); position: relative; display: inline-block; }
         .highlight::after { content: ''; position: absolute; bottom: 8px; left: 0; width: 100%; height: 12px; background: rgba(16, 185, 129, 0.2); z-index: -1; }
 
         /* Background Carousel for Hero (Giữ logic cũ) */
         #background-carousel { position: absolute; inset: 0; z-index: -2; opacity: 0; transition: opacity 1.5s ease-in-out; background-size: cover; background-position: center; filter: saturate(0.5) brightness(1.1); opacity: 0.1 !important; }
 
-        .main-card { background: white; border-radius: 40px; padding: 15px; box-shadow: 0 30px 60px rgba(0,0,0,0.08); position: relative; }
-        .main-card img { width: 100%; border-radius: 30px; display: block; object-fit: cover; aspect-ratio: 4/3; }
+        .hero-card-wrapper { position: relative; width: 100%; }
         
-        .floating-badge { position: absolute; padding: 12px 20px; border-radius: 20px; display: flex; align-items: center; gap: 12px; animation: float 4s infinite ease-in-out; z-index: 10; }
-        .badge-1 { top: -20px; right: -20px; }
-        .badge-2 { bottom: 30px; left: -30px; animation-delay: 2s; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        .main-card { 
+            background: white; 
+            border-radius: 40px; 
+            padding: 18px; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.08); 
+            transform: rotate(0deg); 
+            border: 6px solid rgba(255,255,255,0.5); 
+            transition: transform 0.5s; 
+        }
+        
+        /* --- SỬA ĐỔI: Dùng thẻ IMG thay cho VIDEO --- */
+        .main-card img { 
+            width: 100%; 
+            /* Ép tỷ lệ 2528 / 1696 (~1.49) */
+            aspect-ratio: 2528 / 1696;
+            border-radius: 36px; 
+            display: block; 
+            object-fit: cover; /* Tự động cắt phần dư của GIF để không bị méo */
+        }
+        
+        /* --- NÂNG CẤP FLOATING BADGES (PILL STYLE) --- */
+        .floating-badge { 
+            position: absolute; 
+            padding: 8px 24px 8px 8px; /* Padding trái nhỏ để icon tròn khít hơn */
+            border-radius: 100px; /* Bo tròn hoàn toàn khung ngoài thành hình viên thuốc */
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            animation: float 4s infinite ease-in-out; 
+            z-index: 10; 
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Icon bên trong Badge - Hình tròn tuyệt đối */
+        .badge-icon-wrap {
+            width: 42px; 
+            height: 42px; 
+            border-radius: 50% !important; /* Bo tròn tuyệt đối icon */
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(13, 148, 136, 0.1);
+        }
+
+        .badge-1 { top: -10px; right: -30px; }
+        .badge-2 { bottom: 10px; left: -40px; animation-delay: 2s; }
+
+        @keyframes float { 
+            0%, 100% { transform: translateY(0) rotate(0deg); } 
+            50% { transform: translateY(-15px) rotate(2deg); } 
+        }
 
         /* Social Icons */
         .social-links { display: flex; gap: 12px; margin-top: 25px; }
@@ -123,11 +219,67 @@
         .about-pane.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- DARK MODE --- */
-        html.dark { --text-main: #F8FAFC; --text-light: #94A3B8; --glass-bg: rgba(15, 23, 42, 0.8); }
+        /* --- DARK MODE REFINED --- */
+        html.dark {
+            --text-main: #F1F5F9;
+            --text-light: #94A3B8;
+            --glass-bg: rgba(15, 23, 42, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
         html.dark body { background-color: #0B1120; }
-        html.dark .about-compact-card, html.dark .step-card, html.dark .main-card, html.dark .theme-glass { background: #1E293B; border-color: #334155; }
-        html.dark h1, html.dark h2, html.dark h3 { color: white; }
+        html.dark .glass { background: var(--glass-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-color: var(--glass-border); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); }
+        html.dark .bento-card, html.dark .main-card, html.dark .step-card, html.dark .about-compact-card { background: #111827; border-color: #1F2937; box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5); }
+        html.dark .about-menu { background: #0F172A; border-color: #1F2937; }
+        html.dark .about-tab-btn.active { background: #1F2937; border-color: #374151; }
+        html.dark .hero-text h1 { color: #FFFFFF; }
+        html.dark .highlight::after { background: rgba(20, 184, 166, 0.3); }
+        html.dark .bg-slate-50 { background-color: #0F172A; border-color: #1F2937; }
+
+        /* --- HIỆU ỨNG HOVER ĐỒNG BỘ TOÀN HỆ THỐNG --- */
+        .bento-hover-card {
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            cursor: pointer;
+            border: 1px solid #E2E8F0; /* Viền mặc định nhạt */
+        }
+
+        .bento-hover-card:hover {
+            transform: translateY(-5px) scale(1.01) !important;
+            box-shadow: 0 20px 40px -10px rgba(13, 148, 136, 0.25) !important;
+            border-color: #0D9488 !important; /* Đổi sang màu Primary khi hover */
+        }
+
+        /* Riêng card CTA màu tối thì shadow mạnh hơn một chút */
+        .bg-slate-900.bento-hover-card:hover {
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        /* --- 2. GIAO DIỆN TÀI KHOẢN (USER PILL & DROPDOWN) --- */
+        .user-pill {
+            display: flex; align-items: center; gap: 10px;
+            padding: 5px 14px 5px 5px; border-radius: 100px;
+            background: white; border: 1.5px solid #F1F5F9;
+            cursor: pointer; transition: 0.3s;
+        }
+        .user-pill:hover { border-color: var(--primary); transform: translateY(-2px); }
+        .user-pill img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-light); }
+        .user-pill span { font-size: 0.85rem; font-weight: 800; color: var(--text-main); }
+
+        .auth-dropdown {
+            position: absolute; top: calc(100% + 15px); right: 0;
+            width: 240px; background: white; border-radius: 24px;
+            padding: 8px; box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            border: 1px solid #F1F5F9; display: none; z-index: 1100;
+        }
+        .dropdown-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 15px; border-radius: 14px;
+            font-size: 0.85rem; font-weight: 700; color: var(--text-main);
+            transition: 0.2s; text-decoration: none;
+        }
+        .dropdown-item:hover { background: var(--primary-light); color: var(--primary); }
+        .dropdown-item i { width: 16px; height: 16px; opacity: 0.6; }
+        .dropdown-item.logout { color: #F43F5E; }
+        .dropdown-item.logout:hover { background: #FFF1F2; }
 
         /* Mobile Adjustments */
         @media (max-width: 992px) {
@@ -470,24 +622,44 @@
             <a href="#testimonials" class="font-semibold hover:text-teal-600 transition">Đánh giá</a>
             <a href="#about" class="font-semibold hover:text-teal-600 transition">Về chúng tôi</a>
         </nav>
-        <div class="flex items-center gap-6">
-            <!-- Nút Dark Mode -->
-            <button id="dark-toggle" class="w-10 h-10 flex items-center justify-center rounded-full text-slate-500 hover:bg-slate-100 transition-colors">
-                <i class="fas fa-moon"></i>
-            </button>
-            
-            <!-- Nút CTA -->
-            <a href="auth.html" class="btn-modern btn-primary-ai">
-                Khám phá ngay
-            </a>
+        <div class="flex items-center gap-4">
+            <!-- Container xử lý đăng nhập -->
+            <div class="relative" id="auth-header-wrapper">
+                <!-- Nút hiển thị khi CHƯA đăng nhập -->
+                <a href="auth.html" id="btn-login-main" class="btn-modern btn-primary-ai">
+                    Khám phá ngay
+                </a>
+
+                <!-- Profile Pill khi ĐÃ đăng nhập (Ẩn mặc định) -->
+                <div id="user-logged-pill" class="user-pill" style="display: none;">
+                    <img id="user-avatar-header" src="" alt="Avatar">
+                    <span id="user-name-header">...</span>
+                    <i class="fas fa-chevron-down text-[10px] opacity-30 ml-1"></i>
+                </div>
+
+                <!-- Dropdown Menu -->
+                <div id="auth-dropdown-menu" class="auth-dropdown glass">
+                    <p class="px-4 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50 mb-1">Cá nhân</p>
+                    <a href="" id="link-to-dashboard" class="dropdown-item">
+                        <i data-feather="grid"></i> Bảng điều khiển
+                    </a>
+                    <a href="student/account.html" class="dropdown-item">
+                        <i data-feather="user"></i> Trang cá nhân
+                    </a>
+                    <div class="h-px bg-slate-100 my-1"></div>
+                    <button id="btn-logout-header" class="dropdown-item logout w-full text-left">
+                        <i data-feather="log-out"></i> Đăng xuất
+                    </button>
+                </div>
+            </div>
         </div>
     </header>
 
     <div class="container mx-auto px-6">
-        <!-- Hero Section -->
+        <!-- 1. Hero Section -->
         <section class="hero">
             <div class="hero-text">
-                <h1>Khám phá <span class="highlight">Thế giới</span><br>qua từng câu hỏi với AIGEO</h1>
+                <h1 class="text-4xl lg:text-6xl font-black leading-tight mb-6">Khám phá <span class="highlight">Thế giới</span><br>qua từng câu hỏi với AIGEO</h1>
                 <p class="text-lg text-slate-600 mb-8 max-w-xl">Nền tảng học tập Địa lý cá nhân hóa bởi trí tuệ nhân tạo. Giúp bạn chinh phục kiến thức chuẩn GDPT 2018 một cách thông minh nhất.</p>
                 
                 <div class="flex flex-wrap gap-4">
@@ -509,18 +681,32 @@
                 </div>
             </div>
 
-            <div class="hero-image relative">
-                <div class="main-card">
-                    <img src="https://scontent.fsgn5-2.fna.fbcdn.net/v/t39.30808-6/518388894_122097566198955209_97094124198416558_n.jpg?stp=dst-jpg_tt6&cstp=mx2048x2048&ctp=s2048x2048&_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=cUy8ZMr_UvAQ7kNvwFhZTtQ&_nc_oc=AdrUd1SjcSGmGbR1V6rApbGkk6vvM2GWD9qDIMQTd0z49gl6ZdcXmWP7e4ryjJmuwDb-J0rK2tfDnhcoIQ9oTSMD&_nc_zt=23&_nc_ht=scontent.fsgn5-2.fna&_nc_gid=ZnJep8KgqmJ3r8C_1Xrz2w&_nc_ss=7b2a8&oh=00_Af8JxVe4MBLTJkHWl5dO_ItgA_sxvShCLdQfF-7ukCYWIw&oe=6A32AFDD" alt="Geography Learning">
+            <!-- FIX: Thêm bento-hover-card vào ảnh Hero -->
+            <div class="hero-image relative bento-hover-card rounded-[40px]">
+                <div class="main-card !border-none !shadow-none">
+                    <img src="https://scontent.fsgn5-2.fna.fbcdn.net/v/t39.30808-6/518388894_122097566198955209_97094124198416558_n.jpg?stp=dst-jpg_tt6&cstp=mx2048x2048&ctp=s2048x2048&_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=OlUW1MC9Y70Q7kNvwGWmyIa&_nc_oc=AdqDh9OIRQGgnmzbzhEHw8wG7xyjhqTIl3eDJs6gDrOJL64E0HqtNRpTYkkT2vmcQY3NUvSaws7Z20JLB5rCGI0h&_nc_zt=23&_nc_ht=scontent.fsgn5-2.fna&_nc_gid=q8DXaiqB_ZLf4Ymgk2jjOA&_nc_ss=7b2a8&oh=00_Af8euAqCH94WoRFNlDouPOSqYfOJt1HaQnyvyaySqUo7Pw&oe=6A358B1D" alt="Geography">
                 </div>
-                <!-- Badges -->
+
+                <!-- Badge 1 -->
                 <div class="floating-badge badge-1 glass shadow-xl">
-                    <div class="bg-teal-100 p-2 rounded-lg text-teal-600"><i class="fas fa-globe"></i></div>
-                    <div><div class="font-bold text-sm">Lộ trình AI</div><div class="text-xs text-slate-500">Cá nhân hóa 100%</div></div>
+                    <div class="badge-icon-wrap bg-teal-100 text-teal-600">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div>
+                        <div class="font-bold text-sm">Lộ trình AI</div>
+                        <div class="text-xs text-slate-500">Cá nhân hóa 100%</div>
+                    </div>
                 </div>
+
+                <!-- Badge 2 -->
                 <div class="floating-badge badge-2 glass shadow-xl">
-                    <div class="bg-emerald-100 p-2 rounded-lg text-emerald-600"><i class="fas fa-check"></i></div>
-                    <div><div class="font-bold text-sm">Chuẩn GDPT</div><div class="text-xs text-slate-500">Cập nhật liên tục</div></div>
+                    <div class="badge-icon-wrap bg-emerald-100 text-emerald-600">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <div class="font-bold text-sm">Chuẩn GDPT 2018</div>
+                        <div class="text-xs text-slate-500">Cập nhật liên tục</div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -533,10 +719,10 @@
             </div>
 
             <div class="bento-grid">
-                <div class="bento-card col-span-1 md:grid md:grid-cols-2 md:col-span-3 theme-glass">
+                <div class="bento-card col-span-1 md:grid md:grid-cols-2 md:col-span-3 theme-glass bento-hover-card">
                     <div class="flex flex-col justify-center">
                         <div class="bc-icon-wrap bg-teal-100 text-teal-600"><i class="fas fa-map-marked-alt"></i></div>
-                        <h3 class="text-xl font-bold mb-3">Lộ trình cá nhân hóa</h3>
+                        <h3 class="text-2xl font-bold mb-3">Lộ trình cá nhân hóa</h3>
                         <p class="text-slate-500 text-sm">AI phân tích điểm mạnh, yếu để tạo ra lộ trình ôn tập riêng biệt, giúp bạn tập trung vào những kiến thức quan trọng nhất.</p>
                     </div>
                     <div class="hidden md:flex items-center justify-center">
@@ -545,20 +731,20 @@
                     <i class="fas fa-fingerprint bc-watermark"></i>
                 </div>
 
-                <div class="bento-card col-span-1 md:col-span-3 theme-glass">
+                <div class="bento-card col-span-1 md:col-span-3 theme-glass bento-hover-card">
                     <div class="bc-icon-wrap bg-emerald-100 text-emerald-600"><i class="fas fa-database"></i></div>
-                    <h3 class="text-xl font-bold mb-3">Ngân hàng câu hỏi khổng lồ</h3>
+                    <h3 class="text-2xl font-bold mb-3">Ngân hàng câu hỏi khổng lồ</h3>
                     <p class="text-slate-500 text-sm">Hàng ngàn câu hỏi chất lượng, bám sát chương trình GDPT 2018, được kiểm duyệt và cập nhật liên tục bởi các chuyên gia.</p>
                     <i class="fas fa-server bc-watermark"></i>
                 </div>
 
-                <div class="bento-card col-span-1 md:col-span-2 theme-glass">
+                <div class="bento-card col-span-1 md:col-span-2 theme-glass bento-hover-card">
                     <div class="bc-icon-wrap bg-sky-100 text-sky-600"><i class="fas fa-bolt"></i></div>
-                    <h3 class="text-xl font-bold mb-3">Tạo đề thi bằng AI</h3>
+                    <h3 class="text-2xl font-bold mb-3">Tạo đề thi bằng AI</h3>
                     <p class="text-slate-500 text-sm">Giáo viên có thể tạo ra các bộ đề kiểm tra đa dạng theo yêu cầu chỉ trong vài giây, tiết kiệm tối đa thời gian soạn thảo.</p>
                 </div>
 
-                <div class="bento-card col-span-1 md:col-span-4 theme-gradient">
+                <div class="bento-card col-span-1 md:col-span-4 theme-gradient bento-hover-card">
                     <div class="flex flex-col h-full justify-center">
                         <h3 class="text-2xl font-bold mb-3">Sẵn sàng chinh phục đỉnh cao?</h3>
                         <p class="opacity-90 max-w-lg">Bắt đầu học tập với hệ thống thông minh ngay hôm nay để thấy sự khác biệt trong kết quả của bạn.</p>
@@ -576,17 +762,17 @@
                 <p class="text-slate-500">Chỉ với 3 bước đơn giản để khởi động hành trình chinh phục kiến thức của bạn.</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="step-card">
+                <div class="step-card bento-hover-card">
                     <div class="step-num">1</div>
                     <h3 class="text-xl font-bold mb-3">Đăng ký tài khoản</h3>
                     <p class="text-slate-500 text-sm">Tạo tài khoản miễn phí và thiết lập hồ sơ học tập của bạn chỉ trong một phút.</p>
                 </div>
-                <div class="step-card">
+                <div class="step-card bento-hover-card">
                     <div class="step-num">2</div>
                     <h3 class="text-xl font-bold mb-3">Làm bài & Nhận phân tích</h3>
                     <p class="text-slate-500 text-sm">Hoàn thành các bài kiểm tra đầu vào để AI hiểu rõ năng lực của bạn.</p>
                 </div>
-                <div class="step-card">
+                <div class="step-card bento-hover-card">
                     <div class="step-num">3</div>
                     <h3 class="text-xl font-bold mb-3">Học theo lộ trình AI</h3>
                     <p class="text-slate-500 text-sm">Luyện tập với các câu hỏi được cá nhân hóa để cải thiện nhanh chóng.</p>
@@ -604,7 +790,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
                     <!-- Card lớn: Sứ mệnh -->
-                    <div class="md:col-span-8 bg-white p-10 rounded-[32px] border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all duration-500">
+                    <div class="md:col-span-8 bg-white p-10 rounded-[32px] border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all duration-500 bento-hover-card">
                         <div class="relative z-10">
                             <div class="w-14 h-14 bg-teal-100 text-teal-600 rounded-2xl flex items-center justify-center mb-6">
                                 <i class="fas fa-bullseye text-2xl"></i>
@@ -620,31 +806,31 @@
                     </div>
 
                     <!-- Card nhỏ: Công nghệ -->
-                    <div class="md:col-span-4 bg-teal-900 text-white p-8 rounded-[32px] shadow-lg relative overflow-hidden flex flex-col justify-end min-h-[300px]">
+                    <div class="md:col-span-4 bg-teal-900 text-white p-8 rounded-[32px] shadow-lg relative overflow-hidden flex flex-col justify-end min-h-[300px] bento-hover-card">
                         <div class="absolute top-8 left-8">
                             <div class="w-12 h-12 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center">
                                 <i class="fas fa-microchip text-xl"></i>
                             </div>
                         </div>
                         <div>
-                            <h4 class="text-xl font-bold mb-2">Công nghệ AI</h4>
+                            <h4 class="text-2xl font-bold mb-2">Công nghệ AI</h4>
                             <p class="text-teal-100/80 text-sm">Cá nhân hóa lộ trình học tập dựa trên dữ liệu thời gian thực.</p>
                         </div>
                     </div>
 
                     <!-- Card nhỏ: Tầm nhìn -->
-                    <div class="md:col-span-4 bg-emerald-50 p-8 rounded-[32px] border border-emerald-100">
+                    <div class="md:col-span-4 bg-emerald-50 p-8 rounded-[32px] border border-emerald-100 bento-hover-card">
                         <div class="w-12 h-12 bg-emerald-500 text-white rounded-xl flex items-center justify-center mb-6">
                             <i class="fas fa-eye text-xl"></i>
                         </div>
-                        <h4 class="text-xl font-bold mb-2 text-emerald-900">Tầm nhìn 2026</h4>
+                        <h4 class="text-2xl font-bold mb-2 text-emerald-900">Tầm nhìn 2026</h4>
                         <p class="text-emerald-700/70 text-sm">Trở thành nền tảng số 1 hỗ trợ học tập và giáo dục môn Địa lý.</p>
                     </div>
 
                     <!-- Card rộng: Sự tin tưởng -->
-                    <div class="md:col-span-8 bg-slate-50 p-8 rounded-[32px] border border-slate-200 flex items-center justify-between">
+                    <div class="md:col-span-8 bg-slate-50 p-8 rounded-[32px] border border-slate-200 flex items-center justify-between bento-hover-card">
                         <div>
-                            <h4 class="text-xl font-bold mb-1">Kết nối tri thức</h4>
+                            <h4 class="text-2xl font-bold mb-1">Kết nối tri thức</h4>
                             <p class="text-slate-500">Hơn 1.000 câu hỏi được kiểm duyệt.</p>
                         </div>
                         <div class="flex -space-x-3">
@@ -666,7 +852,7 @@
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Testimonial 1 -->
-                <div class="glass p-8 rounded-3xl border border-white relative">
+                <div class="glass p-8 rounded-3xl border border-white relative bento-hover-card">
                     <i class="fas fa-quote-left text-teal-100 text-6xl absolute top-4 left-4 z-0"></i>
                     <div class="relative z-10">
                         <p class="text-slate-600 italic mb-8">"AIGEO thực sự đã thay đổi cách em học Địa Lí. Tính năng tạo đề theo năng lực giúp em tập trung vào những phần kiến thức còn yếu. Điểm số em đã cải thiện rõ rệt!"</p>
@@ -677,7 +863,7 @@
                     </div>
                 </div>
                 <!-- Testimonial 2 -->
-                <div class="glass p-8 rounded-3xl border border-white relative">
+                <div class="glass p-8 rounded-3xl border border-white relative bento-hover-card">
                     <i class="fas fa-quote-left text-emerald-100 text-6xl absolute top-4 left-4 z-0"></i>
                     <div class="relative z-10">
                         <p class="text-slate-600 italic mb-8">"Tính năng tạo đề thi từ file và giám sát thi cử của AIGEO giúp tôi tiết kiệm rất nhiều thời gian và công sức. Giao diện thân thiện, học sinh của tôi rất thích thú khi sử dụng."</p>
@@ -688,13 +874,13 @@
                     </div>
                 </div>
                 <!-- Testimonial 3 -->
-                <div class="glass p-8 rounded-3xl border border-white relative">
+                <div class="glass p-8 rounded-3xl border border-white relative bento-hover-card">
                     <i class="fas fa-quote-left text-sky-100 text-6xl absolute top-4 left-4 z-0"></i>
                     <div class="relative z-10">
                         <p class="text-slate-600 italic mb-8">"Ngân hàng câu hỏi rất đa dạng và chất lượng. Em đặc biệt thích chatbot AI, nó giải đáp thắc mắc của em gần như ngay lập tức, rất tiện lợi cho việc tự học tại nhà."</p>
                         <div class="flex items-center gap-4">
                             <div class="w-12 h-12 rounded-full bg-sky-500 flex items-center justify-center text-white font-bold">H</div>
-                            <div><div class="font-bold">Lê Quang Huy</div><div class="text-xs text-slate-500">Luyện thi THPT</div></div>
+                            <div><div class="font-bold">Lê Quang Huy</div><div class="text-xs text-slate-500">Học sinh luyện thi THPT</div></div>
                         </div>
                     </div>
                 </div>
@@ -704,7 +890,7 @@
 
     <!-- CTA Card -->
     <div class="container mx-auto px-6 mb-24">
-        <div class="bg-slate-900 rounded-[40px] p-12 md:p-20 text-center text-white relative overflow-hidden">
+        <div class="bg-slate-900 rounded-[40px] p-12 md:p-20 text-center text-white relative overflow-hidden bento-hover-card">
             
             <!-- Các khối decor phát sáng chìm -->
             <div class="absolute -top-24 -right-24 h-80 w-80 rounded-full bg-teal-500/20 blur-[120px]"></div>
@@ -811,8 +997,83 @@
         </div>
     </footer>
 
-    <script>
-        // Slideshow ảnh nền Hero (Logic cũ của AIGEO)
+    <!-- Firebase & Logic -->
+    <script src="../firebase-config.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Khởi tạo Firebase
+        // Lưu ý: Đảm bảo file firebase-config.js của bạn có biến firebaseConfig
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- ELEMENTS ---
+        const loginBtn = document.getElementById('btn-login-main');
+        const userPill = document.getElementById('user-logged-pill');
+        const dropdown = document.getElementById('auth-dropdown-menu');
+        const dashboardLink = document.getElementById('link-to-dashboard');
+        const logoutBtn = document.getElementById('btn-logout-header');
+
+        // --- 1. THEO DÕI TRẠNG THÁI ĐĂNG NHẬP ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                try {
+                    const docSnap = await getDoc(doc(db, "users", user.uid));
+                    if (docSnap.exists()) {
+                        const userData = docSnap.data();
+                        const role = userData.role || 'student';
+                        
+                        // Hiển thị thông tin
+                        document.getElementById('user-name-header').textContent = userData.name.split(' ').pop();
+                        document.getElementById('user-avatar-header').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=0D9488&color=fff&bold=true`;
+                        
+                        // Cập nhật link Dashboard
+                        if(dashboardLink) dashboardLink.href = `/${role}/index.html`;
+
+                        // Đổi trạng thái nút trên Header
+                        if(loginBtn) loginBtn.style.display = 'none';
+                        if(userPill) userPill.style.display = 'flex';
+                        
+                        feather.replace(); // Vẽ lại icon
+                    }
+                } catch (e) { console.error("Lỗi Auth:", e); }
+            } else {
+                if(loginBtn) loginBtn.style.display = 'inline-flex';
+                if(userPill) userPill.style.display = 'none';
+            }
+        });
+
+        // --- 2. ĐIỀU KHIỂN DROPDOWN ---
+        if (userPill) {
+            userPill.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isVisible = dropdown.style.display === 'block';
+                dropdown.style.display = isVisible ? 'none' : 'block';
+                if (!isVisible) {
+                    anime({ targets: '#auth-dropdown-menu', translateY: [15, 0], opacity: [0, 1], duration: 400, easing: 'easeOutBack' });
+                }
+            });
+        }
+        document.addEventListener('click', () => { if(dropdown) dropdown.style.display = 'none'; });
+
+        // --- 3. ĐĂNG XUẤT ---
+        if (logoutBtn) {
+            logoutBtn.onclick = () => {
+                signOut(auth).then(() => window.location.reload());
+            };
+        }
+
+        // --- 4. TABS & CAROUSEL (Gán vào window để onclick hoạt động) ---
+        window.switchTab = (tabId, btn) => {
+            document.querySelectorAll('.about-pane').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.about-tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            btn.classList.add('active');
+        };
+
         const images = [
             'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1600&q=80',
             'https://images.unsplash.com/photo-1526772662000-3f88f10405ff?auto=format&fit=crop&w=1600&q=80',
@@ -820,35 +1081,21 @@
         ];
         let currentIndex = 0;
         const carousel = document.getElementById('background-carousel');
-        function changeBg() {
+        const changeBg = () => {
+            if(!carousel) return;
             carousel.style.opacity = 0;
             setTimeout(() => {
                 carousel.style.backgroundImage = `url('${images[currentIndex]}')`;
-                carousel.style.opacity = 0.1;
+                carousel.style.opacity = 0.08;
                 currentIndex = (currentIndex + 1) % images.length;
             }, 1000);
-        }
-        setInterval(changeBg, 5000);
+        };
+        setInterval(changeBg, 5000); 
         changeBg();
 
-        // Dark Mode Toggle
-        const darkToggle = document.getElementById('dark-toggle');
-        darkToggle.addEventListener('click', () => {
-            document.documentElement.classList.toggle('dark');
-            const isDark = document.documentElement.classList.contains('dark');
-            darkToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-        });
-
-        // Tab Switcher (About section)
-        function switchTab(tabId, btn) {
-            document.querySelectorAll('.about-pane').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.about-tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('tab-' + tabId).classList.add('active');
-            btn.classList.add('active');
-        }
-
-        // Animation Reveal (AnimeJS)
+        // --- 5. INITIALIZE ---
         document.addEventListener('DOMContentLoaded', () => {
+            feather.replace();
             anime({
                 targets: '.hero-text, .hero-image',
                 translateY: [30, 0],
