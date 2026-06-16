@@ -32,8 +32,79 @@
         .blob-3 { width: 300px; height: 300px; background: #CCFBF1; top: 40%; left: 40%; animation-delay: -2s; }
         @keyframes floatBlob { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(40px, 60px) scale(1.1); } }
 
-        /* --- UI COMPONENTS --- */
-        .input-field { transition: all 0.3s ease; }
+        /* 1. Thu nhỏ ô nhập liệu (Compact Size) */
+        .input-field {
+            width: 100%; 
+            padding: 10px 14px; /* Giảm từ 12px xuống 10px */
+            background: #F1F5F9; 
+            border: 2px solid transparent;
+            border-radius: 12px; /* Bo góc nhỏ lại một chút cho sắc nét */
+            font-size: 0.85rem;   /* Giảm từ 0.9rem xuống 0.85rem */
+            font-weight: 600; 
+            transition: all 0.3s; 
+            color: var(--text-main);
+        }
+        
+        /* 2. Tiêu đề mini sát hơn vào ô nhập */
+        .input-label-mini {
+            display: block;
+            font-size: 9px; /* Thu nhỏ một chút */
+            font-weight: 800;
+            color: #94A3B8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 2px; /* Sát vào ô nhập hơn */
+            margin-left: 4px;
+        }
+
+        /* 3. Thu nhỏ thanh gạt Vai trò */
+        .role-pill-container {
+            display: flex;
+            background: #F1F5F9;
+            padding: 3px; /* Giảm từ 4px xuống 3px */
+            border-radius: 14px;
+            margin-bottom: 15px; /* Giảm khoảng cách dưới */
+            position: relative;
+        }
+        .role-pill-btn {
+            flex: 1;
+            padding: 8px; /* Thu nhỏ nút gạt */
+            border-radius: 10px;
+            font-size: 10px; /* Chữ nhỏ lại */
+            font-weight: 800;
+            text-transform: uppercase;
+            z-index: 10;
+            transition: 0.3s;
+            color: #64748B;
+        }
+
+        /* 4. Thu nhỏ nút bấm chính */
+        .btn-modern {
+            width: 100%; 
+            padding: 12px; /* Giảm từ 14px xuống 12px */
+            border-radius: 12px; 
+            font-weight: 800; 
+            font-size: 0.85rem; /* Chữ nút nhỏ lại */
+            border: none; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px;
+        }
+
+        /* 5. Giảm khoảng cách giữa các hàng trong form (Tailwind space-y-4 -> space-y-3) */
+        #register-form.space-y-4 {
+            gap: 0.75rem !important; /* Ép khoảng cách các hàng hẹp lại */
+        }
+        
+        .role-pill-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
         .input-field:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.15); }
         
         .btn-gradient { background: linear-gradient(135deg, #0D9488 0%, #10B981 100%); transition: all 0.3s ease; }
@@ -124,7 +195,7 @@
                     <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1 tracking-widest">Email tài khoản</label>
                     <div class="relative">
                         <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                        <input type="email" id="login-email" class="input-field w-full pl-12 pr-4 py-4 bg-slate-100/50 border border-transparent rounded-2xl outline-none font-bold text-slate-700" placeholder="yourname@gmail.com" required>
+                        <input type="email" id="login-email" class="input-field w-full pl-12 pr-4 py-4 bg-slate-100/50 border border-transparent rounded-2xl outline-none font-bold text-slate-700" placeholder="example@gmail.com" required>
                     </div>
                 </div>
                 <div>
@@ -139,42 +210,72 @@
                     <label class="flex items-center gap-2 cursor-pointer hover:text-teal-600 transition"><input type="checkbox" id="remember-me" class="accent-teal-600 w-4 h-4"> Ghi nhớ</label>
                     <a href="#" id="btn-forgot" class="text-teal-600 hover:underline">Quên mật khẩu?</a>
                 </div>
-                <button type="submit" class="w-full py-4 rounded-2xl text-white font-black btn-gradient shadow-lg shadow-teal-600/30 mt-4 uppercase tracking-widest">Đăng nhập</button>
+                <button type="submit" class="w-full py-4 rounded-2xl text-white font-black btn-gradient shadow-lg shadow-teal-600/30 mt-4 tracking-widest">Đăng nhập</button>
             </form>
 
-            <!-- Register Form -->
-            <form id="register-form" class="space-y-4 hidden">
-                <!-- Role Selector -->
-                <div class="flex p-1 bg-slate-100 rounded-2xl mb-4 relative">
-                    <div id="role-indicator" class="absolute top-1 left-1 w-[calc(50%-4px)] h-[calc(100%-8px)] bg-white rounded-xl shadow-sm transition-all duration-300"></div>
-                    <button type="button" id="btn-role-student" class="flex-1 py-3 text-[10px] font-black uppercase tracking-widest relative z-10 text-teal-600 transition-colors">Học sinh</button>
-                    <button type="button" id="btn-role-teacher" class="flex-1 py-3 text-[10px] font-black uppercase tracking-widest relative z-10 text-slate-400 transition-colors">Giáo viên</button>
+            <!-- Register Section - Bố cục Grid gọn gàng -->
+            <form id="register-form" class="space-y-3 hidden"> 
+                <!-- Role Switcher -->
+                <div class="role-pill-container">
+                    <button type="button" id="btn-role-student" class="role-pill-btn active">Học sinh</button>
+                    <button type="button" id="btn-role-teacher" class="role-pill-btn">Giáo viên</button>
                     <input type="hidden" id="reg-role" value="student">
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="reg-name" class="input-field w-full px-5 py-4 bg-slate-100/50 border border-transparent rounded-2xl outline-none font-bold text-sm" placeholder="Họ và tên" required>
-                    <input type="email" id="reg-email" class="input-field w-full px-5 py-4 bg-slate-100/50 border border-transparent rounded-2xl outline-none font-bold text-sm" placeholder="Email" required>
+                <!-- Hàng 1: Tên & Email -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="input-label-mini">Họ và tên</label>
+                        <input type="text" id="reg-name" class="input-field" placeholder="Nguyễn Văn A" required>
+                    </div>
+                    <div>
+                        <label class="input-label-mini">Email</label>
+                        <input type="email" id="reg-email" class="input-field" placeholder="example@gmail.com" required>
+                    </div>
                 </div>
 
-                <div id="student-fields" class="grid grid-cols-2 gap-4">
-                    <input type="text" id="reg-school-student" class="input-field w-full px-5 py-4 bg-slate-100/50 border border-transparent rounded-2xl outline-none font-bold text-sm" placeholder="Trường học">
-                    <select id="reg-grade" class="input-field w-full px-5 py-4 bg-slate-100/50 border border-transparent rounded-2xl outline-none font-bold text-sm">
-                        <option value="10">Lớp 10</option><option value="11">Lớp 11</option><option value="12">Lớp 12</option>
-                    </select>
+                <!-- Hàng 2: Trường & Khối/Môn (Chạy Dynamic) -->
+                <div id="dynamic-fields" class="grid grid-cols-2 gap-3">
+                    <!-- Fields dành cho Học sinh (Mặc định hiện) -->
+                    <div class="student-only">
+                        <label class="input-label-mini">Trường học</label>
+                        <input type="text" id="reg-school-student" class="input-field" placeholder="Tên trường">
+                    </div>
+                    <div class="student-only">
+                        <label class="input-label-mini">Khối lớp</label>
+                        <select id="reg-grade" class="input-field appearance-none cursor-pointer">
+                            <option value="10">Lớp 10</option>
+                            <option value="11">Lớp 11</option>
+                            <option value="12">Lớp 12</option>
+                        </select>
+                    </div>
+
+                    <!-- Fields dành cho Giáo viên (Mặc định ẩn) -->
+                    <div class="teacher-only hidden">
+                        <label class="input-label-mini">Nơi công tác</label>
+                        <input type="text" id="reg-school-teacher" class="input-field" placeholder="Trường / Trung tâm">
+                    </div>
+                    <div class="teacher-only hidden">
+                        <label class="input-label-mini">Môn dạy</label>
+                        <select id="reg-subject" class="input-field appearance-none cursor-pointer">
+                            <option value="" disabled selected>Chọn môn</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div id="teacher-fields" class="grid grid-cols-2 gap-4 hidden">
-                    <input type="text" id="reg-school-teacher" class="input-field w-full px-5 py-4 bg-slate-100/50 border border-transparent rounded-2xl outline-none font-bold text-sm" placeholder="Nơi công tác">
-                    <input type="text" id="reg-subject" class="input-field w-full px-5 py-4 bg-slate-100/50 border border-transparent rounded-2xl outline-none font-bold text-sm" placeholder="Môn dạy">
+                <!-- Hàng 3: Mật khẩu & Xác nhận -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="input-label-mini">Mật khẩu</label>
+                        <input type="password" id="reg-pass" class="input-field" placeholder="••••••" required>
+                    </div>
+                    <div>
+                        <label class="input-label-mini">Xác nhận</label>
+                        <input type="password" id="reg-confirm" class="input-field" placeholder="••••••" required>
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <input type="password" id="reg-pass" class="input-field w-full px-5 py-4 bg-slate-100/50 border border-transparent rounded-2xl outline-none font-bold text-sm" placeholder="Mật khẩu" required>
-                    <input type="password" id="reg-confirm" class="input-field w-full px-5 py-4 bg-slate-100/50 border border-transparent rounded-2xl outline-none font-bold text-sm" placeholder="Xác nhận" required>
-                </div>
-
-                <button type="submit" class="w-full py-4 rounded-2xl text-white font-black btn-gradient shadow-lg shadow-teal-600/30 mt-2 uppercase tracking-widest">Tạo tài khoản</button>
+                <button type="submit" class="w-full py-4 rounded-2xl text-white font-black btn-gradient shadow-lg shadow-teal-600/30 mt-2 tracking-widest">Tạo tài khoản</button>
             </form>
 
             <!-- Social Auth -->
@@ -258,11 +359,45 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, updateProfile, setPersistence, browserLocalPersistence, browserSessionPersistence, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, serverTimestamp, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        // --- HÀM TẢI DANH SÁCH MÔN HỌC ---
+        const loadSubjects = async () => {
+            const subjectSelect = document.getElementById('reg-subject');
+            if (!subjectSelect) return;
+
+            try {
+                // Lấy dữ liệu từ collection "subjects"
+                const querySnapshot = await getDocs(collection(db, "subjects"));
+                
+                // Xóa nội dung cũ và thêm option mặc định
+                subjectSelect.innerHTML = '<option value="" disabled selected>Chọn môn học</option>';
+                
+                if (querySnapshot.empty) {
+                    console.warn("Lưu ý: Collection 'subjects' đang trống.");
+                    return;
+                }
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const option = document.createElement('option');
+                    // Lưu ID của tài liệu làm giá trị, tên môn học để hiển thị
+                    option.value = doc.id; 
+                    option.textContent = data.name; 
+                    subjectSelect.appendChild(option);
+                });
+                
+                console.log("Đã tải xong danh sách môn học.");
+            } catch (error) {
+                console.error("Lỗi khi kết nối Firestore:", error);
+            }
+        };
+
+        // Gọi hàm ngay lập tức
+        loadSubjects();
 
         let isProcessing = false;
         let pendingRegisterData = null;
@@ -297,17 +432,30 @@
         document.getElementById('tab-login').onclick = () => switchTab('login');
         document.getElementById('tab-register').onclick = () => switchTab('register');
 
-        const setRole = (role) => {
-            document.getElementById('reg-role').value = role;
-            document.getElementById('role-indicator').style.left = role === 'student' ? '4px' : 'calc(50% - 0px)';
-            document.getElementById('btn-role-student').classList.toggle('text-teal-600', role === 'student');
-            document.getElementById('btn-role-teacher').classList.toggle('text-teal-600', role === 'teacher');
-            document.getElementById('student-fields').classList.toggle('hidden', role !== 'student');
-            document.getElementById('teacher-fields').classList.toggle('hidden', role === 'student');
+        // --- LOGIC CHUYỂN VAI TRÒ (CẬP NHẬT) ---
+        const btnStudent = document.getElementById('btn-role-student');
+        const btnTeacher = document.getElementById('btn-role-teacher');
+        const studentFields = document.querySelectorAll('.student-only');
+        const teacherFields = document.querySelectorAll('.teacher-only');
+        const roleInput = document.getElementById('reg-role');
+
+        const updateRoleUI = (role) => {
+            roleInput.value = role;
+            if (role === 'student') {
+                btnStudent.classList.add('active');
+                btnTeacher.classList.remove('active');
+                studentFields.forEach(el => el.classList.remove('hidden'));
+                teacherFields.forEach(el => el.classList.add('hidden'));
+            } else {
+                btnTeacher.classList.add('active');
+                btnStudent.classList.remove('active');
+                teacherFields.forEach(el => el.classList.remove('hidden'));
+                studentFields.forEach(el => el.classList.add('hidden'));
+            }
         };
 
-        document.getElementById('btn-role-student').onclick = () => setRole('student');
-        document.getElementById('btn-role-teacher').onclick = () => setRole('teacher');
+        btnStudent.addEventListener('click', () => updateRoleUI('student'));
+        btnTeacher.addEventListener('click', () => updateRoleUI('teacher'));
 
         // --- LOGIN LOGIC ---
         document.getElementById('login-form').onsubmit = async (e) => {
