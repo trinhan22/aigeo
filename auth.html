@@ -78,20 +78,96 @@
             color: #64748B;
         }
 
-        /* 4. Thu nhỏ nút bấm chính */
+        /* --- FIX LỖI LỆCH CHỮ VÀ CHECKBOX --- */
+        .checkbox-container {
+            display: flex;
+            align-items: center; /* Ép tất cả vào giữa theo chiều dọc */
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+            padding: 2px 0;
+        }
+
+        .custom-checkbox {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #CBD5E1;
+            border-radius: 6px;
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            flex-shrink: 0;
+            /* QUAN TRỌNG: Bỏ margin-top hoặc để về 0 để không bị đẩy lệch */
+            margin: 0 !important; 
+        }
+
+        /* Phần chữ đi kèm */
+        .checkbox-text {
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748B;
+            line-height: 1; /* Đảm bảo chiều cao dòng không làm lệch chữ */
+        }
+        .custom-checkbox:checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        .custom-checkbox:checked::after {
+            content: "\f00c"; /* FontAwesome check icon */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            font-size: 10px;
+            color: white;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* --- NÂNG CẤP NÚT BẤM (BUTTONS) --- */
         .btn-modern {
             width: 100%; 
-            padding: 12px; /* Giảm từ 14px xuống 12px */
-            border-radius: 12px; 
-            font-weight: 800; 
-            font-size: 0.85rem; /* Chữ nút nhỏ lại */
-            border: none; 
-            cursor: pointer; 
-            transition: 0.3s; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
+            padding: 12px;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 0.85rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             gap: 8px;
+        }
+        .btn-modern:active { transform: scale(0.96); } /* Hiệu ứng nhấn nút */
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 8px 15px -3px rgba(13, 148, 136, 0.3);
+        }
+        .btn-primary:hover {
+            box-shadow: 0 12px 20px -3px rgba(13, 148, 136, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-google {
+            background: white;
+            color: #475569;
+            border: 1.5px solid #F1F5F9;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        .btn-google:hover {
+            background: #F8FAFC;
+            border-color: #E2E8F0;
+        }
+
+        /* Thu hẹp khoảng cách phần "Hoặc tiếp tục với" */
+        .divider-space {
+            margin-top: 14px !important;
+            margin-bottom: 14px !important;
         }
 
         /* 5. Giảm khoảng cách giữa các hàng trong form (Tailwind space-y-4 -> space-y-3) */
@@ -206,9 +282,13 @@
                         <i class="fas fa-eye absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 cursor-pointer hover:text-teal-600 transition toggle-pass"></i>
                     </div>
                 </div>
-                <div class="flex justify-between items-center text-xs font-bold text-slate-500 pt-2">
-                    <label class="flex items-center gap-2 cursor-pointer hover:text-teal-600 transition"><input type="checkbox" id="remember-me" class="accent-teal-600 w-4 h-4"> Ghi nhớ</label>
-                    <a href="#" id="btn-forgot" class="text-teal-600 hover:underline">Quên mật khẩu?</a>
+                <!-- Trong form đăng nhập -->
+                <div class="flex justify-between items-center py-1">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="remember-me" class="custom-checkbox"> 
+                        <span class="checkbox-text">Ghi nhớ đăng nhập</span>
+                    </label>
+                    <a href="#" id="btn-forgot" class="text-[11px] font-bold text-teal-600 hover:underline">Quên mật khẩu?</a>
                 </div>
                 <button type="submit" class="w-full py-4 rounded-2xl text-white font-black btn-gradient shadow-lg shadow-teal-600/30 mt-4 tracking-widest">Đăng nhập</button>
             </form>
@@ -275,17 +355,28 @@
                     </div>
                 </div>
 
+                <!-- Checkbox Đồng ý điều khoản -->
+                <div class="px-1 py-1">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="reg-agree" class="custom-checkbox">
+                        <span class="checkbox-text">
+                            Tôi đồng ý với <a href="dieu-khoan.html" target="_blank" class="text-teal-600 hover:underline">Điều khoản sử dụng</a> của AIGEO.
+                        </span>
+                    </label>
+                </div>
+
                 <button type="submit" class="w-full py-4 rounded-2xl text-white font-black btn-gradient shadow-lg shadow-teal-600/30 mt-2 tracking-widest">Tạo tài khoản</button>
             </form>
 
             <!-- Social Auth -->
-            <div class="relative my-8 text-center">
+            <div class="relative divider-space text-center">
                 <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-100"></div></div>
-                <span class="relative bg-white/0 px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Hoặc tiếp tục với</span>
+                <span class="relative bg-white/0 px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Hoặc tiếp tục bằng</span>
             </div>
 
-            <button id="google-login-btn" class="w-full py-4 rounded-2xl border-2 border-slate-100 bg-white text-slate-700 font-bold hover:bg-slate-50 transition flex justify-center items-center gap-3">
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5"><span>Google Account</span>
+            <button id="google-login-btn" class="btn-modern btn-google">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-4 h-4">
+                <span>Google Account</span>
             </button>
 
             <!-- Loading Overlay -->
@@ -308,7 +399,7 @@
                 <p class="text-sm text-slate-500 mb-6 font-medium">Đừng lo! Nhập email của bạn và chúng tôi sẽ gửi liên kết đặt lại mật khẩu.</p>
                 <form id="forgot-form" class="space-y-4">
                     <input type="email" id="forgot-email" class="input-field w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none font-bold text-sm" placeholder="Nhập email của bạn..." required>
-                    <button type="submit" id="forgot-btn" class="w-full py-4 rounded-2xl text-white font-black btn-gradient shadow-lg shadow-teal-600/20 uppercase tracking-widest">Gửi liên kết</button>
+                    <button type="submit" id="forgot-btn" class="w-full py-4 rounded-2xl text-white font-black btn-gradient shadow-lg shadow-teal-600/20 tracking-widest">Gửi liên kết</button>
                 </form>
             </div>
             <div id="forgot-success-section" class="hidden text-center py-6">
@@ -317,7 +408,7 @@
                 </div>
                 <h3 class="text-xl font-black text-slate-800 mb-2">Đã gửi Email!</h3>
                 <p class="text-sm text-slate-500 mb-8 font-medium">Vui lòng kiểm tra hộp thư đến (hoặc thư rác) để hoàn tất việc đặt lại mật khẩu.</p>
-                <button class="close-modal w-full py-3.5 rounded-2xl bg-slate-100 text-slate-600 font-black uppercase text-xs tracking-widest">Đóng cửa sổ</button>
+                <button class="close-modal w-full py-3.5 rounded-2xl bg-slate-100 text-slate-600 font-black text-xs tracking-widest">Đóng cửa sổ</button>
             </div>
         </div>
     </div>
@@ -471,16 +562,24 @@
             }
         };
 
-        // --- REGISTER LOGIC ---
+        // --- CẬP NHẬT LOGIC KIỂM TRA ĐIỀU KHOẢN ---
         document.getElementById('register-form').onsubmit = (e) => {
             e.preventDefault();
+            
+            // 1. Kiểm tra xem đã tích vào checkbox chưa
+            const isAgreed = document.getElementById('reg-agree').checked;
+            if (!isAgreed) {
+                return showAlert("Bạn cần đồng ý với Điều khoản sử dụng để tiếp tục đăng ký.", "error");
+            }
+
             const pass = document.getElementById('reg-pass').value;
             const confirm = document.getElementById('reg-confirm').value;
             const role = document.getElementById('reg-role').value;
 
-            if (pass !== confirm) return showAlert("Mật khẩu xác nhận không khớp.");
-            if (pass.length < 6) return showAlert("Mật khẩu phải có ít nhất 6 ký tự.");
+            if (pass !== confirm) return showAlert("Mật khẩu xác nhận không khớp.", "error");
+            if (pass.length < 6) return showAlert("Mật khẩu phải có ít nhất 6 ký tự.", "error");
 
+            // Dữ liệu đăng ký (giữ nguyên phần cũ của bạn)
             pendingRegisterData = {
                 name: document.getElementById('reg-name').value,
                 email: document.getElementById('reg-email').value,

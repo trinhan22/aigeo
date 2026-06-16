@@ -2,121 +2,197 @@
 <html lang="vi" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sổ tay Hướng dẫn sử dụng AIGEO</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
     <style>
         :root {
-            --primary-teal: #0D9488;
-            --primary-emerald: #10B981;
-        }
-        body { 
-             font-family: 'Be Vietnam Pro', sans-serif; 
-             background-color: #f8fafc; /* Lighter background for better contrast */
-        }
-        .gradient-text {
-            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .prose h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #1e293b;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--primary-teal); /* Đã thay đổi */
-            margin-top: 3.5rem;
-            margin-bottom: 1.5rem;
-        }
-        .prose h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #334155;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-        }
-        .prose p {
-            line-height: 1.75;
-            color: #475569;
-        }
-        .prose a {
-            color: var(--primary-teal);
-            font-weight: 500;
-            text-decoration: none;
-        }
-        .prose a:hover {
-            text-decoration: underline;
-        }
-        .prose code {
-            background-color: #e2e8f0;
-            color: #475569;
-            padding: 0.2rem 0.4rem;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 0.9em;
-        }
-        .prose ol {
-            list-style-type: decimal;
-            padding-left: 1.5rem;
-        }
-        .prose li {
-            margin-bottom: 0.75rem;
-        }
-        /* Đã xoá các kiểu .prose img và .prose img:hover */
-        .sidebar-link {
-            display: block;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            font-size: 0.9rem;
-            color: #475569;
-            transition: all 0.2s;
-            border-left: 3px solid transparent;
-        }
-        .sidebar-link:hover {
-            background-color: #f1f5f9;
-            color: #1e293b;
-        }
-        .sidebar-link.active {
-            background-color: #f0fdfa;
-            color: var(--primary-teal);
-            font-weight: 600;
-            border-left-color: var(--primary-teal);
-        }
-        .sidebar-heading {
-            font-size: 1rem;
-            font-weight: 700;
-            color: #1e293b;
-            margin-top: 1.5rem;
-            margin-bottom: 0.5rem;
-            padding: 0 1rem;
-        }
-        /* Custom Scrollbar for Sidebar */
-        #sidebar-nav::-webkit-scrollbar {
-            width: 6px;
-        }
-        #sidebar-nav::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        #sidebar-nav::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-        #sidebar-nav::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-        /* Reveal on scroll animation */
-        .reveal {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-        }
-        .reveal.visible {
-            opacity: 1;
-            transform: translateY(0);
+            --primary: #0D9488;
+            --primary-light: #F0FDFA;
+            --secondary: #10B981;
+            --text-main: #1E293B;
+            --text-light: #64748B;
+            --bg-body: #F8FAFC;
+            --primary-gradient: linear-gradient(135deg, #0D9488 0%, #10B981 100%);
         }
 
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg-body); 
+            color: var(--text-main);
+            overflow: hidden;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar { 
+            width: 300px; 
+            background: white; 
+            border-right: 1px solid #E2E8F0; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            flex-shrink: 0; 
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            margin: 0.2rem 1rem;
+            color: var(--text-light);
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-radius: 12px;
+            transition: 0.3s;
+            gap: 12px;
+        }
+        .sidebar-link i { width: 18px; height: 18px; }
+        .sidebar-link:hover { color: var(--primary); background: var(--primary-light); }
+        .sidebar-link.active { background: var(--primary-gradient); color: white; box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.2); }
+
+        .nav-group-title {
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #94A3B8;
+            padding: 1.5rem 2rem 0.5rem;
+        }
+
+        /* --- CONTENT BENTO CARDS --- */
+        .bento-card {
+            background: white;
+            border-radius: 28px;
+            border: 1px solid #E2E8F0;
+            padding: 32px;
+            margin-bottom: 32px;
+            transition: 0.3s;
+        }
+        .bento-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        .guide-section-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 16px;
+            padding: 12px 0;
+            border-bottom: 1px solid #F1F5F9;
+        }
+        .step-item:last-child { border-bottom: none; }
+        .step-number {
+            width: 28px;
+            height: 28px;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .role-badge {
+            display: inline-flex;
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 16px;
+        }
+        .badge-teacher { background: #EEF2FF; color: #6366F1; }
+        .badge-student { background: #F0FDFA; color: #0D9488; }
+
+        /* --- ANIMATION --- */
+        .reveal { opacity: 0; transform: translateY(20px); transition: 0.6s ease-out; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        /* --- NÂNG CẤP TIÊU ĐỀ SECTION --- */
+        .section-hero-header {
+            position: relative;
+            padding: 40px;
+            background: white;
+            border-radius: 32px;
+            border: 1px solid #E2E8F0;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 40px;
+            overflow: hidden;
+        }
+
+        .section-hero-header::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 200px; height: 200px;
+            background: var(--bg-vignette);
+            filter: blur(80px);
+            opacity: 0.3;
+            z-index: 0;
+        }
+
+        .section-icon-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 10px 20px -5px rgba(0,0,0,0.1);
+        }
+
+        .header-text-content { position: relative; z-index: 1; }
+
+        .header-text-content h2 {
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .header-text-content p {
+            font-size: 0.9rem;
+            font-weight: 600;
+            opacity: 0.6;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Màu riêng cho Giáo viên */
+        .header-teacher { --bg-vignette: #0D9488; }
+        .header-teacher h2 { background: linear-gradient(135deg, #0D9488, #10B981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header-teacher .section-icon-circle { background: #F0FDFA; color: #0D9488; }
+
+        /* Màu riêng cho Học sinh */
+        .header-student { --bg-vignette: #0D9488; }
+        .header-student h2 { background: linear-gradient(135deg, #0D9488, #10B981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header-student .section-icon-circle { background: #F0FDFA; color: #0D9488; }
+        
         /* --- SCROLLBAR --- */
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
@@ -124,116 +200,249 @@
     </style>
 </head>
 <body class="antialiased">
-    <div class="flex">
-        <aside class="w-72 h-screen sticky top-0 bg-white border-r border-slate-200 shadow-md p-4 hidden md:flex flex-col">
-            <a href="index.html" class="text-2xl font-bold gradient-text block px-4 flex-shrink-0">AIGEO</a>
-            <p class="text-sm text-slate-500 px-4 mt-1 flex-shrink-0">Sổ tay Hướng dẫn</p>
-            <nav id="sidebar-nav" class="mt-8 space-y-2 flex-grow overflow-y-auto">
-                <div>
-                    <a href="#introduction" class="sidebar-link">Giới thiệu</a>
-                </div>
-                <div>
-                    <h3 class="sidebar-heading">Giáo viên</h3>
-                    <a href="#teacher-classrooms" class="sidebar-link">Quản lý Lớp học</a>
-                    <a href="#teacher-questions" class="sidebar-link">Đóng góp Câu hỏi</a>
-                    <a href="#teacher-tests" class="sidebar-link">Tạo & Quản lý Đề thi</a>
-                    <a href="#teacher-monitoring" class="sidebar-link">Giám sát Thi cử</a>
-                </div>
-                <div>
-                    <h3 class="sidebar-heading">Học sinh</h3>
-                    <a href="#student-start" class="sidebar-link">Bắt đầu & Tham gia lớp</a>
-                    <a href="#student-practice" class="sidebar-link">Luyện tập & Thi cử</a>
-                    <a href="#student-stats" class="sidebar-link">Xem Thống kê & Kết quả</a>
-                    <a href="#student-chatbot" class="sidebar-link">Sử dụng Chatbot AI</a>
-                </div>
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="p-8">
+                <a href="/" class="flex items-center gap-3">
+                    <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" class="h-9 w-auto" alt="Logo">
+                    <span class="text-xl font-black text-teal-600 tracking-tight">AIGEO</span>
+                </a>
+            </div>
+
+            <nav id="sidebar-nav" class="flex-grow overflow-y-auto pb-10">
+                <a href="#introduction" class="sidebar-link active"><i data-feather="book-open"></i> Giới thiệu</a>
+
+                <div class="nav-group-title">Dành cho Giáo viên</div>
+                <a href="#teacher-classrooms" class="sidebar-link"><i data-feather="users"></i> Quản lý Lớp học</a>
+                <a href="#teacher-questions" class="sidebar-link"><i data-feather="database"></i> Đóng góp Câu hỏi</a>
+                <a href="#teacher-tests" class="sidebar-link"><i data-feather="file-text"></i> Tạo & Quản lý Đề thi</a>
+                <a href="#teacher-monitoring" class="sidebar-link"><i data-feather="eye"></i> Giám sát Thi cử</a>
+
+                <div class="nav-group-title">Dành cho Học sinh</div>
+                <a href="#student-start" class="sidebar-link"><i data-feather="user-plus"></i> Bắt đầu & Tham gia</a>
+                <a href="#student-practice" class="sidebar-link"><i data-feather="zap"></i> Luyện tập & Thi cử</a>
+                <a href="#student-stats" class="sidebar-link"><i data-feather="bar-chart-2"></i> Thống kê & Kết quả</a>
+                <a href="#student-chatbot" class="sidebar-link"><i data-feather="message-circle"></i> Chatbot AI</a>
             </nav>
         </aside>
 
-        <main class="flex-1 p-6 md:p-12">
-            <article class="prose max-w-4xl mx-auto">
-                <section id="introduction" class="reveal">
-                    <h1 class="gradient-text !mb-2">Chào mừng đến với Sổ tay Hướng dẫn AIGEO</h1>
-                    <p class="!text-lg !mt-0 text-slate-500">Tài liệu này sẽ hướng dẫn bạn cách sử dụng các chức năng chính của hệ thống AIGEO, dành cho vai trò Giáo viên và Học sinh.</p>
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto bg-slate-50/50 p-8 lg:p-16">
+            <div class="max-w-4xl mx-auto">
+                
+                <!-- Section: Introduction - Đã tăng giãn cách cực đẹp -->
+                <section id="introduction" class="reveal mb-24">
+                    <h1 class="text-4xl lg:text-5xl font-black text-slate-800 tracking-tight leading-none">
+                        <span class="block">Chào mừng đến với</span>
+                        <!-- Chỉnh mt-4 hoặc mt-6 để dòng xanh hạ thấp xuống thêm -->
+                        <span class="text-teal-600 block mt-5 lg:mt-4">Sổ tay Hướng dẫn AIGEO</span>
+                    </h1>
+                    
+                    <!-- Một đường kẻ ngắn tinh tế để phân cấp -->
+                    <div class="w-16 h-1.5 bg-teal-600/10 rounded-full my-10"></div>
+
+                    <p class="text-lg text-slate-500 font-medium leading-relaxed max-w-2xl">
+                        Tài liệu này sẽ hướng dẫn bạn cách sử dụng các chức năng chính của hệ thống AIGEO, dành cho vai trò Giáo viên và Học sinh.
+                    </p>
                 </section>
 
-                <section id="teacher-guide" class="reveal">
-                    <h2><i data-feather="briefcase" class="inline-block -mt-1 mr-2"></i>Hướng dẫn cho Giáo viên</h2>
+                <!-- GROUP: TEACHER -->
+                <div class="space-y-12">
+                    <!-- Cấu trúc tiêu đề Giáo viên mới -->
+                    <div id="teacher-guide-start" class="section-hero-header header-teacher reveal">
+                        <div class="section-icon-circle">
+                            <i data-feather="briefcase" style="width: 36px; height: 36px;"></i>
+                        </div>
+                        <div class="header-text-content">
+                            <p>Workspace</p>
+                            <h2>Dành cho Giáo viên</h2>
+                        </div>
+                    </div>
 
-                    <h3 id="teacher-classrooms">Quản lý Lớp học</h3>
-                    <p>Tạo và quản lý các lớp học của riêng bạn để tương tác với học sinh.</p>
-                    <ol>
-                        <li>Vào trang <strong>Quản lý Lớp học</strong> và nhấn nút "Tạo Lớp học mới".</li>
-                        <li>Điền thông tin và lưu lại. Hệ thống sẽ tạo một <strong>Mã lớp</strong> duy nhất.</li>
-                        <li>Gửi mã lớp này hoặc sao chép link mời cho học sinh của bạn để họ tham gia.</li>
-                        <li>Nhấn vào "Xem tiến độ" để theo dõi kết quả làm bài của từng học sinh trong lớp.</li>
-                    </ol>
-                    <h3 id="teacher-questions">Đóng góp Câu hỏi</h3>
-                    <p>Bạn có thể đóng góp câu hỏi do mình soạn vào ngân hàng câu hỏi của hệ thống.</p>
-                    <ol>
-                        <li>Vào trang <strong>Ngân hàng câu hỏi</strong>.</li>
-                        <li>Dùng bộ lọc để chọn chính xác Bài học bạn muốn đóng góp câu hỏi.</li>
-                        <li>Nhấn nút "Đóng góp câu hỏi" và điền đầy đủ thông tin.</li>
-                        <li>Câu hỏi của bạn sẽ được gửi đến Quản trị viên để chờ duyệt. Bạn có thể xem trạng thái (Chờ duyệt, Đã duyệt, Bị từ chối) ngay tại danh sách câu hỏi.</li>
-                    </ol>
+                    <div id="teacher-classrooms" class="bento-card reveal">
+                        <h2 class="guide-section-title"><i data-feather="users" class="text-teal-600"></i> Quản lý Lớp học</h2>
+                        <p class="text-slate-500 mb-6">Tạo và quản lý các lớp học của riêng bạn để tương tác với học sinh.</p>
+                        <div class="space-y-2">
+                            <div class="step-item">
+                                <div class="step-number">1</div>
+                                <p class="text-slate-600">Vào trang <strong>Quản lý Lớp học</strong> và nhấn nút "Tạo Lớp học mới".</p>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">2</div>
+                                <p class="text-slate-600">Điền thông tin và lưu lại. Hệ thống sẽ tạo một <strong>Mã lớp</strong> duy nhất.</p>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">3</div>
+                                <p class="text-slate-600">Gửi mã lớp này hoặc sao chép link mời cho học sinh của bạn để họ tham gia.</p>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">4</div>
+                                <p class="text-slate-600">Nhấn vào "Xem tiến độ" để theo dõi kết quả làm bài của từng học sinh trong lớp.</p>
+                            </div>
+                        </div>
+                    </div>
 
-                    <h3 id="teacher-tests">Tạo & Quản lý Đề thi</h3>
-                    <p>Tạo các bài kiểm tra và giao cho các lớp học của bạn một cách linh hoạt.</p>
-                    <ol>
-                        <li>Vào trang <strong>Quản lý đề thi</strong>, nhấn "Tạo Đề Thi Mới".</li>
-                        <li>Chọn phương thức tạo đề phù hợp:
-                            <ul>
-                                <li><strong>Ngân hàng chung & Cá nhân:</strong> Tự chọn câu hỏi từ hệ thống và câu hỏi do bạn tạo.</li>
-                                <li><strong>Chỉ câu hỏi cá nhân:</strong> Chỉ dùng các câu hỏi do bạn tạo.</li>
-                                <li><strong>Tạo từ File (AI):</strong> Tải lên file Word/PDF, AI sẽ tự động phân tích và tạo câu hỏi.</li>
-                            </ul>
-                        </li>
-                        <li>Sau khi tạo đề, bạn có thể vào "Xem trước" và nhấn "Giao bài" để chọn các lớp học sẽ nhận bài kiểm tra này.</li>
-                    </ol>
+                    <div id="teacher-questions" class="bento-card reveal">
+                        <h2 class="guide-section-title"><i data-feather="database" class="text-teal-600"></i> Đóng góp Câu hỏi</h2>
+                        <p class="text-slate-500 mb-6">Bạn có thể đóng góp câu hỏi do mình soạn vào ngân hàng câu hỏi của hệ thống.</p>
+                        <div class="space-y-2">
+                            <div class="step-item">
+                                <div class="step-number">1</div>
+                                <p class="text-slate-600">Vào trang <strong>Ngân hàng câu hỏi</strong>.</p>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">2</div>
+                                <p class="text-slate-600">Dùng bộ lọc để chọn chính xác Bài học bạn muốn đóng góp câu hỏi.</p>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">3</div>
+                                <p class="text-slate-600">Nhấn nút "Đóng góp câu hỏi" và điền đầy đủ thông tin.</p>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">4</div>
+                                <p class="text-slate-600">Câu hỏi của bạn sẽ được gửi đến Quản trị viên để chờ duyệt. Bạn có thể xem trạng thái (Chờ duyệt, Đã duyệt, Bị từ chối) ngay tại danh sách câu hỏi.</p>
+                            </div>
+                        </div>
+                    </div>
 
-                    <h3 id="teacher-monitoring">Giám sát Thi cử</h3>
-                    <p>Theo dõi học sinh làm bài trong thời gian thực để đảm bảo tính công bằng và hỗ trợ kịp thời.</p>
-                    <ol>
-                        <li>Vào trang <strong>Quản lý đề thi</strong>.</li>
-                        <li>Với các đề đã giao, nhấn vào nút "Giám sát".</li>
-                        <li>Chọn lớp học bạn muốn giám sát.</li>
-                        <li>Màn hình sẽ hiển thị trạng thái của từng học sinh: Đang thi, Offline, Bị khóa (do vi phạm), Đã nộp bài.</li>
-                        <li>Nếu học sinh bị khóa do thoát chế độ toàn màn hình, bạn có thể quyết định "Cho phép thi tiếp" hoặc "Buộc nộp bài".</li>
-                    </ol>
-                    </section>
+                    <div id="teacher-tests" class="bento-card reveal">
+                        <h2 class="guide-section-title"><i data-feather="file-text" class="text-teal-600"></i> Tạo & Quản lý Đề thi</h2>
+                        <p class="text-slate-500 mb-6">Tạo các bài kiểm tra và giao cho các lớp học của bạn một cách linh hoạt.</p>
+                        <div class="space-y-2">
+                            <div class="step-item">
+                                <div class="step-number">1</div>
+                                <p class="text-slate-600">Vào trang <strong>Quản lý đề thi</strong>, nhấn "Tạo Đề Thi Mới".</p>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">2</div>
+                                <div class="text-slate-600">
+                                    Chọn phương thức tạo đề phù hợp:
+                                    <ul class="list-disc ml-5 mt-2 space-y-1 text-sm text-slate-500">
+                                        <li><strong>Ngân hàng chung & Cá nhân:</strong> Tự chọn câu hỏi từ hệ thống và câu hỏi do bạn tạo.</li>
+                                        <li><strong>Chỉ câu hỏi cá nhân:</strong> Chỉ dùng các câu hỏi do bạn tạo.</li>
+                                        <li><strong>Tạo từ File (AI):</strong> Tải lên file Word/PDF, AI sẽ tự động phân tích và tạo câu hỏi.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">3</div>
+                                <p class="text-slate-600">Sau khi tạo đề, bạn có thể vào "Xem trước" và nhấn "Giao bài" để chọn các lớp học sẽ nhận bài kiểm tra này.</p>
+                            </div>
+                        </div>
+                    </div>
 
-                <section id="student-guide" class="reveal">
-                    <h2><i data-feather="user" class="inline-block -mt-1 mr-2"></i>Hướng dẫn cho Học sinh</h2>
-                                        
-                    <h3 id="student-start">Bắt đầu & Tham gia lớp</h3>
-                    <ol>
-                        <li>Đăng ký tài khoản và đăng nhập vào hệ thống.</li>
-                        <li>Lần đầu đăng nhập, bạn sẽ được yêu cầu cập nhật thông tin cá nhân (trường, khối lớp) tại trang <strong>Tài khoản</strong>. Việc này là cần thiết để hệ thống gợi ý đúng nội dung học tập.</li>
-                        <li>Để tham gia lớp, vào mục <strong>Lớp học của tôi</strong>, chọn "Tham gia lớp mới".</li>
-                        <li>Nhập <strong>Mã lớp</strong> do giáo viên cung cấp và nhấn "Tham gia".</li>
-                    </ol>
+                    <div id="teacher-monitoring" class="bento-card reveal">
+                        <h2 class="guide-section-title"><i data-feather="eye" class="text-teal-600"></i> Giám sát Thi cử</h2>
+                        <p class="text-slate-500 mb-6">Theo dõi học sinh làm bài trong thời gian thực để đảm bảo tính công bằng và hỗ trợ kịp thời.</p>
+                        <div class="space-y-2">
+                            <div class="step-item">
+                                <div class="step-number">1</div>
+                                <p class="text-slate-600">Vào trang <strong>Quản lý đề thi</strong>.</p>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">2</div>
+                                <p class="text-slate-600">Với các đề đã giao, nhấn vào nút "Giám sát".</p>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">3</div>
+                                <p class="text-slate-600">Chọn lớp học bạn muốn giám sát.</p>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">4</div>
+                                <p class="text-slate-600">Màn hình sẽ hiển thị trạng thái của từng học sinh: Đang thi, Offline, Bị khóa (do vi phạm), Đã nộp bài.</p>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">5</div>
+                                <p class="text-slate-600">Nếu học sinh bị khóa do thoát chế độ toàn màn hình, bạn có thể quyết định "Cho phép thi tiếp" hoặc "Buộc nộp bài".</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                    <h3 id="student-practice">Luyện tập & Thi cử</h3>
-                    <p>AIGEO cung cấp nhiều hình thức luyện tập để bạn củng cố kiến thức một cách hiệu quả.</p>
-                    <ul>
-                        <li><strong>Bài tập được giao:</strong> Các bài kiểm tra do giáo viên giao sẽ xuất hiện ở Bảng điều khiển và trong chi tiết từng lớp học. Nhấn "Vào thi" để bắt đầu làm bài.</li>
-                        <li><strong>Trung tâm Luyện tập:</strong> Vào mục <strong>Luyện tập</strong>, bạn có thể chọn các hình thức:
-                            <ul>
-                                <li><strong>Đề theo Năng lực (AI):</strong> AI tự động tạo đề dựa trên các lỗi sai của bạn trong các bài làm trước.</li>
-                                <li><strong>Luyện Đề:</strong> Làm các đề thi chung từ ngân hàng đề của hệ thống.</li>
-                                <li><strong>Theo Bài / Tổng hợp:</strong> Tự chọn môn, bài học và số lượng câu hỏi để tạo đề ôn tập theo ý muốn.</li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <h3 id="student-stats">Xem Thống kê & Kết quả</h3>
-                    <ul>
-                        <li>Sau mỗi bài làm, bạn sẽ được chuyển đến trang kết quả chi tiết, bao gồm điểm số, nhận xét từ AI và đáp án chi tiết từng câu.</li>
-                        <li>Vào mục <strong>Thống kê</strong> để xem biểu đồ tiến độ, điểm trung bình, và lịch sử tất cả các bài đã làm.</li>
-                    </ul>
+                <!-- GROUP: STUDENT -->
+                <div class="space-y-12 mt-24">
+                    <!-- Cấu trúc tiêu đề Học sinh mới -->
+                    <div id="student-guide-start" class="section-hero-header header-student reveal mt-24">
+                        <div class="section-icon-circle">
+                            <i data-feather="user" style="width: 36px; height: 36px;"></i>
+                        </div>
+                        <div class="header-text-content">
+                            <p>Learning Area</p>
+                            <h2>Dành cho Học sinh</h2>
+                        </div>
+                    </div>
 
-                    <h3 id="student-chatbot">Sử dụng Chatbot AI</h3>
-                    <p>Khi có bất kỳ thắc mắc nào về kiến thức, hãy vào mục <strong>Chatbot AI</strong>. Trợ lý ảo sẽ giúp bạn giải đáp các câu hỏi liên quan đến môn học một cách nhanh chóng.</p>
-                </section>
-            </article>
+                    <div id="student-start" class="bento-card reveal">
+                        <h2 class="guide-section-title"><i data-feather="user-plus" class="text-teal-600"></i> Bắt đầu & Tham gia lớp</h2>
+                        <div class="space-y-2">
+                            <div class="step-item">
+                                <div class="step-number">1</div>
+                                <p class="text-slate-600">Đăng ký tài khoản và đăng nhập vào hệ thống.</p>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">2</div>
+                                <p class="text-slate-600">Lần đầu đăng nhập, bạn sẽ được yêu cầu cập nhật thông tin cá nhân (trường, khối lớp) tại trang <strong>Tài khoản</strong>. Việc này là cần thiết để hệ thống gợi ý đúng nội dung học tập.</p>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">3</div>
+                                <p class="text-slate-600">Để tham gia lớp, vào mục <strong>Lớp học của tôi</strong>, chọn "Tham gia lớp mới".</p>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">4</div>
+                                <p class="text-slate-600">Nhập <strong>Mã lớp</strong> do giáo viên cung cấp và nhấn "Tham gia".</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="student-practice" class="bento-card reveal">
+                        <h2 class="guide-section-title"><i data-feather="zap" class="text-teal-600"></i> Luyện tập & Thi cử</h2>
+                        <p class="text-slate-500 mb-6">AIGEO cung cấp nhiều hình thức luyện tập để bạn củng cố kiến thức một cách hiệu quả.</p>
+                        <div class="space-y-4">
+                            <div class="p-4 bg-slate-50 rounded-2xl">
+                                <p class="text-sm font-bold text-slate-700 mb-1">Bài tập được giao:</p>
+                                <p class="text-sm text-slate-500">Các bài kiểm tra do giáo viên giao sẽ xuất hiện ở Bảng điều khiển và trong chi tiết từng lớp học. Nhấn "Vào thi" để bắt đầu làm bài.</p>
+                            </div>
+                            <div class="p-4 bg-slate-50 rounded-2xl">
+                                <p class="text-sm font-bold text-slate-700 mb-1">Trung tâm Luyện tập:</p>
+                                <div class="text-sm text-slate-500">
+                                    Vào mục <strong>Luyện tập</strong>, bạn có thể chọn các hình thức:
+                                    <ul class="list-disc ml-5 mt-2 space-y-1">
+                                        <li><strong>Đề theo Năng lực (AI):</strong> AI tự động tạo đề dựa trên các lỗi sai của bạn trong các bài làm trước.</li>
+                                        <li><strong>Luyện Đề:</strong> Làm các đề thi chung từ ngân hàng đề của hệ thống.</li>
+                                        <li><strong>Theo Bài / Tổng hợp:</strong> Tự chọn môn, bài học và số lượng câu hỏi để tạo đề ôn tập theo ý muốn.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="student-stats" class="bento-card reveal">
+                        <h2 class="guide-section-title"><i data-feather="bar-chart-2" class="text-teal-600"></i> Xem Thống kê & Kết quả</h2>
+                        <div class="space-y-2">
+                            <div class="step-item">
+                                <div class="step-number">1</div>
+                                <p class="text-slate-600">Sau mỗi bài làm, bạn sẽ được chuyển đến trang kết quả chi tiết, bao gồm điểm số, nhận xét từ AI và đáp án chi tiết từng câu.</p>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">2</div>
+                                <p class="text-slate-600">Vào mục <strong>Thống kê</strong> để xem biểu đồ tiến độ, điểm trung bình, và lịch sử tất cả các bài đã làm.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="student-chatbot" class="bento-card reveal">
+                        <h2 class="guide-section-title"><i data-feather="message-circle" class="text-teal-600"></i> Sử dụng Chatbot AI</h2>
+                        <p class="text-slate-600">Khi có bất kỳ thắc mắc nào về kiến thức, hãy vào mục <strong>Chatbot AI</strong>. Trợ lý ảo sẽ giúp bạn giải đáp các câu hỏi liên quan đến môn học một cách nhanh chóng.</p>
+                    </div>
+                </div>
+
+                <footer class="text-center py-20 reveal">
+                    <p class="text-slate-400 font-bold mb-4 uppercase text-xs tracking-widest">AIGEO Manual</p>
+                    <p class="text-slate-300 text-sm font-medium">&copy; 2025 AIGEO. All rights reserved.</p>
+                </footer>
+            </div>
         </main>
     </div>
 
@@ -241,10 +450,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             feather.replace();
 
-            const sections = document.querySelectorAll('section[id]');
-            const navLinks = document.querySelectorAll('#sidebar-nav a');
-
-            // Scroll reveal animation
+            // Reveal on Scroll
             const revealObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -253,75 +459,25 @@
                 });
             }, { threshold: 0.1 });
             
-            document.querySelectorAll('.reveal').forEach(el => {
-                revealObserver.observe(el);
-            });
+            document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-            // Active sidebar link on scroll
+            // Sidebar Active Tracking
+            const sections = document.querySelectorAll('section[id], div[id].bento-card');
+            const navLinks = document.querySelectorAll('.sidebar-link');
+
             const activeLinkObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
                         navLinks.forEach(link => {
-                            const isChildOfHeading = link.previousElementSibling && link.previousElementSibling.classList.contains('sidebar-heading');
-                            let targetId = link.getAttribute('href').substring(1);
-                            
-                            // Special case for headings
-                            if (entry.target.id.startsWith('teacher') && link.getAttribute('href') === '#teacher-classrooms') {
-                                targetId = 'teacher-guide';
-                            } else if (entry.target.id.startsWith('student') && link.getAttribute('href') === '#student-start') {
-                                targetId = 'student-guide';
-                            }
-
-                            link.classList.toggle('active', targetId === entry.target.id);
+                            link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
                         });
                     }
                 });
-            }, { rootMargin: "-40% 0px -60% 0px" });
+            }, { rootMargin: "-20% 0px -70% 0px" });
 
-            sections.forEach(section => {
-                activeLinkObserver.observe(section);
-            });
+            sections.forEach(section => activeLinkObserver.observe(section));
         });
     </script>
-
-<script type="text/javascript">
-    // 1. Chặn Chuột phải (Để ẩn menu "Inspect/Kiểm tra" và "View Source/Xem nguồn")
-    document.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-        // Không hiện thông báo gì cả để trải nghiệm mượt mà hơn
-    });
-
-    // 2. Chặn các phím tắt Developer Tools
-    document.addEventListener('keydown', function(e) {
-        // Chặn F12
-        if (e.key === 'F12' || e.keyCode === 123) {
-            e.preventDefault();
-            return false;
-        }
-
-        // Chặn các tổ hợp phím Ctrl + ...
-        if (e.ctrlKey) {
-            switch (e.key.toLowerCase()) {
-                case 'u': // Chặn Ctrl + U (Xem source code)
-                case 's': // Chặn Ctrl + S (Lưu trang web)
-                case 'p': // Chặn Ctrl + P (In trang web - thường hiện code)
-                // Lưu ý: KHÔNG chặn 'c' (Copy) và 'a' (Select All)
-                    e.preventDefault();
-                    return false;
-            }
-
-            // Chặn Ctrl + Shift + ... (Các phím mở DevTools)
-            if (e.shiftKey) {
-                switch (e.key.toLowerCase()) {
-                    case 'i': // Inspect Element
-                    case 'j': // Console
-                    case 'c': // Element Inspector
-                        e.preventDefault();
-                        return false;
-                }
-            }
-        }
-    });
-</script>
 </body>
 </html>

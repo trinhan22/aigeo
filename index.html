@@ -253,25 +253,44 @@
             box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.4) !important;
         }
 
-        /* --- 2. GIAO DIỆN TÀI KHOẢN (USER PILL & DROPDOWN) --- */
+        /* --- CẬP NHẬT USER PILL ĐẬM ĐÀ & NỔI BẬT HƠN --- */
         .user-pill {
-            display: flex; align-items: center; gap: 10px;
-            padding: 5px 14px 5px 5px; border-radius: 100px;
-            background: white; border: 1.5px solid #F1F5F9;
-            cursor: pointer; transition: 0.3s;
+            display: flex; 
+            align-items: center; 
+            gap: 10px;
+            padding: 5px 14px 5px 5px; 
+            border-radius: 100px;
+            /* Sử dụng màu nền Teal siêu nhạt để tạo sự khác biệt với Header trắng */
+            background: #F0FDFA; 
+            /* Viền màu Teal nhạt để tạo độ khối (Shadow nhẹ) */
+            border: 1.5px solid #CCFBF1; 
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .user-pill:hover { border-color: var(--primary); transform: translateY(-2px); }
-        .user-pill img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-light); }
+
+        .user-pill:hover {
+            border-color: var(--primary); 
+            transform: translateY(-1px);
+        }
+
+        .user-pill img { 
+            width: 34px; 
+            height: 34px; 
+            border-radius: 50%; 
+            object-fit: cover; 
+            /* Viền trắng cho ảnh đại diện để tách biệt với nền xanh nhạt của pill */
+            border: 2px solid white; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
         .user-pill span { 
             font-size: 0.85rem; 
             font-weight: 800; 
-            color: var(--text-main); 
-            
-            /* THÊM CÁC DÒNG DƯỚI ĐÂY ĐỂ XỬ LÝ TÊN DÀI */
-            max-width: 150px;       /* Giới hạn độ rộng tối đa cho tên */
-            white-space: nowrap;    /* Không cho xuống dòng */
-            overflow: hidden;       /* Ẩn phần thừa */
-            text-overflow: ellipsis; /* Hiện dấu ... nếu tên quá dài */
+            color: var(--primary-dark); /* Chữ màu Teal đậm cho dễ đọc */
+            max-width: 150px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .auth-dropdown {
@@ -626,7 +645,7 @@
 
     <!-- Header -->
     <header class="glass">
-        <a href="#" class="logo">
+        <a href="/" class="logo">
             <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" alt="AIGEO Logo">
             <span>AIGEO</span>
         </a>
@@ -646,8 +665,8 @@
 
                 <!-- Profile Pill khi ĐÃ đăng nhập (Ẩn mặc định) -->
                 <div id="user-logged-pill" class="user-pill" style="display: none;">
-                    <img id="user-avatar-header" src="" alt="Avatar">
-                    <span id="user-name-header">...</span>
+                    <img id="user-avatar-header" alt="Avatar">
+                    <span id="user-name-header"></span>
                     <i class="fas fa-chevron-down text-[10px] opacity-30 ml-1"></i>
                 </div>
 
@@ -969,8 +988,8 @@
                 <h4 class="font-bold mb-6 text-slate-800 uppercase tracking-wider text-sm">Hỗ trợ</h4>
                 <ul class="space-y-4 text-slate-500 text-sm">
                     <li><a href="huong-dan-su-dung.html" class="hover:text-teal-600" target="_blank">Hướng dẫn sử dụng</a></li>
-                    <li><a href="dieu-khoan.html" class="hover:text-teal-600" target="_blank">Điều khoản dịch vụ</a></li>
-                    <li><a href="dieu-khoan.html" class="hover:text-teal-600" target="_blank">Chính sách bảo mật</a></li>
+                    <li><a href="dieu-khoan.html" class="hover:text-teal-600">Điều khoản dịch vụ</a></li>
+                    <li><a href="dieu-khoan.html" class="hover:text-teal-600">Chính sách bảo mật</a></li>
                     <li><a href="huong-dan-su-dung.html" class="hover:text-teal-600" target="_blank">Câu hỏi thường gặp</a></li>
                 </ul>
             </div>

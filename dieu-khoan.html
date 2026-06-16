@@ -6,48 +6,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AIGEO - Điều khoản & Cam kết</title>
     
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/feather-icons"></script>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
     <style>
         :root {
-            --primary-teal: #0D9488;
-            --primary-emerald: #10B981;
+            --primary: #0D9488;
+            --primary-light: #F0FDFA;
+            --secondary: #10B981;
+            --text-main: #1E293B;
+            --text-light: #64748B;
+            --bg-body: #F8FAFC;
+            --primary-gradient: linear-gradient(135deg, #0D9488 0%, #10B981 100%);
         }
+
         body { 
-            font-family: 'Be Vietnam Pro', sans-serif; 
-            background-color: #f8fafc;
-            color: #334155;
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg-body); 
+            color: var(--text-main);
         }
-        .gradient-text {
-            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+
+        /* --- BACKGROUND BLOBS --- */
+        .background-blobs { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.2; animation: floatBlob 10s infinite alternate; }
+        .blob-1 { width: 500px; height: 500px; background: #99F6E4; top: -100px; left: -100px; }
+        .blob-2 { width: 400px; height: 400px; background: #BBF7D0; bottom: -50px; right: -50px; animation-delay: -5s; }
+        @keyframes floatBlob { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(30px, 50px) scale(1.1); } }
+
+        /* --- HEADER --- */
+        header { 
+            background: rgba(255, 255, 255, 0.8); 
+            backdrop-filter: blur(20px); 
+            border-bottom: 1px solid #E2E8F0;
         }
-        .prose h3 {
-            color: #0f766e;
-            font-weight: 700;
-            margin-top: 1.5rem;
-            margin-bottom: 0.5rem;
-            font-size: 1.125rem;
-        }
-        .prose ul {
-            list-style-type: disc;
-            padding-left: 1.5rem;
-            margin-bottom: 1rem;
-        }
-        .prose li {
-            margin-bottom: 0.25rem;
-        }
-        .section-card {
+
+        /* --- BENTO CARDS --- */
+        .term-card {
             background: white;
-            border-radius: 1rem;
-            padding: 2rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
-            border: 1px solid #e2e8f0;
-            margin-bottom: 1.5rem;
+            border-radius: 32px;
+            padding: 40px;
+            border: 1px solid #E2E8F0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
+        .term-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.03);
+            border-color: var(--primary-light);
+        }
+
+        .icon-wrap {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 15px -3px rgba(0,0,0,0.05);
+        }
+
+        /* Colors for different sections */
+        .c-teal { border-top: 6px solid #0D9488; }
+        .c-teal .icon-wrap { background: #F0FDFA; color: #0D9488; }
+        
+        .c-blue { border-top: 6px solid #3B82F6; }
+        .c-blue .icon-wrap { background: #EFF6FF; color: #3B82F6; }
+
+        .c-rose { border-top: 6px solid #F43F5E; }
+        .c-rose .icon-wrap { background: #FFF1F2; color: #F43F5E; }
+
+        .c-purple { border-top: 6px solid #8B5CF6; }
+        .c-purple .icon-wrap { background: #F5F3FF; color: #8B5CF6; }
+
+        .c-slate { border-top: 6px solid #475569; }
+        .c-slate .icon-wrap { background: #F8FAFC; color: #475569; }
+
+        /* Typography */
+        .term-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 16px; color: #1E293B; letter-spacing: -0.5px; }
+        .term-content { color: #64748B; line-height: 1.8; font-size: 1rem; }
+        .term-content strong { color: #1E293B; font-weight: 700; }
+        .term-content ul { list-style: none; padding: 0; margin-top: 12px; }
+        .term-content li { position: relative; padding-left: 24px; margin-bottom: 8px; }
+        .term-content li::before { content: '→'; position: absolute; left: 0; color: var(--primary); font-weight: 800; }
+
+        /* Animation */
+        .reveal { opacity: 0; transform: translateY(30px); transition: 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
 
         /* --- SCROLLBAR --- */
         ::-webkit-scrollbar { width: 5px; }
@@ -57,108 +106,137 @@
 </head>
 <body class="antialiased">
 
-    <header class="bg-white/90 backdrop-blur-sm sticky top-0 z-50 border-b border-slate-200">
-        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="index.html" class="flex items-center gap-2">
-                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" alt="AIGEO Logo" class="h-8 w-auto">
-                <span class="text-2xl font-bold gradient-text">AIGEO</span>
-            </a>
-            <a href="index.html" class="text-sm font-semibold text-slate-500 hover:text-teal-600 flex items-center">
-                <i data-feather="arrow-left" class="w-4 h-4 mr-1"></i> Quay lại trang chủ
-            </a>
-        </nav>
-    </header>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
 
-    <main class="container mx-auto px-4 py-12 max-w-4xl">
+    <main class="container mx-auto px-6 py-20 max-w-4xl">
         
-        <div class="text-center mb-12">
-            <h1 class="text-3xl md:text-4xl font-extrabold text-slate-800 mb-4">ĐIỀU KHOẢN SỬ DỤNG VÀ CAM KẾT</h1>
-            <p class="text-slate-500">Cập nhật lần cuối: Tháng 06/2026</p>
+        <!-- Hero Title - Đơn giản, thoáng đãng và đẳng cấp -->
+        <div class="text-center mb-20 reveal">
+            <h1 class="text-4xl md:text-5xl font-black text-slate-800 tracking-tight">
+                <span class="block">ĐIỀU KHOẢN SỬ DỤNG</span>
+                <!-- Chỉnh mt-4 hoặc mt-6 để tăng độ giãn giữa 2 dòng tùy ý -->
+                <span class="block mt-4 text-teal-600">& CAM KẾT DỊCH VỤ</span>
+            </h1>
+            
+            <!-- Thanh vạch mờ tinh tế -->
+            <div class="w-12 h-1 bg-slate-200 mx-auto my-8 rounded-full"></div>
+
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-100 shadow-sm">
+                <span class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Cập nhật lần cuối: Tháng 06/2026</p>
+            </div>
         </div>
 
-        <div class="prose max-w-none">
+        <div class="space-y-10">
 
-            <div class="section-card border-l-4 border-l-teal-500">
-                <h3 class="flex items-center text-xl"><i data-feather="users" class="w-5 h-5 mr-2"></i>1. ĐỊNH DANH VÀ NĂNG LỰC CHỦ THỂ</h3>
-                <p class="text-justify mb-4">
-                    Hệ thống AIGEO được xây dựng, vận hành và chịu trách nhiệm nội dung bởi nhóm tác giả bao gồm các thành viên có đầy đủ năng lực hành vi dân sự và nhận thức chuyên môn, cụ thể:
-                </p>
-                <ul class="font-medium text-slate-700 grid grid-cols-1 md:grid-cols-2 gap-2">
-                    <li><i data-feather="check" class="w-4 h-4 inline text-teal-500 mr-2"></i>Thầy Nguyễn Minh Khiêm</li>
-                    <li><i data-feather="check" class="w-4 h-4 inline text-teal-500 mr-2"></i>Cô Trần Thị Bích Ngân</li>
-                    <li><i data-feather="check" class="w-4 h-4 inline text-teal-500 mr-2"></i>Bạn Trần Ngọc Minh Thông</li>
-                    <li><i data-feather="check" class="w-4 h-4 inline text-teal-500 mr-2"></i>Bạn Nguyễn Bảo Trâm</li>
-                    <li><i data-feather="check" class="w-4 h-4 inline text-teal-500 mr-2"></i>Bạn Nguyễn Hoàng Đăng Khoa</li>
-                    <li><i data-feather="check" class="w-4 h-4 inline text-teal-500 mr-2"></i>Bạn Nguyễn Trí Nhân</li>
-                </ul>
-                <p class="mt-4 text-sm text-slate-500 italic">
-                    Nhóm tác giả cam kết chịu trách nhiệm về cấu trúc hệ thống và quy trình vận hành kỹ thuật của AIGEO trong phạm vi dự án nghiên cứu khoa học.
-                </p>
+            <!-- Điều 1 -->
+            <div class="term-card c-teal reveal">
+                <div class="icon-wrap"><i data-feather="users" class="w-7 h-7"></i></div>
+                <h2 class="term-title">1. Định danh & Năng lực chủ thể</h2>
+                <div class="term-content">
+                    <p class="mb-4">Hệ thống AIGEO được xây dựng, vận hành và chịu trách nhiệm nội dung bởi nhóm tác giả bao gồm các thành viên có đầy đủ năng lực hành vi dân sự và nhận thức chuyên môn, cụ thể:</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 font-bold text-slate-700">
+                        <div class="flex items-center gap-2"><i data-feather="check-circle" class="w-4 h-4 text-teal-500"></i> Thầy Nguyễn Minh Khiêm</div>
+                        <div class="flex items-center gap-2"><i data-feather="check-circle" class="w-4 h-4 text-teal-500"></i> Cô Trần Thị Bích Ngân</div>
+                        <div class="flex items-center gap-2"><i data-feather="check-circle" class="w-4 h-4 text-teal-500"></i> Bạn Trần Ngọc Minh Thông</div>
+                        <div class="flex items-center gap-2"><i data-feather="check-circle" class="w-4 h-4 text-teal-500"></i> Bạn Nguyễn Bảo Trâm</div>
+                        <div class="flex items-center gap-2"><i data-feather="check-circle" class="w-4 h-4 text-teal-500"></i> Bạn Nguyễn Hoàng Đăng Khoa</div>
+                        <div class="flex items-center gap-2"><i data-feather="check-circle" class="w-4 h-4 text-teal-500"></i> Bạn Nguyễn Trí Nhân</div>
+                    </div>
+                    <p class="mt-6 text-sm italic opacity-70">Nhóm tác giả cam kết chịu trách nhiệm về cấu trúc hệ thống và quy trình vận hành kỹ thuật của AIGEO trong phạm vi dự án nghiên cứu khoa học.</p>
+                </div>
             </div>
 
-            <div class="section-card border-l-4 border-l-blue-500">
-                <h3 class="flex items-center text-xl"><i data-feather="book-open" class="w-5 h-5 mr-2"></i>2. NGUỒN GỐC DỮ LIỆU VÀ BẢN QUYỀN</h3>
-                <p>Chúng tôi tôn trọng tuyệt đối quyền sở hữu trí tuệ và các quy định của Luật Sở hữu trí tuệ Việt Nam:</p>
-                <ul>
-                    <li><strong>Nguồn tài liệu:</strong> Toàn bộ dữ liệu câu hỏi, lý thuyết nền tảng và khung chương trình sử dụng trên AIGEO được biên soạn, trích dẫn và tham khảo dựa trên các tài liệu chính thống được xuất bản bởi <strong>Nhà Xuất Bản Giáo Dục Việt Nam</strong>.</li>
-                    <li><strong>Mục đích sử dụng:</strong> Hệ thống AIGEO sử dụng các tài liệu này cho mục đích <strong>giáo dục phi lợi nhuận</strong>, phục vụ nghiên cứu khoa học, giảng dạy và học tập nội bộ.</li>
-                    <li><strong>Cam kết người dùng:</strong> Người dùng không được phép sao chép, kinh doanh hoặc sử dụng dữ liệu từ AIGEO cho mục đích thương mại khi chưa có sự đồng ý của nhóm tác giả và các bên nắm giữ bản quyền gốc.</li>
-                </ul>
+            <!-- Điều 2 -->
+            <div class="term-card c-blue reveal">
+                <div class="icon-wrap"><i data-feather="book-open" class="w-7 h-7"></i></div>
+                <h2 class="term-title">2. Nguồn gốc dữ liệu & Bản quyền</h2>
+                <div class="term-content">
+                    <p>Chúng tôi tôn trọng tuyệt đối quyền sở hữu trí tuệ và các quy định của Luật Sở hữu trí tuệ Việt Nam:</p>
+                    <ul>
+                        <li><strong>Nguồn tài liệu:</strong> Toàn bộ dữ liệu câu hỏi, lý thuyết nền tảng và khung chương trình sử dụng trên AIGEO được biên soạn, trích dẫn và tham khảo dựa trên các tài liệu chính thống được xuất bản bởi <strong>Nhà Xuất Bản Giáo Dục Việt Nam</strong>.</li>
+                        <li><strong>Mục đích sử dụng:</strong> Hệ thống AIGEO sử dụng các tài liệu này cho mục đích <strong>giáo dục phi lợi nhuận</strong>, phục vụ nghiên cứu khoa học, giảng dạy và học tập nội bộ.</li>
+                        <li><strong>Cam kết người dùng:</strong> Người dùng không được phép sao chép, kinh doanh hoặc sử dụng dữ liệu từ AIGEO cho mục đích thương mại khi chưa có sự đồng ý của nhóm tác giả và các bên nắm giữ bản quyền gốc.</li>
+                    </ul>
+                </div>
             </div>
 
-            <div class="section-card border-l-4 border-l-red-500">
-                <h3 class="flex items-center text-xl"><i data-feather="shield" class="w-5 h-5 mr-2"></i>3. QUY CHẾ THI CỬ VÀ GIÁM SÁT (ANTI-CHEAT)</h3>
-                <p>Để đảm bảo tính công bằng, hệ thống áp dụng các biện pháp giám sát kỹ thuật tự động. Khi tham gia bài thi, người dùng (Học sinh) cam kết:</p>
-                <ul class="list-decimal pl-5 space-y-2">
-                    <li><strong>Duy trì kết nối:</strong> Giữ màn hình làm bài ở trạng thái hoạt động (active) và chế độ Toàn màn hình (Fullscreen) trong suốt thời gian thi.</li>
-                    <li><strong>Không gian lận:</strong> Hệ thống tự động ghi nhận các hành vi: Chuyển tab trình duyệt, mở ứng dụng khác, hoặc thoát toàn màn hình.</li>
-                    <li><strong>Chế tài xử lý:</strong> 
-                        <ul class="list-disc pl-5 mt-1 text-sm text-slate-600">
-                            <li>Hệ thống sẽ cảnh báo khi phát hiện vi phạm.</li>
-                            <li>Nếu vi phạm vượt quá giới hạn cho phép, bài thi sẽ bị <strong>KHÓA TỰ ĐỘNG</strong>.</li>
-                            <li>Giáo viên có toàn quyền xem xét lịch sử vi phạm (log) để quyết định hủy kết quả hoặc cho phép thi lại.</li>
-                        </ul>
-                    </li>
-                </ul>
+            <!-- Điều 3 -->
+            <div class="term-card c-rose reveal">
+                <div class="icon-wrap"><i data-feather="shield" class="w-7 h-7"></i></div>
+                <h2 class="term-title">3. Quy chế thi cử & Giám sát</h2>
+                <div class="term-content">
+                    <p>Để đảm bảo tính công bằng, hệ thống áp dụng các biện pháp giám sát kỹ thuật tự động. Khi tham gia bài thi, người dùng (Học sinh) cam kết:</p>
+                    <ul>
+                        <li><strong>Duy trì kết nối:</strong> Giữ màn hình làm bài ở trạng thái hoạt động (active) và chế độ Toàn màn hình (Fullscreen) trong suốt thời gian thi.</li>
+                        <li><strong>Không gian lận:</strong> Hệ thống tự động ghi nhận các hành vi: Chuyển tab trình duyệt, mở ứng dụng khác, hoặc thoát toàn màn hình.</li>
+                        <li><strong>Chế tài xử lý:</strong> Bài thi sẽ bị <strong>KHÓA TỰ ĐỘNG</strong> nếu vượt quá giới hạn vi phạm. Giáo viên có quyền hủy kết quả dựa trên dữ liệu Log này.</li>
+                    </ul>
+                </div>
             </div>
 
-            <div class="section-card border-l-4 border-l-purple-500">
-                <h3 class="flex items-center text-xl"><i data-feather="database" class="w-5 h-5 mr-2"></i>4. CÔNG NGHỆ VÀ BẢO MẬT DỮ LIỆU</h3>
-                <p>Chúng tôi cam kết bảo vệ dữ liệu người dùng theo các nguyên tắc sau:</p>
-                <ul>
-                    <li><strong>Lưu trữ an toàn:</strong> Dữ liệu tài khoản và kết quả học tập được lưu trữ trên nền tảng điện toán đám mây Google Cloud (Firebase), được bảo mật theo tiêu chuẩn quốc tế.</li>
-                    <li><strong>Trí tuệ nhân tạo (AI):</strong> Các tính năng Chatbot và Phân tích bài làm sử dụng API từ các đối tác AI (như OpenRouter/Google Gemini). Dữ liệu gửi đi được xử lý ẩn danh để bảo vệ thông tin cá nhân.</li>
-                    <li><strong>Tài nguyên hình ảnh:</strong> Hình ảnh câu hỏi được lưu trữ trên các dịch vụ lưu trữ đám mây chuyên dụng để tối ưu tốc độ truy cập.</li>
-                    <li><strong>Quyền riêng tư:</strong> Chúng tôi không chia sẻ dữ liệu định danh của người dùng cho bên thứ ba vì mục đích quảng cáo hoặc thương mại.</li>
-                </ul>
+            <!-- Điều 4 -->
+            <div class="term-card c-purple reveal">
+                <div class="icon-wrap"><i data-feather="database" class="w-7 h-7"></i></div>
+                <h2 class="term-title">4. Công nghệ & Bảo mật dữ liệu</h2>
+                <div class="term-content">
+                    <p>Chúng tôi cam kết bảo vệ dữ liệu người dùng theo các nguyên tắc sau:</p>
+                    <ul>
+                        <li><strong>Lưu trữ an toàn:</strong> Dữ liệu tài khoản và kết quả học tập được lưu trữ trên nền tảng điện toán đám mây <strong>Google Cloud (Firebase)</strong>, được bảo mật theo tiêu chuẩn quốc tế.</li>
+                        <li><strong>Trí tuệ nhân tạo (AI):</strong> Các tính năng Chatbot và Phân tích bài làm sử dụng API từ các đối tác AI. Dữ liệu gửi đi được xử lý ẩn danh để bảo vệ thông tin cá nhân.</li>
+                        <li><strong>Tài nguyên hình ảnh:</strong> Hình ảnh câu hỏi được lưu trữ trên các dịch vụ lưu trữ đám mây chuyên dụng để tối ưu tốc độ truy cập.</li>
+                        <li><strong>Quyền riêng tư:</strong> Chúng tôi không chia sẻ dữ liệu định danh của người dùng cho bên thứ ba vì mục đích quảng cáo hoặc thương mại.</li>
+                    </ul>
+                </div>
             </div>
 
-            <div class="section-card border-l-4 border-l-slate-500">
-                <h3 class="flex items-center text-xl"><i data-feather="alert-circle" class="w-5 h-5 mr-2"></i>5. ĐIỀU KHOẢN CHUNG</h3>
-                <ul>
-                    <li><strong>Trách nhiệm tài khoản:</strong> Người dùng chịu trách nhiệm bảo mật thông tin đăng nhập. Mọi hành vi thực hiện từ tài khoản được coi là do chính chủ tài khoản thực hiện.</li>
-                    <li><strong>Sửa đổi:</strong> Nhóm quản trị có quyền điều chỉnh nội dung hệ thống hoặc các điều khoản này để phù hợp với tình hình thực tế. Thông báo sẽ được cập nhật trực tiếp trên website.</li>
-                    <li><strong>Chống phá hoại:</strong> Nghiêm cấm mọi hành vi tấn công kỹ thuật (DDoS, Spam, Inject Code) vào hệ thống. Tài khoản vi phạm sẽ bị khóa vĩnh viễn và xử lý theo quy định.</li>
-                </ul>
+            <!-- Điều 5 -->
+            <div class="term-card c-slate reveal">
+                <div class="icon-wrap"><i data-feather="alert-circle" class="w-7 h-7"></i></div>
+                <h2 class="term-title">5. Điều khoản chung</h2>
+                <div class="term-content">
+                    <ul>
+                        <li><strong>Trách nhiệm tài khoản:</strong> Người dùng chịu trách nhiệm bảo mật thông tin đăng nhập. Mọi hành vi thực hiện từ tài khoản được coi là do chính chủ tài khoản thực hiện.</li>
+                        <li><strong>Sửa đổi:</strong> Nhóm quản trị có quyền điều chỉnh nội dung hệ thống hoặc các điều khoản này để phù hợp với tình hình thực tế. Thông báo sẽ được cập nhật trực tiếp trên website.</li>
+                        <li><strong>Phá hoại:</strong> Nghiêm cấm mọi hành vi tấn công kỹ thuật (DDoS, Spam, Inject Code) vào hệ thống. Tài khoản vi phạm sẽ bị khóa vĩnh viễn và xử lý theo quy định.</li>
+                    </ul>
+                </div>
             </div>
 
         </div>
 
-        <div class="text-center mt-12 mb-16">
-            <p class="text-slate-600 mb-6">Bằng việc đăng ký và sử dụng AIGEO, bạn xác nhận đã đọc, hiểu và đồng ý tuân thủ toàn bộ các điều khoản trên.</p>
-            <button onclick="window.history.back()" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:-translate-y-1 transition-all duration-200">
+        <!-- Call to action -->
+        <div class="text-center mt-20 reveal">
+            <p class="text-slate-500 mb-8 font-medium">Bằng việc sử dụng AIGEO, bạn xác nhận đã đọc và đồng ý tuân thủ toàn bộ các điều khoản trên.</p>
+            <button onclick="window.history.back()" class="bg-teal-600 hover:bg-teal-700 text-white font-black py-4 px-12 rounded-2xl shadow-xl shadow-teal-600/20 transform hover:-translate-y-1 transition-all duration-300 uppercase tracking-widest text-sm">
                 Tôi Đã Hiểu và Đồng Ý
             </button>
         </div>
 
     </main>
 
-    <footer class="container mx-auto py-8 border-t border-slate-200 text-center text-slate-400 text-xs">
-        <p>&copy; 2025 AIGEO. All rights reserved.</p>
+    <footer class="container mx-auto py-12 border-t border-slate-200 text-center">
+        <p class="text-slate-400 font-bold text-[10px] tracking-[0.2em]">&copy; 2025 AIGEO. All rights reserved.</p>
     </footer>
 
     <script>
         feather.replace();
+
+        // Reveal Animation Observer
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        document.querySelectorAll('.reveal').forEach(el => {
+            revealObserver.observe(el);
+        });
     </script>
 </body>
 </html>
