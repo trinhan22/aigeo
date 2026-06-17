@@ -1,7 +1,7 @@
 {
   "name": "AIGEO - Học tập AI",
   "short_name": "AIGEO",
-  "description": "Nền tảng học tập và trắc nghiệm Địa lý sử dụng AI.",
+  "description": "Nền tảng học tập và trắc nghiệm Địa lí sử dụng AI.",
   "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#f1f5f9",
