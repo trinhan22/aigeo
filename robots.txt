@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /student/
+Disallow: /teacher/
+
+Sitemap: https://aigeo.info.vn/sitemap.xml
