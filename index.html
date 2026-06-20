@@ -1023,7 +1023,7 @@
         </div>
         
         <!-- CHỈ SỬA PHẦN DƯỚI NÀY -->
-        <div class="mt-20 pt-8 border-t border-slate-100 w-full bg-white"> <!-- Đã đổi về bg-white -->
+        <div class="mt-20 pt-8 border-t border-slate-100 w-full bg-white">
             <div class="container mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-8">
                 
                 <!-- NHÓM TRÁI: Copyright & Version kiểu cũ -->
@@ -1042,24 +1042,25 @@
                     </div>
                 </div>
 
-                <!-- NHÓM PHẢI: Trust Badges (DMCA to hơn xíu + Đồng bộ Hover) -->
+                <!-- NHÓM PHẢI: Trust Badges (Đã thay Badge DMCA mới + Đồng bộ Hover) -->
                 <div class="flex items-center gap-6">
-                    <!-- DMCA Badge - Đã tăng height lên 28px -->
+                    <!-- Badge DMCA Mới -->
                     <a href="//www.dmca.com/Protection/Status.aspx?ID=3d40c767-7a34-4719-83bd-aca993e7b16d" 
                        title="DMCA.com Protection Status" 
+                       class="dmca-badge"
                        style="display: flex; align-items: center; justify-content: center; height: 28px; opacity: 0.7; transition: all 0.3s ease;" 
                        onmouseover="this.style.opacity='1'; this.style.transform='translateY(-2px)'" 
                        onmouseout="this.style.opacity='0.8'; this.style.transform='translateY(0)'" 
                        target="_blank"> 
-                        <img src="https://images.dmca.com/Badges/dmca_copyright_protected150b.png?ID=3d40c767-7a34-4719-83bd-aca993e7b16d" 
-                             alt="DMCA" 
-                             style="height: 28px; width: auto; border-radius: 4px; display: block;" />
+                        <img src="https://images.dmca.com/Badges/dmca_protected_sml_120ad.png?ID=3d40c767-7a34-4719-83bd-aca993e7b16d" 
+                             alt="DMCA.com Protection Status" 
+                             style="height: 28px; width: auto; display: block;" />
                     </a>
 
                     <!-- Vạch ngăn cách dọc -->
                     <div class="w-[1px] h-6 bg-slate-200"></div>
 
-                    <!-- J2TEAM Launch Badge (Giữ nguyên size to + dùng chung hover) -->
+                    <!-- J2TEAM Launch Badge -->
                     <a href="https://launch.j2team.dev/products/aigeo?utm_source=badge-launched&utm_medium=badge&utm_campaign=badge-aigeo" 
                        target="_blank" 
                        rel="noopener noreferrer" 
@@ -1075,6 +1076,7 @@
 
             </div>
         </div>
+        <!-- Script DMCA Helper đặt cuối cùng -->
         <script src="https://images.dmca.com/Badges/DMCABadgeHelper.min.js"></script>
     </footer>
 
