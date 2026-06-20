@@ -718,65 +718,64 @@
             </div>
         </section>
 
-        <!-- About / Mission Tabs -->
+        <!-- BẮT ĐẦU ĐOẠN SỬA PHẦN SỨ MỆNH -->
         <section id="about" class="py-24 relative">
-            <div class="container mx-auto px-6">
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl font-extrabold mb-4 text-slate-900">Sứ mệnh của AIGEO</h2>
-                    <p class="text-slate-500 max-w-2xl mx-auto">Chúng tôi tin rằng công nghệ là chìa khóa để khai mở tiềm năng học tập vô hạn.</p>
+            <!-- Đã loại bỏ thẻ container dư thừa ở đây để đồng bộ độ rộng -->
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-extrabold mb-4 text-slate-900">Sứ mệnh của AIGEO</h2>
+                <p class="text-slate-500 max-w-2xl mx-auto">Chúng tôi tin rằng công nghệ là chìa khóa để khai mở tiềm năng học tập vô hạn.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                <!-- Card lớn: Sứ mệnh -->
+                <div class="md:col-span-8 bg-white p-10 rounded-[32px] border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all duration-500 bento-hover-card">
+                    <div class="relative z-10">
+                        <div class="w-14 h-14 bg-teal-100 text-teal-600 rounded-2xl flex items-center justify-center mb-6">
+                            <i class="fas fa-bullseye text-2xl"></i>
+                        </div>
+                        <h3 class="text-3xl font-bold mb-4">Khai mở tiềm năng vô hạn</h3>
+                        <p class="text-slate-600 text-lg leading-relaxed max-w-xl">
+                            AIGEO ra đời với sứ mệnh mang đến một công cụ học tập thông minh, hiệu quả và dễ dàng tiếp cận cho mọi học sinh, giúp các em tự tin chinh phục tri thức và đạt được những mục tiêu lớn lao.
+                        </p>
+                    </div>
+                    <!-- Hình ảnh chìm trang trí -->
+                    <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=400&q=80" 
+                        class="absolute right-[-50px] bottom-[-50px] w-80 h-80 object-cover opacity-10 group-hover:opacity-20 transition-opacity rounded-full">
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-                    <!-- Card lớn: Sứ mệnh -->
-                    <div class="md:col-span-8 bg-white p-10 rounded-[32px] border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all duration-500 bento-hover-card">
-                        <div class="relative z-10">
-                            <div class="w-14 h-14 bg-teal-100 text-teal-600 rounded-2xl flex items-center justify-center mb-6">
-                                <i class="fas fa-bullseye text-2xl"></i>
-                            </div>
-                            <h3 class="text-3xl font-bold mb-4">Khai mở tiềm năng vô hạn</h3>
-                            <p class="text-slate-600 text-lg leading-relaxed max-w-xl">
-                                AIGEO ra đời với sứ mệnh mang đến một công cụ học tập thông minh, hiệu quả và dễ dàng tiếp cận cho mọi học sinh, giúp các em tự tin chinh phục tri thức và đạt được những mục tiêu lớn lao.
-                            </p>
-                        </div>
-                        <!-- Hình ảnh chìm trang trí -->
-                        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=400&q=80" 
-                            class="absolute right-[-50px] bottom-[-50px] w-80 h-80 object-cover opacity-10 group-hover:opacity-20 transition-opacity rounded-full">
-                    </div>
-
-                    <!-- Card nhỏ: Công nghệ -->
-                    <div class="md:col-span-4 bg-teal-900 text-white p-8 rounded-[32px] shadow-lg relative overflow-hidden flex flex-col justify-end min-h-[300px] bento-hover-card">
-                        <div class="absolute top-8 left-8">
-                            <div class="w-12 h-12 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center">
-                                <i class="fas fa-microchip text-xl"></i>
-                            </div>
-                        </div>
-                        <div>
-                            <h4 class="text-2xl font-bold mb-2">Công nghệ AI</h4>
-                            <p class="text-teal-100/80 text-sm">Cá nhân hóa lộ trình học tập dựa trên dữ liệu thời gian thực.</p>
+                <!-- Card nhỏ: Công nghệ -->
+                <div class="md:col-span-4 bg-[#064E3B] text-white p-8 rounded-[32px] shadow-lg relative overflow-hidden flex flex-col justify-end min-h-[300px] bento-hover-card">
+                    <div class="absolute top-8 left-8">
+                        <div class="w-12 h-12 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center">
+                            <i class="fas fa-microchip text-xl"></i>
                         </div>
                     </div>
-
-                    <!-- Card nhỏ: Tầm nhìn -->
-                    <div class="md:col-span-4 bg-emerald-50 p-8 rounded-[32px] border border-emerald-100 bento-hover-card">
-                        <div class="w-12 h-12 bg-emerald-500 text-white rounded-xl flex items-center justify-center mb-6">
-                            <i class="fas fa-eye text-xl"></i>
-                        </div>
-                        <h4 class="text-2xl font-bold mb-2 text-emerald-900">Tầm nhìn 2026</h4>
-                        <p class="text-emerald-700/70 text-sm">Trở thành nền tảng số 1 hỗ trợ học tập và giáo dục môn Địa lý.</p>
+                    <div>
+                        <h4 class="text-2xl font-bold mb-2">Công nghệ AI</h4>
+                        <p class="text-teal-100/80 text-sm">Cá nhân hóa lộ trình học tập dựa trên dữ liệu thời gian thực.</p>
                     </div>
+                </div>
 
-                    <!-- Card rộng: Sự tin tưởng -->
-                    <div class="md:col-span-8 bg-slate-50 p-8 rounded-[32px] border border-slate-200 flex items-center justify-between bento-hover-card">
-                        <div>
-                            <h4 class="text-2xl font-bold mb-1">Kết nối tri thức</h4>
-                            <p class="text-slate-500">Hơn 1.000 câu hỏi được kiểm duyệt.</p>
-                        </div>
-                        <div class="flex -space-x-3">
-                            <img src="https://hopvan.info.vn/IMG/thungan.png" class="w-12 h-12 rounded-full border-4 border-white">
-                            <img src="https://hopvan.info.vn/IMG/vinhan.png" class="w-12 h-12 rounded-full border-4 border-white">
-                            <img src="https://hopvan.info.vn/IMG/minhnguyet.png" class="w-12 h-12 rounded-full border-4 border-white">
-                            <div class="w-12 h-12 rounded-full border-4 border-white bg-teal-500 flex items-center justify-center text-white text-xs font-bold">+</div>
-                        </div>
+                <!-- Card nhỏ: Tầm nhìn -->
+                <div class="md:col-span-4 bg-emerald-50 p-8 rounded-[32px] border border-emerald-100 bento-hover-card">
+                    <div class="w-12 h-12 bg-emerald-500 text-white rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-eye text-xl"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-2 text-emerald-900">Tầm nhìn 2026</h4>
+                    <p class="text-emerald-700/70 text-sm">Trở thành nền tảng số 1 hỗ trợ học tập và giáo dục môn Địa lý.</p>
+                </div>
+
+                <!-- Card rộng: Sự tin tưởng -->
+                <div class="md:col-span-8 bg-slate-50 p-8 rounded-[32px] border border-slate-200 flex items-center justify-between bento-hover-card">
+                    <div>
+                        <h4 class="text-2xl font-bold mb-1">Kết nối tri thức</h4>
+                        <p class="text-slate-500">Hơn 1.000 câu hỏi được kiểm duyệt.</p>
+                    </div>
+                    <div class="flex -space-x-3">
+                        <img src="https://hopvan.info.vn/IMG/thungan.png" class="w-12 h-12 rounded-full border-4 border-white">
+                        <img src="https://hopvan.info.vn/IMG/vinhan.png" class="w-12 h-12 rounded-full border-4 border-white">
+                        <img src="https://hopvan.info.vn/IMG/minhnguyet.png" class="w-12 h-12 rounded-full border-4 border-white">
+                        <div class="w-12 h-12 rounded-full border-4 border-white bg-teal-500 flex items-center justify-center text-white text-xs font-bold">+</div>
                     </div>
                 </div>
             </div>
