@@ -54,7 +54,7 @@
         .cta-button { background: var(--primary-gradient); color: white; padding: 12px 24px; border-radius: 14px; font-weight: 800; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; border: none; cursor: pointer; box-shadow: 0 10px 20px rgba(13, 148, 136, 0.15); }
         .cta-button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(13, 148, 136, 0.25); }
         
-        .view-result-btn { background: white; color: var(--text-main); border: 1.5px solid #E2E8F0; padding: 12px 24px; border-radius: 14px; font-weight: 800; transition: 0.3s; gap: 8px; }
+        .view-result-btn { background: white; color: var(--text-main); border: 1.5px solid #E2E8F0; padding: 12px 24px; border-radius: 14px; font-weight: 800; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
         .view-result-btn:hover { background: #F8FAFC; border-color: var(--primary); color: var(--primary); }
 
         /* --- SCROLLBAR --- */
@@ -711,7 +711,7 @@
                     let buttonHTML = '';
                     if (submission) {
                         buttonHTML = `
-                            <a href="result.html" data-submission-id="${submission.id}" class="view-result-btn bg-white text-slate-700 font-semibold px-5 py-2 rounded-lg border border-slate-300 hover:bg-slate-50 transition text-sm">Xem kết quả</a>
+                            <a href="result.html" data-submission-id="${submission.id}" class="view-result-btn bg-white text-slate-700 font-semibold px-5 py-2 rounded-lg border border-slate-300 hover:bg-slate-50 transition text-sm">Xem lại</a>
                         `;
                     } else {
                         buttonHTML = `<a href="test.html?testId=${test.id}&classId=${classId}" class="cta-button text-white font-semibold px-5 py-2 rounded-lg">Vào thi</a>`;
