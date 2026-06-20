@@ -1022,31 +1022,60 @@
             </div>
         </div>
         
-        <div class="mt-20 pt-8 border-t border-slate-100 w-full">
-            <div class="container mx-auto px-6 flex flex-col items-center gap-4">
+        <!-- CHỈ SỬA PHẦN DƯỚI NÀY -->
+        <div class="mt-20 pt-8 border-t border-slate-100 w-full bg-white"> <!-- Đã đổi về bg-white -->
+            <div class="container mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-8">
                 
-                <p class="text-center text-slate-400 text-xs m-0">
-                    &copy; 2025 AIGEO. All rights reserved.
-                </p>
-                
-                <div style="display: flex; align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                <!-- NHÓM TRÁI: Copyright & Version kiểu cũ -->
+                <div class="flex flex-wrap items-center justify-center md:justify-start gap-4">
+                    <p class="text-slate-400 text-xs m-0 font-medium">
+                        &copy; 2025 <span class="text-slate-600 font-bold tracking-tight">AIGEO</span>. All rights reserved.
+                    </p>
                     
+                    <div class="hidden md:block w-[1px] h-4 bg-slate-200"></div>
+
+                    <!-- Badge Version kiểu cũ của bạn -->
                     <div style="display: flex; align-items: center; gap: 6px; padding: 0 12px; height: 26px; border-radius: 999px; background-color: rgba(249, 250, 251, 0.8); border: 1px solid #e2e8f0; cursor: default;">
                         <span style="font-size: 8px; font-weight: 900; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; line-height: 1;">AIGEO Platform</span>
                         <span style="width: 4px; height: 4px; border-radius: 50%; background-color: #0d9488;"></span>
                         <span style="font-size: 9px; font-weight: 700; color: #0f766e; font-family: monospace; line-height: 1;">v1.1.3</span>
                     </div>
-
-                    <div style="width: 1px; height: 16px; background-color: #cbd5e1;"></div>
-
-                    <a href="//www.dmca.com/Protection/Status.aspx?ID=3d40c767-7a34-4719-83bd-aca993e7b16d" title="DMCA.com Protection Status" class="dmca-badge" style="display: flex; align-items: center; justify-content: center; height: 26px; opacity: 0.8; filter: grayscale(20%); transition: all 0.3s ease;" onmouseover="this.style.opacity='1'; this.style.filter='grayscale(0%)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.opacity='0.8'; this.style.filter='grayscale(20%)'; this.style.transform='translateY(0)'" target="_blank"> 
-                        <img src="https://images.dmca.com/Badges/dmca_copyright_protected150b.png?ID=3d40c767-7a34-4719-83bd-aca993e7b16d" alt="DMCA.com Protection Status" style="height: 24px; width: auto; border-radius: 4px; display: block; margin: 0;" />
-                    </a>
-                    <script src="https://images.dmca.com/Badges/DMCABadgeHelper.min.js"></script>
-
                 </div>
+
+                <!-- NHÓM PHẢI: Trust Badges (DMCA to hơn xíu + Đồng bộ Hover) -->
+                <div class="flex items-center gap-6">
+                    <!-- DMCA Badge - Đã tăng height lên 28px -->
+                    <a href="//www.dmca.com/Protection/Status.aspx?ID=3d40c767-7a34-4719-83bd-aca993e7b16d" 
+                       title="DMCA.com Protection Status" 
+                       style="display: flex; align-items: center; justify-content: center; height: 28px; opacity: 0.7; transition: all 0.3s ease;" 
+                       onmouseover="this.style.opacity='1'; this.style.transform='translateY(-2px)'" 
+                       onmouseout="this.style.opacity='0.8'; this.style.transform='translateY(0)'" 
+                       target="_blank"> 
+                        <img src="https://images.dmca.com/Badges/dmca_copyright_protected150b.png?ID=3d40c767-7a34-4719-83bd-aca993e7b16d" 
+                             alt="DMCA" 
+                             style="height: 26px; width: auto; border-radius: 4px; display: block;" />
+                    </a>
+
+                    <!-- Vạch ngăn cách dọc -->
+                    <div class="w-[1px] h-6 bg-slate-200"></div>
+
+                    <!-- J2TEAM Launch Badge (Giữ nguyên size to + dùng chung hover) -->
+                    <a href="https://launch.j2team.dev/products/aigeo?utm_source=badge-launched&utm_medium=badge&utm_campaign=badge-aigeo" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       style="display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: all 0.3s ease;" 
+                       onmouseover="this.style.opacity='1'; this.style.transform='translateY(-2px)'" 
+                       onmouseout="this.style.opacity='0.8'; this.style.transform='translateY(0)'">
+                        <img src="https://launch.j2team.dev/badge/aigeo/light" 
+                             alt="AIGEO - Launched on J2TEAM Launch" 
+                             style="height: 36px; width: auto; border-radius: 6px;" 
+                             loading="lazy" />
+                    </a>
+                </div>
+
             </div>
         </div>
+        <script src="https://images.dmca.com/Badges/DMCABadgeHelper.min.js"></script>
     </footer>
 
     <!-- Firebase & Logic -->
