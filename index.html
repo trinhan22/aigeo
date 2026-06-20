@@ -1026,7 +1026,7 @@
         <div class="mt-20 pt-8 border-t border-slate-100 w-full bg-white">
             <div class="container mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-8">
                 
-                <!-- NHÓM TRÁI: Copyright & Version kiểu cũ -->
+                <!-- NHÓM TRÁI: Copyright & Version kiểu cũ (Rõ nét) -->
                 <div class="flex flex-wrap items-center justify-center md:justify-start gap-4">
                     <p class="text-slate-400 text-xs m-0 font-medium">
                         &copy; 2025 <span class="text-slate-600 font-bold tracking-tight">AIGEO</span>. All rights reserved.
@@ -1042,15 +1042,15 @@
                     </div>
                 </div>
 
-                <!-- NHÓM PHẢI: Trust Badges (Đã thay Badge DMCA mới + Đồng bộ Hover) -->
+                <!-- NHÓM PHẢI: Trust Badges (Luôn rõ nét 100%, chỉ trồi lên khi hover) -->
                 <div class="flex items-center gap-6">
-                    <!-- Badge DMCA Mới -->
+                    <!-- DMCA Badge - Đã thay link ảnh và bỏ mờ -->
                     <a href="//www.dmca.com/Protection/Status.aspx?ID=3d40c767-7a34-4719-83bd-aca993e7b16d" 
                        title="DMCA.com Protection Status" 
                        class="dmca-badge"
-                       style="display: flex; align-items: center; justify-content: center; height: 28px; opacity: 0.7; transition: all 0.3s ease;" 
-                       onmouseover="this.style.opacity='1'; this.style.transform='translateY(-2px)'" 
-                       onmouseout="this.style.opacity='0.8'; this.style.transform='translateY(0)'" 
+                       style="display: flex; align-items: center; justify-content: center; height: 28px; transition: all 0.3s ease;" 
+                       onmouseover="this.style.transform='translateY(-2px)'" 
+                       onmouseout="this.style.transform='translateY(0)'" 
                        target="_blank"> 
                         <img src="https://images.dmca.com/Badges/dmca_copyright_protected150b.png?ID=3d40c767-7a34-4719-83bd-aca993e7b16d" 
                              alt="DMCA.com Protection Status" 
@@ -1060,13 +1060,13 @@
                     <!-- Vạch ngăn cách dọc -->
                     <div class="w-[1px] h-6 bg-slate-200"></div>
 
-                    <!-- J2TEAM Launch Badge -->
+                    <!-- J2TEAM Launch Badge - Bỏ mờ, luôn rõ nét -->
                     <a href="https://launch.j2team.dev/products/aigeo?utm_source=badge-launched&utm_medium=badge&utm_campaign=badge-aigeo" 
                        target="_blank" 
                        rel="noopener noreferrer" 
-                       style="display: flex; align-items: center; justify-content: center; opacity: 0.7; transition: all 0.3s ease;" 
-                       onmouseover="this.style.opacity='1'; this.style.transform='translateY(-2px)'" 
-                       onmouseout="this.style.opacity='0.8'; this.style.transform='translateY(0)'">
+                       style="display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;" 
+                       onmouseover="this.style.transform='translateY(-2px)'" 
+                       onmouseout="this.style.transform='translateY(0)'">
                         <img src="https://launch.j2team.dev/badge/aigeo/light" 
                              alt="AIGEO - Launched on J2TEAM Launch" 
                              style="height: 36px; width: auto; border-radius: 6px;" 
@@ -1076,8 +1076,7 @@
 
             </div>
         </div>
-        <!-- Script DMCA Helper đặt cuối cùng -->
-        <script src="https://images.dmca.com/Badges/DMCABadgeHelper.min.js"> </script>
+        <script src="https://images.dmca.com/Badges/DMCABadgeHelper.min.js"></script>
     </footer>
 
     <!-- Firebase & Logic -->
