@@ -39,14 +39,22 @@
         
         .avatar-box { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; }
 
-        .assignment-card { background: white; border: 1px solid #F1F5F9; padding: 20px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; transition: 0.3s; }
-        .assignment-card:hover { border-color: var(--primary); transform: translateX(5px); box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+        .assignment-card {
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .assignment-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -10px rgba(13, 148, 136, 0.1);
+        }
+        .view-result-btn:hover {
+            transform: scale(1.02);
+        }
 
         /* --- BUTTONS --- */
         .cta-button { background: var(--primary-gradient); color: white; padding: 12px 24px; border-radius: 14px; font-weight: 800; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; border: none; cursor: pointer; box-shadow: 0 10px 20px rgba(13, 148, 136, 0.15); }
         .cta-button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(13, 148, 136, 0.25); }
         
-        .view-result-btn { background: white; color: var(--text-main); border: 1.5px solid #E2E8F0; padding: 10px 20px; border-radius: 14px; font-weight: 700; font-size: 0.85rem; transition: 0.3s; }
+        .view-result-btn { background: white; color: var(--text-main); border: 1.5px solid #E2E8F0; padding: 12px 24px; border-radius: 14px; font-weight: 800; transition: 0.3s; gap: 8px; }
         .view-result-btn:hover { background: #F8FAFC; border-color: var(--primary); color: var(--primary); }
 
         /* --- SCROLLBAR --- */
@@ -304,7 +312,7 @@
                         </a>
                         <div>
                             <h1 id="class-name-header" class="text-3xl font-black text-slate-900 tracking-tight">Đang tải...</h1>
-                            <p id="class-subject-header" class="text-teal-600 font-bold mt-1 uppercase text-xs tracking-widest"></p>
+                            <p id="class-subject-header" class="text-teal-600 font-bold mt-1 uppercase text-[10px] tracking-widest italic"></p>
                         </div>
                     </div>
                     <!-- Nút Rời lớp học -->
@@ -503,125 +511,148 @@
                 });
             }
 
-            // --- OVERRIDE RENDER ASSIGNMENTS (Giao diện Dashbaord) ---
+            // --- CẬP NHẬT HÀM HIỂN THỊ BÀI TẬP ---
             window.renderAssignments = (tests, submissions, classId) => {
-                if(tests.length === 0) {
-                    assignmentsContainer.innerHTML = `
+                const container = document.getElementById('assignments-container');
+                
+                if (tests.length === 0) {
+                    container.innerHTML = `
                         <div class="py-20 text-center bg-white rounded-[40px] border-2 border-dashed border-slate-200">
-                            <i data-feather="inbox" class="w-12 h-12 mx-auto text-slate-300 mb-4"></i>
-                            <p class="text-slate-400 font-bold">Chưa có bài tập nào được giao cho lớp.</p>
+                            <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i data-feather="inbox" class="w-10 h-10 text-slate-300"></i>
+                            </div>
+                            <p class="text-slate-400 font-bold tracking-tight">Lớp học hiện tại chưa có bài tập được giao.</p>
                         </div>`;
                     feather.replace();
                     return;
                 }
                 
-                assignmentsContainer.innerHTML = tests.map(test => {
-                    const sub = submissions.find(s => s.testId === test.id);
+                container.innerHTML = tests.map(test => {
+                    // Tìm bài làm tương ứng với đề thi này
+                    const submission = submissions.find(s => s.testId === test.id);
+                    
+                    // Logic hiển thị Badge và Nút bấm
+                    let statusBadge = '';
+                    let actionButtons = '';
+
+                    if (submission) {
+                        // Trạng thái ĐÃ LÀM
+                        statusBadge = `
+                            <div class="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg border border-emerald-100">
+                                <span class="relative flex h-2 w-2">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                </span>
+                                <span class="text-[10px] font-black uppercase tracking-wider">Đã hoàn thành</span>
+                            </div>`;
+                        
+                        actionButtons = `
+                            <a href="result.html" data-submission-id="${submission.id}" 
+                            class="view-result-btn flex items-center gap-2 px-6 py-2.5 bg-white border-2 border-slate-100 text-slate-700 rounded-xl font-bold text-sm hover:border-teal-500 hover:text-teal-600 transition-all shadow-sm">
+                                <i data-feather="file-text" class="w-4 h-4"></i> Xem kết quả
+                            </a>`;
+                    } else {
+                        // Trạng thái CHƯA LÀM
+                        statusBadge = `
+                            <div class="flex items-center gap-1.5 px-3 py-1 bg-slate-100 text-slate-500 rounded-lg border border-slate-200">
+                                <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+                                <span class="text-[10px] font-black uppercase tracking-wider">Chưa làm bài</span>
+                            </div>`;
+                        
+                        actionButtons = `
+                            <a href="test.html?testId=${test.id}&classId=${classId}" 
+                            class="cta-button flex items-center gap-2 px-8 py-2.5 text-sm group">
+                                Bắt đầu ngay <i data-feather="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                            </a>`;
+                    }
+
                     return `
-                        <div class="assignment-card">
-                            <div class="flex items-center gap-5">
-                                <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center shrink-0">
-                                    <i data-feather="file-text"></i>
+                        <div class="assignment-card group !flex-col md:!flex-row !items-start md:!items-center gap-6 p-6 bg-white rounded-[32px] border border-slate-100 hover:border-teal-500/30 transition-all duration-300">
+                            <!-- Phần thông tin -->
+                            <div class="flex items-center gap-5 flex-1">
+                                <div class="w-16 h-16 bg-slate-50 text-slate-400 group-hover:bg-teal-50 group-hover:text-teal-600 rounded-2xl flex items-center justify-center shrink-0 transition-colors duration-300">
+                                    <i data-feather="edit-3" class="w-7 h-7"></i>
                                 </div>
-                                <div>
-                                    <h3 class="font-black text-slate-800 text-lg leading-tight mb-1">${test.name}</h3>
-                                    <p class="text-xs font-bold text-slate-400 uppercase tracking-tighter">
-                                        ${test.questionIds?.length || 0} câu hỏi • ${test.timeLimit || 45} phút
+                                <div class="space-y-1">
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        <h3 class="font-black text-slate-800 text-lg tracking-tight">${test.name}</h3>
+                                        ${statusBadge}
+                                    </div>
+                                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-4">
+                                        <span class="flex items-center gap-1"><i data-feather="help-circle" class="w-3"></i> ${test.questionIds?.length || 0} câu hỏi</span>
+                                        <span class="flex items-center gap-1"><i data-feather="clock" class="w-3"></i> ${test.timeLimit || 45} phút</span>
                                     </p>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-3">
-                                ${sub ? `
-                                    <a href="result.html" data-submission-id="${sub.id}" class="view-result-btn">Xem kết quả</a>
-                                    <a href="test.html?testId=${test.id}&classId=${classId}" class="cta-button !px-6 text-sm">Làm lại</a>
-                                ` : `
-                                    <a href="test.html?testId=${test.id}&classId=${classId}" class="cta-button !px-10 text-sm">Vào thi</a>
-                                `}
+
+                            <!-- Phần nút bấm -->
+                            <div class="w-full md:w-auto shrink-0">
+                                ${actionButtons}
                             </div>
                         </div>`;
                 }).join('');
 
-                // Gán sự kiện nút Xem kết quả
-                assignmentsContainer.querySelectorAll('.view-result-btn').forEach(btn => {
+                // Gán sự kiện Click cho các nút xem kết quả để lưu ID bài làm
+                container.querySelectorAll('.view-result-btn').forEach(btn => {
                     btn.onclick = (e) => {
-                        e.preventDefault();
-                        sessionStorage.setItem('latestResultId', btn.dataset.submissionId);
-                        window.location.href = btn.getAttribute('href');
+                        const subId = btn.getAttribute('data-submission-id');
+                        if (subId) {
+                            sessionStorage.setItem('latestResultId', subId);
+                            // Sau khi lưu xong sẽ tự động nhảy theo href="result.html"
+                        }
                     };
                 });
+
                 feather.replace();
             }
-            
+
+            // --- Cập nhật lại logic initPage để đồng bộ với hàm renderAssignments mới ---
             async function initPage() {
                 const urlParams = new URLSearchParams(window.location.search);
                 const classId = urlParams.get('classId');
 
-                if (!classId) {
-                    classNameHeader.textContent = "Lỗi: Không tìm thấy lớp học";
-                    return;
-                }
-
-                // --- LOGIC RỜI LỚP HỌC ---
-                const leaveBtn = document.getElementById('leave-class-btn');
-                leaveBtn.onclick = async () => {
-                    const confirmLeave = confirm("Bạn có chắc chắn muốn rời khỏi lớp học này? Bạn sẽ không thể xem bài tập của lớp này nữa trừ khi tham gia lại.");
-                    
-                    if (confirmLeave) {
-                        try {
-                            leaveBtn.disabled = true;
-                            leaveBtn.textContent = "Đang rời lớp...";
-                            
-                            const classDocRef = doc(db, "classrooms", classId);
-                            
-                            // Sử dụng arrayRemove để xóa ID của học sinh hiện tại khỏi danh sách lớp
-                            await updateDoc(classDocRef, {
-                                students: arrayRemove(currentUser.uid)
-                            });
-
-                            showToast("Bạn đã rời khỏi lớp học thành công.");
-                            
-                            // Chờ 1.5 giây rồi quay về trang danh sách lớp
-                            setTimeout(() => {
-                                window.location.href = "classrooms.html";
-                            }, 1500);
-
-                        } catch (error) {
-                            console.error("Lỗi khi rời lớp:", error);
-                            showToast("Đã xảy ra lỗi, vui lòng thử lại.", "error");
-                            leaveBtn.disabled = false;
-                            leaveBtn.innerHTML = '<i data-feather="log-out" class="w-3 h-3"></i> Rời lớp học';
-                            feather.replace();
-                        }
-                    }
-                };
+                if (!classId) return;
 
                 try {
                     const classDocRef = doc(db, "classrooms", classId);
                     const classDocSnap = await getDoc(classDocRef);
-                    if (!classDocSnap.exists() || !classDocSnap.data().students.includes(currentUser.uid)) {
-                        throw new Error("Lớp học không tồn tại hoặc bạn không có quyền truy cập.");
-                    }
                     
-                    const classroom = { id: classDocSnap.id, ...classDocSnap.data() };
-                    
-                    const [subject, teacher, students, tests, submissions] = await Promise.all([
-                        getDoc(doc(db, "subjects", classroom.subjectId)),
-                        getDoc(doc(db, "users", classroom.teacherId)),
-                        fetchDocsInChunks(collection(db, "users"), "__name__", classroom.students),
-                        fetchDocsInChunks(collection(db, "tests"), "__name__", (classroom.assignments || []).map(a => a.testId)),
-                        getDocs(query(collection(db, "submissions"), where("studentId", "==", currentUser.uid), where("classId", "==", classId)))
-                    ]);
-                    
-                    classNameHeader.textContent = classroom.className;
-                    classSubjectHeader.textContent = `${subject.data().name} - Lớp ${classroom.grade}`;
-                    
-                    renderMembers(teacher.data(), students);
-                    renderAssignments(tests, submissions.docs.map(d => d.data()), classId);
+                    if (classDocSnap.exists()) {
+                        const classroom = { id: classDocSnap.id, ...classDocSnap.data() };
+                        
+                        // Lấy thông tin môn học để làm Subtitle
+                        const subjectSnap = await getDoc(doc(db, "subjects", classroom.subjectId));
+                        document.getElementById('class-name-header').textContent = classroom.className;
+                        document.getElementById('class-subject-header').textContent = `${subjectSnap.data()?.name || 'Địa lí'} • Khối ${classroom.grade}`;
 
+                        // Lấy thông tin Giáo viên
+                        const teacherSnap = await getDoc(doc(db, "users", classroom.teacherId));
+                        
+                        // Lấy danh sách học sinh
+                        const studentDocs = await fetchDocsInChunks(collection(db, "users"), "__name__", classroom.students);
+                        
+                        // Lấy danh sách đề thi
+                        const testIds = (classroom.assignments || []).map(a => a.testId);
+                        const testDocs = await fetchDocsInChunks(collection(db, "tests"), "__name__", testIds);
+                        
+                        // Lấy danh sách bài làm của học sinh này tại lớp này
+                        const submissionsQuery = query(
+                            collection(db, "submissions"), 
+                            where("studentId", "==", currentUser.uid), 
+                            where("classId", "==", classId)
+                        );
+                        const submissionsSnap = await getDocs(submissionsQuery);
+                        const submissionData = submissionsSnap.docs.map(d => ({id: d.id, ...d.data()}));
+
+                        // Gọi hàm Render Members
+                        renderMembers(teacherSnap.data(), studentDocs);
+                        
+                        // Gọi hàm Render Assignments (Đã cập nhật logic chỉ hiện 1 nút)
+                        renderAssignments(testDocs, submissionData, classId);
+                    }
                 } catch (error) {
-                    console.error("Error loading classroom details:", error);
-                    classNameHeader.textContent = "Lỗi tải dữ liệu";
-                    assignmentsContainer.innerHTML = `<p class="text-red-500">${error.message}</p>`;
+                    console.error("Lỗi:", error);
+                    showToast("Không thể tải dữ liệu lớp học", "error");
                 }
             }
             
@@ -680,8 +711,7 @@
                     let buttonHTML = '';
                     if (submission) {
                         buttonHTML = `
-                            <a href="result.html" data-submission-id="${submission.id}" class="view-result-btn bg-white text-slate-700 font-semibold px-4 py-2 rounded-lg border border-slate-300 hover:bg-slate-50 transition text-sm">Xem kết quả</a>
-                            <a href="test.html?testId=${test.id}&classId=${classId}" class="cta-button text-white font-semibold px-4 py-2 rounded-lg text-sm">Làm lại</a>
+                            <a href="result.html" data-submission-id="${submission.id}" class="view-result-btn bg-white text-slate-700 font-semibold px-5 py-2 rounded-lg border border-slate-300 hover:bg-slate-50 transition text-sm">Xem kết quả</a>
                         `;
                     } else {
                         buttonHTML = `<a href="test.html?testId=${test.id}&classId=${classId}" class="cta-button text-white font-semibold px-5 py-2 rounded-lg">Vào thi</a>`;
