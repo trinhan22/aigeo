@@ -399,245 +399,143 @@
 
 
         /* ============================================================
-        AIGEO MOBILE OPTIMIZATION - CHI TIẾT & CHUYÊN NGHIỆP
+        AIGEO FINAL MOBILE FIX - ĐÃ TỐI ƯU CARD SỨ MỆNH & AVATAR
         ============================================================ */
 
         @media (max-width: 768px) {
-            /* 1. Tổng quan & Layout */
+            /* 1. Reset & Hiệu năng */
             body {
-                background-attachment: scroll; /* Tối ưu hiệu năng cho điện thoại */
+                overflow-x: hidden;
+                background-attachment: scroll;
             }
             
             .container {
-                padding-left: 20px !important;
-                padding-right: 20px !important;
+                padding-left: 15px !important;
+                padding-right: 15px !important;
+                width: 100% !important;
             }
 
-            /* 2. Header (Pill Style Mobile) */
+            /* 2. Fix Header (Menu Pill) */
             header {
-                top: 10px;
-                width: 95%;
-                padding: 8px 16px;
-                border-radius: 25px; /* Thu gọn pill */
+                top: 10px !important;
+                width: calc(100% - 30px) !important;
+                height: auto !important;
+                padding: 8px 15px !important;
+                border-radius: 20px !important;
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
             }
 
-            header .logo span {
-                font-size: 1.2rem; /* Giảm cỡ chữ logo */
-            }
-
-            header .logo img {
-                height: 32px;
-                width: 32px;
-            }
+            header .logo span { font-size: 1.1rem !important; }
+            header .logo img { height: 30px !important; width: 30px !important; }
+            header nav { display: none !important; } /* Ẩn menu chữ trên mobile */
 
             .btn-modern {
-                padding: 10px 20px;
-                font-size: 0.85rem;
+                padding: 8px 16px !important;
+                font-size: 0.8rem !important;
             }
 
-            .user-pill span {
-                max-width: 100px;
-            }
-
-            /* 3. Hero Section */
+            /* 3. Fix Hero Section */
             .hero {
-                min-height: auto;
-                padding-top: 120px; /* Tránh bị Header che */
-                padding-bottom: 40px;
-                grid-template-columns: 1fr !important;
-                gap: 30px;
+                display: flex !important;
+                flex-direction: column !important;
+                padding-top: 100px !important;
+                padding-bottom: 40px !important;
+                min-height: auto !important;
+                text-align: center !important;
+                gap: 30px !important;
             }
 
-            .hero-text h1 {
-                font-size: 2.2rem !important; /* Cỡ chữ tiêu đề chính mobile */
-                line-height: 1.2;
-                text-align: center;
+            .hero-text { order: 2 !important; }
+            .hero-image { order: 1 !important; width: 100% !important; max-width: 400px !important; margin: 0 auto !important; }
+
+            .hero-text h1 { font-size: 2.1rem !important; line-height: 1.2 !important; }
+            .hero-text p { font-size: 0.95rem !important; }
+            .hero-text .flex { justify-content: center !important; flex-direction: column !important; gap: 12px !important; }
+
+            /* ÉP CỤM ẢNH ĐẠI DIỆN LUÔN NẰM NGANG */
+            .hero-text .flex.items-center.gap-4 { flex-direction: column !important; gap: 15px !important; }
+            .flex.-space-x-3 { 
+                flex-direction: row !important; 
+                justify-content: center !important; 
+                margin-bottom: 0 !important; 
+            }
+            .flex.-space-x-3 img { width: 35px !important; height: 35px !important; }
+
+            .main-card { padding: 10px !important; border-radius: 24px !important; }
+            .floating-badge { display: none !important; } /* Tắt để tránh lỗi tràn màn hình ngang */
+
+            /* 4. Fix Bento Grid (Tính năng) */
+            .bento-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+            .bento-card { grid-column: span 1 !important; padding: 25px !important; border-radius: 24px !important; }
+
+            /* 5. FIX TRIỆT ĐỂ PHẦN SỨ MỆNH (ABOUT) - KHÔNG CÒN BỊ HỐP */
+            #about .grid-cols-12 > div {
+                grid-column: span 12 !important; /* Mọi card đều full width */
             }
 
-            .hero-text p {
-                font-size: 0.95rem;
-                text-align: center;
-                margin-left: auto;
-                margin-right: auto;
+            #about .md\:col-span-8, 
+            #about .md\:col-span-4,
+            #about .bg-white,
+            #about .bg-slate-50 {
+                padding: 24px !important; /* Giảm padding từ 40px (p-10) xuống 24px để mở rộng nội dung */
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                border-radius: 24px !important; /* Bo góc đồng bộ các khối khác */
             }
 
-            .hero-text .flex {
-                justify-content: center; /* Căn giữa các nút bấm */
+            #about .flex.items-center.justify-between {
+                flex-direction: column !important;
+                text-align: center !important;
+                gap: 20px !important;
             }
 
-            .main-card {
-                border-radius: 24px;
-                padding: 8px;
+            #about h3.text-3xl { font-size: 1.5rem !important; line-height: 1.3 !important; }
+            #about p.text-lg { font-size: 1rem !important; padding-right: 0 !important; }
+
+            /* Fix Avatar trong phần "Kết nối tri thức" */
+            #about .flex.-space-x-3 { margin-left: 12px !important; }
+            #about .flex.-space-x-3 div.w-12.h-12, 
+            #about .flex.-space-x-3 img { width: 40px !important; height: 40px !important; }
+
+            /* Tab Menu About */
+            .about-menu { flex-direction: row !important; overflow-x: auto !important; padding-bottom: 10px !important; gap: 10px !important; }
+            .about-tab-btn { white-space: nowrap !important; flex-shrink: 0 !important; }
+
+            /* 6. Fix Footer */
+            footer { padding-top: 50px !important; text-align: center !important; }
+            footer .grid-cols-1 { grid-template-columns: 1fr !important; gap: 40px !important; }
+            footer .logo, footer .social-links, footer .download-container { justify-content: center !important; align-items: center !important; }
+            footer ul { text-align: center !important; }
+
+            /* Dải Bottom Bar (Copyright & Badges) */
+            footer .mt-20.pt-8.border-t {
+                padding: 30px 15px !important;
+                margin-top: 40px !important;
             }
 
-            .hero-image {
-                order: -1; /* Đưa ảnh lên trên tiêu đề trên mobile nếu muốn, hoặc giữ nguyên tùy ý */
-                margin-bottom: 20px;
+            footer .mt-20.pt-8 .container > div {
+                flex-direction: column !important; /* Xếp chồng Copyright và Badge */
+                gap: 20px !important;
+                align-items: center !important;
             }
 
-            /* 4. Bento Grid (Chuyển về 1 cột hoặc 2 cột nhỏ) */
-            .bento-grid {
-                grid-template-columns: 1fr !important; /* Ép về 1 cột dọc */
-                gap: 16px;
+            /* Ẩn thanh gạch dọc khi các badge xếp chồng lên nhau */
+            footer .w-\[1px\].h-6.bg-slate-200,
+            footer .hidden.md\:block.w-\[1px\].h-4.bg-slate-200 {
+                display: none !important;
             }
 
-            .bento-card {
-                padding: 24px !important;
-                grid-column: span 1 !important; /* Reset lại tất cả col-span */
-            }
-
-            .bento-card h3 {
-                font-size: 1.2rem;
-            }
-
-            .bc-icon-wrap {
-                width: 44px;
-                height: 44px;
-                margin-bottom: 16px;
-            }
-
-            .bc-watermark {
-                font-size: 5rem; /* Thu nhỏ logo chìm */
-                right: -10px;
-                bottom: -10px;
-            }
-
-            /* 5. Section Titles */
-            section[id] {
-                padding-top: 60px !important;
-                padding-bottom: 60px !important;
-            }
-
-            h2.text-3xl, h2.text-4xl {
-                font-size: 1.8rem !important;
-                line-height: 1.3;
-            }
-
-            /* 6. Step / Roadmap */
-            .step-card {
-                padding: 24px;
-            }
-
-            .step-num {
-                width: 40px;
-                height: 40px;
-                font-size: 1rem;
-            }
-
-            /* 7. About Tabs (Tối ưu hóa tab menu mobile) */
-            .about-compact-card {
-                flex-direction: column;
-                border-radius: 24px;
-            }
-
-            .about-menu {
-                width: 100%;
-                padding: 12px;
-                flex-direction: row; /* Chuyển menu sang dạng cuộn ngang */
-                overflow-x: auto;
-                white-space: nowrap;
-                gap: 8px;
-                -webkit-overflow-scrolling: touch;
-            }
-
-            .about-menu::-webkit-scrollbar {
-                display: none; /* Ẩn thanh cuộn cho thẩm mỹ */
-            }
-
-            .about-tab-btn {
-                padding: 10px 16px;
-                font-size: 0.8rem;
-                flex: 0 0 auto;
-            }
-
-            .about-content-area {
-                padding: 24px;
-            }
-
-            .about-content-area h3 {
-                font-size: 1.4rem;
-            }
-
-            /* 8. Testimonials (Carousel cảm giác) */
-            #testimonials .grid {
-                display: flex;
-                overflow-x: auto;
-                scroll-snap-type: x mandatory;
-                gap: 16px;
-                padding-bottom: 20px;
-                -webkit-overflow-scrolling: touch;
-            }
-
-            #testimonials .glass {
-                flex: 0 0 85%; /* Hiện 1 card và 1 phần card tiếp theo */
-                scroll-snap-align: start;
-                padding: 24px;
-            }
-
-            /* 9. CTA Card */
-            .mb-24 {
-                margin-bottom: 40px !important;
-            }
-
-            .bg-slate-900.rounded-\[40px\] {
-                border-radius: 30px;
-                padding: 40px 20px !important;
-            }
-
-            .bg-slate-900 h2 {
-                font-size: 1.75rem !important;
-            }
-
-            .btn-white-glow {
-                width: 100%;
-                padding: 16px;
-                font-size: 1rem;
-            }
-
-            /* 10. Footer */
-            footer {
-                padding-top: 40px;
-                text-align: center;
-            }
-
-            footer .grid {
-                gap: 40px;
-            }
-
-            footer .logo {
-                justify-content: center;
-            }
-
-            footer ul {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 15px;
-            }
-
-            footer ul li {
-                margin: 0 !important;
-            }
-
-            footer .flex-col {
-                align-items: center; /* Căn giữa các nút tải App */
-            }
-
-            /* Fix Background Blobs on Mobile */
-            .blob-1 { width: 300px; height: 300px; }
-            .blob-2 { width: 250px; height: 250px; }
+            /* Thu nhỏ Badge để không bị tràn màn hình mobile */
+            .dmca-badge img { height: 22px !important; width: auto !important; }
+            a[href*="j2team"] img { height: 32px !important; width: auto !important; }
         }
 
-        /* Fix cho các màn hình cực nhỏ (iPhone SE/5) */
+        /* Fix riêng cho màn hình cực nhỏ (iPhone SE/5) */
         @media (max-width: 380px) {
-            .hero-text h1 {
-                font-size: 1.8rem !important;
-            }
-            
-            .btn-modern {
-                padding: 8px 14px;
-                font-size: 0.75rem;
-            }
+            .hero-text h1 { font-size: 1.8rem !important; }
+            #about h3.text-3xl { font-size: 1.3rem !important; }
         }
 
     </style>
@@ -1054,7 +952,7 @@
                        target="_blank"> 
                         <img src ="https://images.dmca.com/Badges/dmca-badge-w250-5x1-06.png?ID=3d40c767-7a34-4719-83bd-aca993e7b16d"
                              alt="DMCA.com Protection Status" 
-                             style="height: 33px; width: auto; display: block;" />
+                             style="height: 28px; width: auto; display: block;" />
                     </a>
 
                     <!-- Vạch ngăn cách dọc -->
@@ -1069,7 +967,7 @@
                        onmouseout="this.style.transform='translateY(0)'">
                         <img src="https://launch.j2team.dev/badge/aigeo/light" 
                              alt="AIGEO - Launched on J2TEAM Launch" 
-                             style="height: 39px; width: auto; border-radius: 6px;" 
+                             style="height: 36px; width: auto; border-radius: 6px;" 
                              loading="lazy" />
                     </a>
                 </div>
