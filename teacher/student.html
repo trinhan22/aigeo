@@ -89,20 +89,29 @@
         top: 0 !important;
         z-index: 50 !important;
         height: 60px !important;
-        padding: 0 16px !important;
         background: rgba(255, 255, 255, 0.9) !important;
         backdrop-filter: blur(10px);
-        border-bottom: 1px solid #F1F5F9;
+        border-bottom: 1px solid #E2E8F0;
     }
 
-    header .text-slate-800, header .text-slate-400 {
-        font-size: 10px !important; /* Thu nhỏ breadcrumb */
+    .flex.items-center.gap-2.text-xs.font-bold.text-slate-400.uppercase.tracking-widest {
+        display: none !important;
     }
 
-    #user-name { display: none; } /* Ẩn tên để header thoáng */
-    #user-avatar { height: 32px; width: 32px; border-radius: 8px; }
+    /* 2. Ép cụm Avatar/User sang bên phải */
+    /* Target vào container chứa cả dòng chữ và avatar (thường là thẻ header hoặc div cha flex) */
+    header .flex.items-center.justify-between, 
+    main .flex.items-center.justify-between {
+        display: flex !important;
+        justify-content: flex-end !important; /* Đẩy tất cả nội dung còn lại sang phải */
+    }
 
-    /* 3. BOTTOM NAVIGATION (SIDEBAR) */
+    /* Đảm bảo khối chứa Avatar có margin-left auto để tự động hít về bên phải */
+    #auth-header-wrapper, .user-pill {
+        margin-left: auto !important;
+    }
+
+    /* 3. FIX LỖI LỆCH NÚT ACTIVE (BOTTOM NAV) */
     .sidebar {
         width: 100% !important;
         height: 65px !important;
@@ -112,16 +121,14 @@
         flex-direction: row !important;
         border-right: none !important;
         border-top: 1px solid #E2E8F0 !important;
-        background: rgba(255, 255, 255, 0.95) !important;
-        backdrop-filter: blur(15px);
+        background: white !important;
         z-index: 1000 !important;
-        padding: 0 !important;
         display: flex !important;
-        box-shadow: 0 -4px 20px rgba(0,0,0,0.03);
+        padding: 0 !important;
     }
 
     .sidebar .p-8, .nav-group-title, .sidebar .p-4.border-t {
-        display: none !important; /* Ẩn logo, tiêu đề và nút phụ */
+        display: none !important; /* Ẩn logo và các phần thừa */
     }
 
     .sidebar nav {
@@ -130,7 +137,7 @@
         width: 100% !important;
         justify-content: space-around !important;
         align-items: center !important;
-        padding: 0 5px !important;
+        padding: 0 !important;
     }
 
     .sidebar-link {
@@ -148,18 +155,19 @@
     }
 
     .sidebar-link i, .sidebar-link svg {
-        width: 22px !important;
-        height: 22px !important;
+        width: 24px !important;
+        height: 24px !important;
         margin: 0 !important;
     }
 
-    /* Chỉ dấu Active tinh tế */
+    /* Căn giữa thanh Active và BỎ SHADOW */
     .sidebar-link.active {
         background: transparent !important;
         color: var(--primary) !important;
         box-shadow: none !important;
     }
 
+    /* Thanh gạch ngang nhỏ trên đầu icon */
     .sidebar-link.active::after {
         content: '';
         position: absolute;
