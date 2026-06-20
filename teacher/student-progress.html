@@ -10,6 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/feather-icons"></script>
+    <!-- Excel Export Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
         :root {
@@ -24,307 +26,37 @@
 
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body); color: var(--text-main); overflow: hidden; }
 
-        /* --- SIDEBAR STYLE (Đồng bộ) --- */
+        /* --- SIDEBAR STYLE --- */
         .sidebar { width: 280px; background: white; border-right: 1px solid #E2E8F0; height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; }
         .nav-group-title { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #94A3B8; padding: 1.5rem 1.5rem 0.5rem; }
         .sidebar-link { display: flex; align-items: center; padding: 0.8rem 1.5rem; color: var(--text-light); font-weight: 600; font-size: 0.9rem; transition: 0.3s; gap: 12px; }
-        .sidebar-link i { width: 18px; height: 18px; }
         .sidebar-link:hover { color: var(--primary); background: var(--primary-light); }
         .sidebar-link.active { background: var(--primary-gradient); color: white; border-radius: 12px; margin: 0 12px; box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.2); }
 
-        /* --- STUDENT CARD STYLE --- */
-        .student-card {
-            background: white;
-            border-radius: 24px;
-            border: 1px solid #E2E8F0;
-            padding: 24px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            text-decoration: none;
-        }
-        .student-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-            box-shadow: 0 12px 24px -10px rgba(13, 148, 136, 0.2);
-        }
-        .student-card::after {
-            content: 'CHI TIẾT →';
-            position: absolute;
-            bottom: 0; right: 0;
-            font-size: 8px; font-weight: 900;
-            background: var(--primary-gradient);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 12px 0 0 0;
-            opacity: 0;
-            transition: 0.3s;
-        }
-        .student-card:hover::after { opacity: 1; }
+        /* --- MODERN TABLE --- */
+        .modern-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .modern-table th { padding: 16px 20px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #94A3B8; border-bottom: 1px solid #F1F5F9; text-align: left; background: #F8FAFC; }
+        .modern-table td { padding: 14px 20px; border-bottom: 1px solid #F1F5F9; font-size: 0.85rem; vertical-align: middle; transition: 0.2s; }
+        .modern-table tr:hover td { background-color: #F0FDFA; }
 
-        .avatar-initial {
-            width: 48px; height: 48px;
-            border-radius: 16px;
-            background: #F1F5F9;
-            color: #64748B;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 800; font-size: 1.1rem;
-            transition: 0.3s;
-        }
-        .student-card:hover .avatar-initial {
-            background: var(--primary-light);
-            color: var(--primary);
-            transform: scale(1.1);
-        }
+        /* --- SCORE & STATUS --- */
+        .score-pill { font-weight: 800; padding: 4px 12px; border-radius: 100px; font-size: 0.8rem; }
+        .score-high { color: #0D9488; font-size: 1.1rem; } /* Giống trong ảnh mẫu: 124/150 */
+        .status-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; }
+        .status-done { background: #DCFCE7; color: #15803D; }
+        .status-pending { background: #F1F5F9; color: #64748B; }
 
-        /* --- STUDENT CARD STYLE (Unified) --- */
-        .student-card {
-            background: white;
-            border-radius: 24px;
-            border: 1px solid #E2E8F0;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            position: relative; /* Để nút con bám theo */
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            height: 100%;
-        }
+        /* --- BENTO CARD --- */
+        .bento-card { background: white; border-radius: 24px; border: 1px solid #E2E8F0; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
 
-        /* Hiệu ứng hover cho cả cái card */
-        .student-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-            box-shadow: 0 15px 30px -10px rgba(13, 148, 136, 0.1);
-        }
-
-        /* Nút xoá nằm TRONG card */
-        .kick-btn {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            width: 28px;
-            height: 28px;
-            background: #F1F5F9; /* Màu xám nhạt trung tính khi bình thường */
-            color: #94A3B8;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            border: none;
-            cursor: pointer;
-            z-index: 10;
-            opacity: 0; /* Ẩn đi */
-            transform: scale(0.8);
-        }
-
-        /* Khi hover vào card thì nút xoá hiện lên bên trong */
-        .student-card:hover .kick-btn {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        /* Khi di chuột trực tiếp vào nút xoá */
-        .kick-btn:hover {
-            background: #FEE2E2 !important;
-            color: #EF4444 !important;
-            transform: scale(1.1) !important;
-        }
-
-        /* Phần link bao phủ diện tích card trừ nút xoá */
-        .card-link {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            flex-grow: 1;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        /* --- SCROLLBAR --- */
+        /* SCROLLBAR */
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #0D9488; }
-        .toast { transition: 0.3s; transform: translateY(100%); opacity: 0; }
-        .toast.show { transform: translateY(0); opacity: 1; }
 
-/* ============================================================
-   AIGEO CLASSROOMS MOBILE OPTIMIZATION - PROFESSIONAL UI
-   ============================================================ */
-
-@media (max-width: 768px) {
-    /* 1. SỬA LỖI KHÔNG CUỘN ĐƯỢC & CHIỀU CAO */
-    html, body {
-        overflow-x: hidden !important;
-        overflow-y: auto !important; 
-        height: auto !important;     
-        position: relative !important;
-        display: block !important;    /* Hủy flex h-screen */
-    }
-
-    /* 2. HEADER - Tối giản & Sticky */
-    header {
-        position: sticky !important;
-        top: 0 !important;
-        z-index: 50 !important;
-        height: 60px !important;
-        background: rgba(255, 255, 255, 0.9) !important;
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid #E2E8F0;
-    }
-
-    .flex.items-center.gap-2.text-xs.font-bold.text-slate-400.uppercase.tracking-widest {
-        display: none !important;
-    }
-
-    /* 2. Ép cụm Avatar/User sang bên phải */
-    /* Target vào container chứa cả dòng chữ và avatar (thường là thẻ header hoặc div cha flex) */
-    header .flex.items-center.justify-between, 
-    main .flex.items-center.justify-between {
-        display: flex !important;
-        justify-content: flex-end !important; /* Đẩy tất cả nội dung còn lại sang phải */
-    }
-
-    /* Đảm bảo khối chứa Avatar có margin-left auto để tự động hít về bên phải */
-    #auth-header-wrapper, .user-pill {
-        margin-left: auto !important;
-    }
-
-    /* 3. FIX LỖI LỆCH NÚT ACTIVE (BOTTOM NAV) */
-    .sidebar {
-        width: 100% !important;
-        height: 65px !important;
-        position: fixed !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        flex-direction: row !important;
-        border-right: none !important;
-        border-top: 1px solid #E2E8F0 !important;
-        background: white !important;
-        z-index: 1000 !important;
-        display: flex !important;
-        padding: 0 !important;
-    }
-
-    .sidebar .p-8, .nav-group-title, .sidebar .p-4.border-t {
-        display: none !important; /* Ẩn logo và các phần thừa */
-    }
-
-    .sidebar nav {
-        display: flex !important;
-        flex-direction: row !important;
-        width: 100% !important;
-        justify-content: space-around !important;
-        align-items: center !important;
-        padding: 0 !important;
-    }
-
-    .sidebar-link {
-        flex: 1 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        height: 100% !important;
-        font-size: 0 !important; /* Ẩn chữ */
-        color: #94A3B8 !important;
-        position: relative !important;
-    }
-
-    .sidebar-link i, .sidebar-link svg {
-        width: 24px !important;
-        height: 24px !important;
-        margin: 0 !important;
-    }
-
-    /* Căn giữa thanh Active và BỎ SHADOW */
-    .sidebar-link.active {
-        background: transparent !important;
-        color: var(--primary) !important;
-        box-shadow: none !important;
-    }
-
-    /* Thanh gạch ngang nhỏ trên đầu icon */
-    .sidebar-link.active::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 20px;
-        height: 4px;
-        background: var(--primary);
-        border-radius: 0 0 4px 4px;
-    }
-
-    /* 4. MAIN CONTENT AREA */
-    main {
-        display: block !important;
-        padding-bottom: 80px !important; /* Tránh menu che khuất */
-    }
-
-    .bg-slate-50\/50 {
-        padding: 20px 16px !important; /* Giảm padding tổng quát */
-    }
-
-    /* 5. TITLE & JOIN BUTTON */
-    .flex-col.md\:flex-row {
-        gap: 16px !important;
-        margin-bottom: 30px !important;
-    }
-
-    h1.text-4xl {
-        font-size: 1.8rem !important; /* Thu nhỏ tiêu đề chính */
-        text-align: left;
-    }
-
-    .cta-button {
-        width: 100% !important; /* Nút "Tham gia lớp mới" rộng 100% */
-        justify-content: center !important;
-        padding: 14px !important;
-        font-size: 14px !important;
-    }
-
-    /* 6. CLASS CARDS GRID */
-    #classrooms-grid {
-        grid-template-columns: 1fr !important; /* Một lớp một dòng */
-        gap: 20px !important;
-    }
-
-    .class-card {
-        padding: 24px !important; /* Thu hẹp padding card */
-        border-radius: 28px !important;
-    }
-
-    .class-card h3 {
-        font-size: 1.25rem !important;
-    }
-
-    /* 7. TOASTS & MODALS */
-    #toast-container {
-        bottom: 85px !important; /* Đẩy lên trên Bottom Nav */
-        left: 16px !important;
-        right: 16px !important;
-    }
-
-    .modal-backdrop > div {
-        width: 92% !important;
-        padding: 24px !important;
-        border-radius: 30px !important;
-    }
-
-    /* Phản hồi chạm (Touch Feedback) */
-    .class-card:active {
-        transform: scale(0.98);
-        transition: 0.1s;
-    }
-}
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .hide-mobile { display: none; }
+        }
     </style>
 </head>
 <body class="flex h-screen">
@@ -333,7 +65,7 @@
     <aside class="sidebar">
         <div class="p-8">
             <a href="/" class="flex items-center gap-3">
-                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" class="h-9 w-auto" alt="Logo">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" class="h-9 w-auto">
                 <span class="text-xl font-black text-teal-600 tracking-tight">AIGEO</span>
             </a>
         </div>
@@ -357,9 +89,9 @@
         <!-- Header -->
         <header class="h-16 bg-white border-b flex items-center justify-between px-8 shrink-0">
             <div class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">
-                <a href="index.html" class="hover:text-teal-600">Tổng Quan</a>
+                <a href="index.html" class="hover:text-teal-600 transition">Tổng Quan</a>
                 <span>/</span>
-                <a href="classrooms.html" class="hover:text-teal-600">Quản Lý Lớp Học</a>
+                <a href="classrooms.html" class="hover:text-teal-600 transition">Quản Lý Lớp Học</a>
                 <span>/</span>
                 <span class="text-slate-800">Danh Sách Học Sinh</span>
             </div>
@@ -372,238 +104,286 @@
             </div>
         </header>
 
-        <!-- Main Area -->
-        <div class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50/50 p-8">
-            <div class="max-w-7xl mx-auto">
-                <!-- Class Banner -->
-                <div class="flex items-center gap-6 mb-10">
-                    <a href="classrooms.html" class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center border border-slate-200 hover:bg-slate-50 transition shadow-sm nav-link">
-                        <i data-feather="chevron-left" class="text-slate-600"></i>
-                    </a>
-                    <div>
-                        <h1 id="class-name-header" class="text-3xl font-black text-slate-900 tracking-tight">Đang tải thông tin lớp...</h1>
-                        <p id="class-subject-header" class="text-teal-600 font-bold mt-1 uppercase text-[10px] tracking-widest"></p>
+        <!-- Main Content -->
+        <div class="flex-1 overflow-y-auto bg-slate-50/50 p-8">
+            <div class="max-w-7xl mx-auto space-y-8">
+                
+                <!-- Title Bar -->
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div class="flex items-center gap-4">
+                        <a href="classrooms.html" class="w-10 h-10 bg-white border rounded-xl flex items-center justify-center text-slate-400 hover:text-teal-600 transition shadow-sm">
+                            <i data-feather="arrow-left" class="w-5"></i>
+                        </a>
+                        <div>
+                            <h1 id="class-title" class="text-2xl font-black text-slate-900 tracking-tight">Đang tải thông tin lớp...</h1>
+                            <p id="class-subtitle" class="text-teal-600 font-bold text-[10px] uppercase tracking-widest mt-1 italic"></p>
+                        </div>
+                    </div>
+                    <button id="btn-export" class="flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-xl text-sm font-black hover:bg-emerald-700 transition shadow-lg shadow-emerald-100">
+                        <i data-feather="download"></i> XUẤT EXCEL
+                    </button>
+                </div>
+
+                <!-- Stats Summary -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bento-card p-6 flex items-center gap-5">
+                        <div class="w-14 h-14 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center"><i data-feather="users"></i></div>
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Sĩ số lớp</p>
+                            <h3 id="stat-students" class="text-2xl font-black text-slate-800">0</h3>
+                        </div>
+                    </div>
+                    <div class="bento-card p-6 flex items-center gap-5">
+                        <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center"><i data-feather="bar-chart-2"></i></div>
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Điểm trung bình</p>
+                            <h3 id="stat-avg" class="text-2xl font-black text-slate-800">0.0</h3>
+                        </div>
+                    </div>
+                    <div class="bento-card p-6 flex items-center gap-5">
+                        <div class="w-14 h-14 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center"><i data-feather="check-square"></i></div>
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tỷ lệ hoàn thành</p>
+                            <h3 id="stat-percent" class="text-2xl font-black text-slate-800">0%</h3>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Student Grid -->
-                <div id="progress-area">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <!-- Skeleton Loader -->
-                        <div class="h-24 bg-white rounded-[24px] animate-pulse border border-slate-100"></div>
-                        <div class="h-24 bg-white rounded-[24px] animate-pulse border border-slate-100"></div>
-                        <div class="h-24 bg-white rounded-[24px] animate-pulse border border-slate-100"></div>
-                        <div class="h-24 bg-white rounded-[24px] animate-pulse border border-slate-100"></div>
+                <!-- Filters & Table -->
+                <div class="bento-card">
+                    <div class="p-6 border-b border-slate-50 flex flex-col md:flex-row gap-4 items-center justify-between bg-white">
+                        <div class="flex flex-wrap gap-4 w-full md:w-auto">
+                            <div class="relative w-full md:w-64">
+                                <i data-feather="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300"></i>
+                                <input type="text" id="search-student" placeholder="Tìm kiếm học viên..." class="w-full pl-10 pr-4 py-2 bg-slate-50 border-none rounded-xl text-sm font-semibold focus:ring-2 focus:ring-teal-500 outline-none">
+                            </div>
+                            <select id="filter-test" class="w-full md:w-64 px-4 py-2 bg-slate-50 border-none rounded-xl text-sm font-bold text-slate-600 cursor-pointer outline-none focus:ring-2 focus:ring-teal-500">
+                                <option value="">Tất cả đề thi</option>
+                            </select>
+                        </div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                            <i data-feather="database" class="w-3"></i> Tổng cộng <span id="count-rows" class="text-teal-600">0</span> bài thi
+                        </p>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="modern-table" id="table-results">
+                            <thead>
+                                <tr>
+                                    <th class="w-16">STT</th>
+                                    <th>Mã HV</th>
+                                    <th>Học viên</th>
+                                    <th>Tên bài thi</th>
+                                    <th>Kết quả</th>
+                                    <th class="hide-mobile">Trạng thái</th>
+                                    <th style="text-align: center;">Chi tiết</th>
+                                </tr>
+                            </thead>
+                            <tbody id="data-body">
+                                <tr><td colspan="7" class="text-center py-20 text-slate-300 font-bold uppercase tracking-widest text-xs animate-pulse">Đang truy vấn dữ liệu học tập...</td></tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <div id="toast-container" class="fixed bottom-10 right-10 z-50 flex flex-col gap-3"></div>
-
     <script src="../firebase-config.js"></script>
-<script type="module">
+    <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, collection, query, where, getDocs, updateDoc, arrayRemove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, query, where, getDocs, orderBy, updateDoc, arrayRemove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const app = initializeApp(firebaseConfig);
-            const auth = getAuth(app);
-            const db = getFirestore(app);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-            let currentUser = null;
-            let currentClassId = null;
-            const progressArea = document.getElementById('progress-area');
-            const classNameHeader = document.getElementById('class-name-header');
-            const classSubjectHeader = document.getElementById('class-subject-header');
+        let currentClassId = new URLSearchParams(window.location.search).get('classId');
+        let studentsList = [];
+        let allSubmissions = [];
 
-            // --- 1. AUTH LOGIC ---
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    currentUser = user;
-                    const docSnap = await getDoc(doc(db, "users", user.uid));
-                    if (docSnap.exists() && docSnap.data().role === 'teacher') {
-                        const userData = docSnap.data();
-                        document.getElementById('user-name').textContent = userData.name;
-                        document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=0D9488&color=fff&bold=true`;
-                        initPage();
-                    } else { window.location.href = '../auth.html'; }
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const docSnap = await getDoc(doc(db, "users", user.uid));
+                if (docSnap.exists() && docSnap.data().role === 'teacher') {
+                    document.getElementById('user-name').textContent = docSnap.data().name;
+                    document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(docSnap.data().name)}&background=0D9488&color=fff&bold=true`;
+                    initDashboard();
                 } else { window.location.href = '../auth.html'; }
+            } else { window.location.href = '../auth.html'; }
+        });
+
+        async function initDashboard() {
+            if (!currentClassId) return;
+
+            try {
+                // 1. Tải thông tin lớp & học sinh
+                const classSnap = await getDoc(doc(db, "classrooms", currentClassId));
+                if (!classSnap.exists()) return;
+                const classData = classSnap.data();
+
+                // --- ĐOẠN CODE LẤY MÔN HỌC TỪ DỮ LIỆU THẬT ---
+                let subjectName = "Chưa cập nhật môn"; // Sẽ hiện dòng này nếu lớp trên Firebase bị thiếu subjectId
+
+                if (classData.subjectId) {
+                    const subjectDocSnap = await getDoc(doc(db, "subjects", classData.subjectId));
+                    if (subjectDocSnap.exists()) {
+                        subjectName = subjectDocSnap.data().name; // Đây chính là biến lấy tên thật từ database (Toán, Lý, Hóa, Sinh...)
+                    }
+                }
+
+                document.getElementById('class-title').textContent = `Danh sách học sinh lớp: ${classData.className}`;
+                document.getElementById('class-subtitle').textContent = `Khối ${classData.grade} • ${subjectName}`;
+                // ---------------------------------------------
+
+                const studentIds = classData.students || [];
+                if (studentIds.length > 0) {
+                    studentsList = await fetchDocsInChunks(collection(db, "users"), "__name__", studentIds);
+                    document.getElementById('stat-students').textContent = studentsList.length;
+                }
+
+                // 2. Tải bài làm (submissions)
+                const q = query(collection(db, "submissions"), where("classId", "==", currentClassId), orderBy("completedAt", "desc"));
+                const querySnap = await getDocs(q);
+                allSubmissions = querySnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+                // 3. Đổ danh sách đề thi vào bộ lọc
+                const testMap = new Map();
+                allSubmissions.forEach(s => testMap.set(s.testId, s.testName));
+                const filterSelect = document.getElementById('filter-test');
+                testMap.forEach((name, id) => {
+                    const opt = document.createElement('option');
+                    opt.value = id;
+                    opt.textContent = name;
+                    filterSelect.appendChild(opt);
+                });
+
+                renderTable();
+                updateStats();
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById('data-body').innerHTML = `<tr><td colspan="7" class="text-center py-10 text-red-400">Lỗi: ${error.message}</td></tr>`;
+            }
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('data-body');
+            const searchVal = document.getElementById('search-student').value.toLowerCase();
+            const filterTest = document.getElementById('filter-test').value;
+
+            const filtered = allSubmissions.filter(s => {
+                const student = studentsList.find(std => std.id === s.studentId);
+                const nameMatch = student ? student.name.toLowerCase().includes(searchVal) : false;
+                const testMatch = filterTest === "" || s.testId === filterTest;
+                return nameMatch && testMatch;
             });
 
-            // --- 2. HÀM ĐUỔI HỌC SINH ---
-            function setupKickLogic() {
-                document.querySelectorAll('.kick-btn').forEach(btn => {
-                    btn.onclick = async (e) => {
-                        e.preventDefault();
-                        e.stopPropagation(); // Chặn click nhảy vào trang student.html
-
-                        const studentId = btn.getAttribute('data-id');
-                        const studentName = btn.getAttribute('data-name');
-
-                        if (confirm(`Bạn có chắc chắn muốn mời học sinh "${studentName}" ra khỏi lớp không?`)) {
-                            try {
-                                btn.disabled = true;
-                                btn.innerHTML = `<i class="animate-spin" data-feather="loader"></i>`;
-                                feather.replace();
-
-                                const classDocRef = doc(db, "classrooms", currentClassId);
-                                await updateDoc(classDocRef, {
-                                    students: arrayRemove(studentId)
-                                });
-
-                                alert("Đã xóa học sinh thành công!");
-                                initPage(); // Tải lại danh sách học sinh
-
-                            } catch (error) {
-                                console.error("Lỗi xóa:", error);
-                                alert("Đã có lỗi xảy ra.");
-                                btn.disabled = false;
-                                btn.innerHTML = `<i data-feather="user-x"></i>`;
-                                feather.replace();
-                            }
-                        }
-                    };
-                });
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-20 text-slate-400 font-bold uppercase text-[10px]">Không tìm thấy kết quả</td></tr>`;
+                return;
             }
 
-            function renderStudentList(students) {
-                if (students.length === 0) {
-                    progressArea.innerHTML = `<div class="col-span-full py-20 text-center"><p class="text-slate-400 font-bold uppercase tracking-widest text-xs">Lớp học chưa có học sinh</p></div>`;
-                    return;
-                }
+            tbody.innerHTML = '';
+            filtered.forEach((s, index) => {
+                const student = studentsList.find(std => std.id === s.studentId) || { name: 'N/A', id: 'N/A' };
+                const scoreRatio = (s.score / s.totalQuestions) * 10;
                 
-                progressArea.innerHTML = '';
-                progressArea.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-20';
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="font-bold text-slate-300 text-xs">${index + 1}</td>
+                    <td><span class="text-teal-600 font-bold text-[11px] bg-teal-50 px-2 py-1 rounded">HV${student.id.slice(-4).toUpperCase()}</span></td>
+                    <td class="font-bold text-slate-800">${student.name}</td>
+                    <td class="text-slate-500 font-medium">${s.testName}</td>
+                    <td>
+                        <span class="score-high">${s.score}</span><span class="text-slate-300 font-bold text-xs">/${s.totalQuestions}</span>
+                    </td>
+                    <td class="hide-mobile">
+                        <span class="status-badge status-done"><i data-feather="check-circle" class="w-3"></i> Đã nộp bài</span>
+                    </td>
+                    <td style="text-align: center;">
+                        <div class="flex items-center justify-center gap-2">
+                            <button onclick="kickStudent('${student.id}', '${student.name}')" class="p-2 hover:bg-red-50 text-red-500 transition rounded-xl inline-flex" title="Đuổi học sinh khỏi lớp">
+                                <i data-feather="user-x" class="w-4"></i>
+                            </button>
+                            <a href="student.html?studentId=${student.id}&studentName=${encodeURIComponent(student.name)}&classId=${currentClassId}" class="p-2 hover:bg-teal-50 text-teal-600 transition rounded-xl inline-flex" title="Xem tiến độ">
+                                <i data-feather="external-link" class="w-4"></i>
+                            </a>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
 
-                students.sort((a, b) => (a.name || '').localeCompare(b.name || '')).forEach((student) => {
-                    const initial = (student.name || 'S').charAt(0).toUpperCase();
-                    
-                    const card = document.createElement('div');
-                    card.className = "student-card"; // Khối trắng bao quanh tất cả
+            document.getElementById('count-rows').textContent = filtered.length;
+            feather.replace();
+        }
 
-                    card.innerHTML = `
-                        <!-- Nút xoá: Nằm trong Card nhưng tách biệt với Link -->
-                        <button class="kick-btn" data-id="${student.id}" data-name="${student.name}" title="Xoá học sinh">
-                            <i data-feather="x" class="w-3 h-3"></i>
-                        </button>
-
-                        <!-- Link chi tiết: Bao phủ avatar và text -->
-                        <a href="student.html?studentId=${student.id}&studentName=${encodeURIComponent(student.name)}&classId=${currentClassId}" class="card-link nav-link">
-                            <div class="avatar-initial shadow-sm">${initial}</div>
-                            <div class="overflow-hidden">
-                                <p class="font-black text-slate-800 truncate text-sm">${student.name}</p>
-                                <p class="text-[10px] font-bold text-slate-400 truncate uppercase tracking-tighter">${student.email || 'N/A'}</p>
-                            </div>
-                        </a>
-                    `;
-                    progressArea.appendChild(card);
-                });
-
-                feather.replace();
-                setupKickLogic(); 
-                attachNavLinkLogic(); 
-            }
-
-            // --- 4. TẢI DỮ LIỆU ---
-            async function initPage() {
-                const urlParams = new URLSearchParams(window.location.search);
-                currentClassId = urlParams.get('classId');
-                if (!currentClassId) return;
-
-                try {
-                    const classDocRef = doc(db, "classrooms", currentClassId);
-                    const classDocSnap = await getDoc(classDocRef);
-                    
-                    if (classDocSnap.exists()) {
-                        const classroomData = classDocSnap.data();
-                        
-                        // Lấy tên môn học
-                        const subjectDocSnap = await getDoc(doc(db, "subjects", classroomData.subjectId));
-                        const subjectName = subjectDocSnap.exists() ? subjectDocSnap.data().name : "Địa lý";
-                        
-                        classNameHeader.textContent = `Danh sách học sinh lớp: ${classroomData.className}`;
-                        classSubjectHeader.textContent = `${subjectName} - Lớp ${classroomData.grade}`;
-                        
-                        const studentIds = classroomData.students || [];
-                        if (studentIds.length === 0) {
-                             progressArea.innerHTML = `<div class="col-span-full py-20 text-center"><p class="text-slate-400 font-bold uppercase text-xs">Lớp chưa có học sinh</p></div>`;
-                             return;
-                        }
-                        
-                        const studentDocs = await fetchDocsInChunks(collection(db, "users"), "__name__", studentIds);
-                        renderStudentList(studentDocs);
-                    }
-                } catch (error) { console.error(error); }
+        function updateStats() {
+            if (allSubmissions.length === 0) {
+                document.getElementById('stat-avg').textContent = "0.0";
+                document.getElementById('stat-percent').textContent = "0%";
+                return;
             }
             
-            async function fetchDocsInChunks(collectionRef, field, ids) {
-                if (!ids || ids.length === 0) return [];
-                const allDocsData = [];
-                for (let i = 0; i < ids.length; i += 30) {
-                    const chunk = ids.slice(i, i + 30);
-                    const q = query(collectionRef, where(field, "in", chunk));
-                    const snapshot = await getDocs(q);
-                    snapshot.forEach(doc => allDocsData.push({id: doc.id, ...doc.data()}));
-                }
-                return allDocsData;
-            }
+            // 1. Tính điểm trung bình
+            const sumScore = allSubmissions.reduce((acc, s) => acc + (s.score / s.totalQuestions) * 10, 0);
+            document.getElementById('stat-avg').textContent = (sumScore / allSubmissions.length).toFixed(1);
+            
+            // 2. Tính tỷ lệ hoàn thành (Lọc các học sinh đã nộp ít nhất 1 bài để không bị lặp)
+            const uniqueStudentsSubmitted = new Set(allSubmissions.map(s => s.studentId)).size;
+            let completion = (uniqueStudentsSubmitted / (studentsList.length || 1)) * 100;
+            
+            // Đảm bảo an toàn tuyệt đối không bao giờ vượt 100%
+            if (completion > 100) completion = 100;
+            
+            document.getElementById('stat-percent').textContent = Math.round(completion) + '%';
+        }
 
-            function attachNavLinkLogic() {
-                document.querySelectorAll('.nav-link').forEach(link => {
-                    link.onclick = (e) => {
-                        e.preventDefault();
-                        document.body.style.opacity = '0';
-                        setTimeout(() => { window.location.href = link.href; }, 200);
-                    }
+        // Thêm hàm xử lý đuổi học sinh
+        window.kickStudent = async (studentId, studentName) => {
+            if (!confirm(`Bạn có chắc chắn muốn đuổi học viên "${studentName}" ra khỏi lớp không?`)) {
+                return;
+            }
+            
+            try {
+                const classDocRef = doc(db, "classrooms", currentClassId);
+                await updateDoc(classDocRef, {
+                    students: arrayRemove(studentId)
                 });
+                alert(`Đã xóa học viên ${studentName} khỏi lớp thành công!`);
+                window.location.reload(); // Tải lại trang để cập nhật danh sách
+            } catch (error) {
+                console.error("Lỗi khi đuổi học sinh:", error);
+                alert("Có lỗi xảy ra. Vui lòng thử lại!");
             }
+        };
 
-            document.getElementById('logout-btn').onclick = () => signOut(auth);
-            feather.replace();
-        });
+        async function fetchDocsInChunks(colRef, field, ids) {
+            let results = [];
+            for (let i = 0; i < ids.length; i += 30) {
+                const chunk = ids.slice(i, i + 30);
+                const q = query(colRef, where(field, "in", chunk));
+                const snap = await getDocs(q);
+                snap.forEach(d => results.push({ id: d.id, ...d.data() }));
+            }
+            return results;
+        }
+
+        // Search & Filter Events
+        document.getElementById('search-student').oninput = renderTable;
+        document.getElementById('filter-test').onchange = renderTable;
+
+        // Export Excel
+        document.getElementById('btn-export').onclick = () => {
+            const table = document.getElementById('table-results');
+            const wb = XLSX.utils.table_to_book(table);
+            XLSX.writeFile(wb, `KetQuaLopHoc_${currentClassId}.xlsx`);
+        };
+
+        document.getElementById('logout-btn').onclick = () => signOut(auth);
+        feather.replace();
     </script>
-
-<script type="text/javascript">
-    // 1. Chặn Chuột phải (Để ẩn menu "Inspect/Kiểm tra" và "View Source/Xem nguồn")
-    document.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-        // Không hiện thông báo gì cả để trải nghiệm mượt mà hơn
-    });
-
-    // 2. Chặn các phím tắt Developer Tools
-    document.addEventListener('keydown', function(e) {
-        // Chặn F12
-        if (e.key === 'F12' || e.keyCode === 123) {
-            e.preventDefault();
-            return false;
-        }
-
-        // Chặn các tổ hợp phím Ctrl + ...
-        if (e.ctrlKey) {
-            switch (e.key.toLowerCase()) {
-                case 'u': // Chặn Ctrl + U (Xem source code)
-                case 's': // Chặn Ctrl + S (Lưu trang web)
-                case 'p': // Chặn Ctrl + P (In trang web - thường hiện code)
-                // Lưu ý: KHÔNG chặn 'c' (Copy) và 'a' (Select All)
-                    e.preventDefault();
-                    return false;
-            }
-
-            // Chặn Ctrl + Shift + ... (Các phím mở DevTools)
-            if (e.shiftKey) {
-                switch (e.key.toLowerCase()) {
-                    case 'i': // Inspect Element
-                    case 'j': // Console
-                    case 'c': // Element Inspector
-                        e.preventDefault();
-                        return false;
-                }
-            }
-        }
-    });
-</script>
 </body>
 </html>
