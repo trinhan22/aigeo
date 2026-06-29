@@ -1,0 +1,335 @@
+:root {
+            --primary: #0D9488;
+            --primary-light: #F0FDFA;
+            --secondary: #10B981;
+            --text-main: #1E293B;
+            --text-light: #64748B;
+            --bg-body: #F8FAFC;
+            --primary-gradient: linear-gradient(135deg, #0D9488 0%, #10B981 100%);
+        }
+
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body); color: var(--text-main); overflow: hidden; }
+
+        /* --- SIDEBAR STYLE (Đồng bộ) --- */
+        .sidebar { width: 280px; background: white; border-right: 1px solid #E2E8F0; height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; }
+        .nav-group-title { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #94A3B8; padding: 1.5rem 1.5rem 0.5rem; }
+        .sidebar-link { display: flex; align-items: center; padding: 0.8rem 1.5rem; color: var(--text-light); font-weight: 600; font-size: 0.9rem; transition: 0.3s; gap: 12px; }
+        .sidebar-link i { width: 18px; height: 18px; }
+        .sidebar-link:hover { color: var(--primary); background: var(--primary-light); }
+        .sidebar-link.active { background: var(--primary-gradient); color: white; border-radius: 12px; margin: 0 12px; box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.2); }
+
+        /* --- DASHBOARD CARDS --- */
+        .bento-card { background: white; border-radius: 32px; border: 1px solid #E2E8F0; padding: 24px; transition: 0.3s; }
+        .bento-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05); border-color: var(--primary); }
+        
+        .stat-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+
+        /* --- GIAO DIỆN LỊCH SỬ TINH TẾ (SOFT UI) --- */
+        #history-table-container {
+            padding: 24px;
+            background: white;
+        }
+
+        .history-header-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 100px;
+            padding: 12px 20px;
+            background: #F8FAFC;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .header-label {
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #94A3B8;
+            letter-spacing: 0.1em;
+        }
+
+        .history-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 100px;
+            padding: 20px;
+            align-items: center;
+            border-radius: 16px;
+            transition: 0.3s;
+            border-bottom: 1px solid #F8FAFC;
+        }
+
+        .history-row:hover {
+            background: #F8FAFC; /* Màu xanh teal cực nhẹ */
+            transform: scale(1.01);
+        }
+
+        .test-name {
+            font-weight: 700;
+            color: #1E293B;
+            font-size: 0.9rem;
+        }
+
+        .subject-tag {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #64748B;
+            background: #F1F5F9;
+            padding: 4px 10px;
+            border-radius: 8px;
+            width: fit-content;
+        }
+
+        .score-value {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 800;
+            font-size: 1rem;
+        }
+
+        .score-good { color: #0D9488; }
+        .score-avg { color: #D97706; }
+        .score-bad { color: #E11D48; }
+
+        .date-text {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #94A3B8;
+        }
+
+        .btn-view {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            justify-content: flex-end;
+        }
+
+        .btn-view:hover {
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0D9488; }
+
+        .skeleton { background: #E2E8F0; animation: pulse 2s infinite; border-radius: 8px; }
+        @keyframes pulse { 50% { opacity: .5; } }
+
+        .modal-backdrop { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); }
+        
+/* ============================================================
+   AIGEO STATS PAGE MOBILE OPTIMIZATION
+   ============================================================ */
+
+@media (max-width: 768px) {
+    /* 1. RESET LAYOUT & SCROLL */
+    html, body {
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        height: auto !important;
+        display: block !important;
+    }
+
+    /* 2. HEADER - Tối giản & Sticky */
+    header {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 50 !important;
+        height: 60px !important;
+        background: rgba(255, 255, 255, 0.9) !important;
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid #E2E8F0;
+    }
+
+    .flex.items-center.gap-2.text-xs.font-bold.text-slate-400.uppercase.tracking-widest {
+        display: none !important;
+    }
+
+    /* 2. Ép cụm Avatar/User sang bên phải */
+    /* Target vào container chứa cả dòng chữ và avatar (thường là thẻ header hoặc div cha flex) */
+    header .flex.items-center.justify-between, 
+    main .flex.items-center.justify-between {
+        display: flex !important;
+        justify-content: flex-end !important; /* Đẩy tất cả nội dung còn lại sang phải */
+    }
+
+    /* Đảm bảo khối chứa Avatar có margin-left auto để tự động hít về bên phải */
+    #auth-header-wrapper, .user-pill {
+        margin-left: auto !important;
+    }
+
+    /* 3. FIX LỖI LỆCH NÚT ACTIVE (BOTTOM NAV) */
+    .sidebar {
+        width: 100% !important;
+        height: 65px !important;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        flex-direction: row !important;
+        border-right: none !important;
+        border-top: 1px solid #E2E8F0 !important;
+        background: white !important;
+        z-index: 1000 !important;
+        display: flex !important;
+        padding: 0 !important;
+    }
+
+    .sidebar .p-8, .nav-group-title, .sidebar .p-4.border-t {
+        display: none !important; /* Ẩn logo và các phần thừa */
+    }
+
+    .sidebar nav {
+        display: flex !important;
+        flex-direction: row !important;
+        width: 100% !important;
+        justify-content: space-around !important;
+        align-items: center !important;
+        padding: 0 !important;
+    }
+
+    .sidebar-link {
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        height: 100% !important;
+        font-size: 0 !important; /* Ẩn chữ */
+        color: #94A3B8 !important;
+        position: relative !important;
+    }
+
+    .sidebar-link i, .sidebar-link svg {
+        width: 24px !important;
+        height: 24px !important;
+        margin: 0 !important;
+    }
+
+    /* Căn giữa thanh Active và BỎ SHADOW */
+    .sidebar-link.active {
+        background: transparent !important;
+        color: var(--primary) !important;
+        box-shadow: none !important;
+    }
+
+    /* Thanh gạch ngang nhỏ trên đầu icon */
+    .sidebar-link.active::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 20px;
+        height: 4px;
+        background: var(--primary);
+        border-radius: 0 0 4px 4px;
+    }
+
+    /* 4. MAIN CONTENT AREA */
+    main {
+        display: block !important;
+        padding-bottom: 80px !important; /* Tránh menu che khuất */
+    }
+    .p-8 { padding: 24px 16px !important; }
+
+    h1.text-4xl { font-size: 1.8rem !important; }
+
+    /* 5. STATS GRID - Chuyển sang 2x2 */
+    .grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-4 {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+    }
+
+    .bento-card {
+        padding: 20px !important;
+        border-radius: 24px !important;
+    }
+
+    .stat-icon {
+        width: 36px !important;
+        height: 36px !important;
+        margin-bottom: 12px !important;
+    }
+
+    .bento-card h3 { font-size: 1.5rem !important; }
+
+    /* 6. CHART CONTAINER */
+    #chart-container {
+        height: 250px !important; /* Giảm chiều cao biểu đồ trên mobile */
+    }
+
+    /* 7. LỊCH SỬ LÀM BÀI - Chuyển Grid thành List Card */
+    #history-table-container {
+        padding: 16px !important;
+    }
+
+    .history-header-grid {
+        display: none !important; /* Ẩn tiêu đề bảng trên mobile */
+    }
+
+    .history-row {
+        grid-template-columns: 1fr !important; /* Đưa về 1 cột dọc */
+        position: relative;
+        padding: 16px !important;
+        margin-bottom: 12px;
+        border: 1px solid #F1F5F9;
+        background: #F8FAFC;
+    }
+
+    .test-name {
+        font-size: 0.95rem !important;
+        margin-bottom: 8px;
+        padding-right: 60px; /* Chừa chỗ cho điểm */
+        white-space: normal !important; /* Cho phép xuống dòng nếu tên dài */
+    }
+
+    /* Đưa điểm số lên góc trên bên phải */
+    .history-row > div:nth-child(3) {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        text-align: right !important;
+    }
+
+    .score-value { font-size: 1.1rem !important; }
+
+    /* Môn học và Ngày làm nằm cạnh nhau */
+    .history-row > div:nth-child(2),
+    .history-row > div:nth-child(4) {
+        display: inline-block !important;
+        margin-right: 12px;
+        margin-top: 4px;
+    }
+
+    .date-text { text-align: left !important; }
+
+    /* Nút "Xem lại" dàn hàng ngang dưới cùng */
+    .history-row > div:nth-child(5) {
+        border-top: 1px dashed #E2E8F0;
+        margin-top: 12px;
+        padding-top: 12px;
+        text-align: center !important;
+    }
+
+    .btn-view {
+        justify-content: center !important;
+        font-size: 0.8rem !important;
+    }
+
+    /* 8. TOASTS & MODALS */
+    #toast-container {
+        bottom: 85px !important;
+        left: 16px; right: 16px;
+    }
+
+    .modal-backdrop > div {
+        width: 95% !important;
+        border-radius: 28px !important;
+        padding: 24px !important;
+    }
+}

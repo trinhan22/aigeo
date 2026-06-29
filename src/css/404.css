@@ -1,0 +1,14 @@
+body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .bg-pattern {
+            background-color: #f0f4ff;
+            background-image: radial-gradient(#dbeafe 1.5px, transparent 1.5px);
+            background-size: 30px 30px;
+        }

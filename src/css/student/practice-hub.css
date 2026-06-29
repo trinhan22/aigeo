@@ -1,0 +1,245 @@
+:root {
+            --primary: #0D9488;
+            --primary-light: #F0FDFA;
+            --secondary: #10B981;
+            --text-main: #1E293B;
+            --text-light: #64748B;
+            --bg-body: #F8FAFC;
+            --primary-gradient: linear-gradient(135deg, #0D9488 0%, #10B981 100%);
+        }
+
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body); color: var(--text-main); overflow: hidden; }
+
+        /* --- SIDEBAR --- */
+        .sidebar { width: 280px; background: white; border-right: 1px solid #E2E8F0; height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; }
+        .nav-group-title { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #94A3B8; padding: 1.5rem 1.5rem 0.5rem; }
+        .sidebar-link { display: flex; align-items: center; padding: 0.8rem 1.5rem; color: var(--text-light); font-weight: 600; font-size: 0.9rem; transition: 0.3s; gap: 12px; }
+        .sidebar-link i { width: 18px; height: 18px; }
+        .sidebar-link:hover { color: var(--primary); background: var(--primary-light); }
+        .sidebar-link.active { background: var(--primary-gradient); color: white; border-radius: 12px; margin: 0 12px; box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.2); }
+
+        /* --- MODERN TAB PILLS --- */
+        .tabs-pill-container { background: #F1F5F9; padding: 6px; border-radius: 100px; display: inline-flex; gap: 4px; margin-bottom: 24px; overflow-x: auto; max-width: 100%; }
+        .tab-button { padding: 10px 20px; border-radius: 100px; font-size: 0.8rem; font-weight: 800; color: var(--text-light); transition: 0.3s; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+        .tab-button.active { background: white; color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
+        /* --- BENTO CARDS --- */
+        .bento-card { background: white; border-radius: 32px; border: 1px solid #E2E8F0; padding: 32px; transition: 0.3s; position: relative; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: slideUp 0.4s ease forwards; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- INPUTS --- */
+        .modern-select { width: 100%; padding: 14px 20px; background: #F8FAFC; border: 2px solid #F1F5F9; border-radius: 16px; font-weight: 700; color: var(--text-main); outline: none; transition: 0.3s; appearance: none; cursor: pointer; }
+        .modern-select:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1); }
+
+        /* --- LESSON CARD --- */
+        .lesson-card { border: 2px solid #F1F5F9; border-radius: 20px; transition: 0.3s; cursor: pointer; position: relative; background: white; }
+        .lesson-card:has(input:checked) { border-color: var(--primary); background: var(--primary-light); }
+        .lesson-check-icon { position: absolute; top: 12px; right: 12px; width: 22px; height: 22px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; opacity: 0; transform: scale(0.5); transition: 0.3s; }
+        .lesson-card:has(input:checked) .lesson-check-icon { opacity: 1; transform: scale(1); }
+
+        /* --- BUTTONS --- */
+        .cta-button { background: var(--primary-gradient); color: white; padding: 14px 32px; border-radius: 16px; font-weight: 800; transition: 0.3s; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 10px 20px rgba(13, 148, 136, 0.15); border: none; cursor: pointer; }
+        .cta-button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(13, 148, 136, 0.25); }
+        .cta-button:disabled { background: #E2E8F0; color: #94A3B8; box-shadow: none; cursor: not-allowed; }
+
+        /* --- RANGE SLIDER --- */
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 8px; background: #E2E8F0; border-radius: 10px; }
+        input[type=range]::-webkit-slider-thumb { height: 22px; width: 22px; border-radius: 50%; background: var(--primary); -webkit-appearance: none; margin-top: -7px; cursor: pointer; box-shadow: 0 4px 10px rgba(13, 148, 136, 0.3); }
+
+        .skeleton { background: #E2E8F0; animation: pulse 2s infinite; border-radius: 12px; }
+        @keyframes pulse { 50% { opacity: .5; } }
+        
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0D9488; }
+
+        .modal-backdrop { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); }
+
+
+/* ============================================================
+   AIGEO CLASSROOMS MOBILE OPTIMIZATION - PROFESSIONAL UI
+   ============================================================ */
+
+@media (max-width: 768px) {
+    /* 1. SỬA LỖI KHÔNG CUỘN ĐƯỢC & CHIỀU CAO */
+    html, body {
+        overflow-x: hidden !important;
+        overflow-y: auto !important; 
+        height: auto !important;     
+        position: relative !important;
+        display: block !important;    /* Hủy flex h-screen */
+    }
+
+    /* 2. HEADER - Tối giản & Sticky */
+    header {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 50 !important;
+        height: 60px !important;
+        background: rgba(255, 255, 255, 0.9) !important;
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid #E2E8F0;
+    }
+
+    .flex.items-center.gap-2.text-xs.font-bold.text-slate-400.uppercase.tracking-widest {
+        display: none !important;
+    }
+
+    /* 2. Ép cụm Avatar/User sang bên phải */
+    /* Target vào container chứa cả dòng chữ và avatar (thường là thẻ header hoặc div cha flex) */
+    header .flex.items-center.justify-between, 
+    main .flex.items-center.justify-between {
+        display: flex !important;
+        justify-content: flex-end !important; /* Đẩy tất cả nội dung còn lại sang phải */
+    }
+
+    /* Đảm bảo khối chứa Avatar có margin-left auto để tự động hít về bên phải */
+    #auth-header-wrapper, .user-pill {
+        margin-left: auto !important;
+    }
+
+    /* 3. FIX LỖI LỆCH NÚT ACTIVE (BOTTOM NAV) */
+    .sidebar {
+        width: 100% !important;
+        height: 65px !important;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        flex-direction: row !important;
+        border-right: none !important;
+        border-top: 1px solid #E2E8F0 !important;
+        background: white !important;
+        z-index: 1000 !important;
+        display: flex !important;
+        padding: 0 !important;
+    }
+
+    .sidebar .p-8, .nav-group-title, .sidebar .p-4.border-t {
+        display: none !important; /* Ẩn logo và các phần thừa */
+    }
+
+    .sidebar nav {
+        display: flex !important;
+        flex-direction: row !important;
+        width: 100% !important;
+        justify-content: space-around !important;
+        align-items: center !important;
+        padding: 0 !important;
+    }
+
+    .sidebar-link {
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        height: 100% !important;
+        font-size: 0 !important; /* Ẩn chữ */
+        color: #94A3B8 !important;
+        position: relative !important;
+    }
+
+    .sidebar-link i, .sidebar-link svg {
+        width: 24px !important;
+        height: 24px !important;
+        margin: 0 !important;
+    }
+
+    /* Căn giữa thanh Active và BỎ SHADOW */
+    .sidebar-link.active {
+        background: transparent !important;
+        color: var(--primary) !important;
+        box-shadow: none !important;
+    }
+
+    /* Thanh gạch ngang nhỏ trên đầu icon */
+    .sidebar-link.active::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 20px;
+        height: 4px;
+        background: var(--primary);
+        border-radius: 0 0 4px 4px;
+    }
+
+    /* Ẩn thanh cuộn cho phần danh mục trên mobile */
+    .tabs-pill-container {
+        -ms-overflow-style: none;  /* Cho Internet Explorer và Edge */
+        scrollbar-width: none;     /* Cho Firefox */
+    }
+
+    .tabs-pill-container::-webkit-scrollbar {
+        display: none !important;  /* Cho Chrome, Safari và Opera */
+    }
+    
+    /* 4. MAIN CONTENT AREA */
+    main {
+        display: block !important;
+        padding-bottom: 80px !important; /* Tránh menu che khuất */
+    }
+
+    .bg-slate-50\/50 {
+        padding: 20px 16px !important; /* Giảm padding tổng quát */
+    }
+
+    /* 5. TITLE & JOIN BUTTON */
+    .flex-col.md\:flex-row {
+        gap: 16px !important;
+        margin-bottom: 30px !important;
+    }
+
+    h1.text-4xl {
+        font-size: 1.8rem !important; /* Thu nhỏ tiêu đề chính */
+        text-align: left;
+    }
+
+    .cta-button {
+        width: 100% !important; /* Nút "Tham gia lớp mới" rộng 100% */
+        justify-content: center !important;
+        padding: 14px !important;
+        font-size: 14px !important;
+    }
+
+    /* 6. CLASS CARDS GRID */
+    #classrooms-grid {
+        grid-template-columns: 1fr !important; /* Một lớp một dòng */
+        gap: 20px !important;
+    }
+
+    .class-card {
+        padding: 24px !important; /* Thu hẹp padding card */
+        border-radius: 28px !important;
+    }
+
+    .class-card h3 {
+        font-size: 1.25rem !important;
+    }
+
+    /* 7. TOASTS & MODALS */
+    #toast-container {
+        bottom: 85px !important; /* Đẩy lên trên Bottom Nav */
+        left: 16px !important;
+        right: 16px !important;
+    }
+
+    .modal-backdrop > div {
+        width: 92% !important;
+        padding: 24px !important;
+        border-radius: 30px !important;
+    }
+
+    /* Phản hồi chạm (Touch Feedback) */
+    .class-card:active {
+        transform: scale(0.98);
+        transition: 0.1s;
+    }
+}

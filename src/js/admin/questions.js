@@ -1,0 +1,1131 @@
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, onSnapshot, query, where, getDocs, addDoc, updateDoc, deleteDoc, writeBatch, serverTimestamp, orderBy, deleteField } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+            
+            // --- DOM Elements ---
+            const questionsArea = document.getElementById('questions-area');
+            const filters = { subject: document.getElementById('filter-subject'), grade: document.getElementById('filter-grade'), lesson: document.getElementById('filter-lesson') };
+            const toastContainer = document.getElementById('toast-container');
+            
+            // Edit Modal
+            const editModal = document.getElementById('edit-question-modal');
+            const editForm = document.getElementById('edit-question-form');
+            const editCancelBtn = document.getElementById('edit-cancel-btn');
+            const editSubmitBtn = document.getElementById('edit-submit-btn');
+
+            // Quick Add Modal
+            const quickAddModal = document.getElementById('quick-add-modal');
+            const quickAddForm = document.getElementById('quick-add-form');
+            const closeQuickAddBtn = document.getElementById('close-quick-add-btn');
+            const saveAndAddAnotherBtn = document.getElementById('save-and-add-another-btn');
+            const saveAllPendingBtn = document.getElementById('save-all-pending-btn');
+            const pendingCountDisplay = document.getElementById('pending-count-display');
+
+            // AI Import Modal
+            const aiImportModal = document.getElementById('ai-import-modal');
+            const closeAiImportBtn = document.getElementById('close-ai-import-btn');
+            const aiDropZone = document.getElementById('ai-drop-zone');
+            const aiFileInput = document.getElementById('ai-file-input');
+            const fileInfo = document.getElementById('file-info');
+            const fileNameDisplay = document.getElementById('file-name');
+            const startAiScanBtn = document.getElementById('start-ai-scan-btn');
+            const aiStatus = document.getElementById('ai-status'); 
+            const aiPreviewList = document.getElementById('ai-preview-list');
+            const importSelectedBtn = document.getElementById('import-selected-btn');
+            const extractedCountEl = document.getElementById('extracted-count');
+            
+            // Delete Modal
+            const deleteConfirmModal = document.getElementById('delete-confirm-modal');
+            const deleteCancelBtn = document.getElementById('delete-cancel-btn');
+            const deleteConfirmBtn = document.getElementById('delete-confirm-btn');
+            const deleteConfirmText = document.getElementById('delete-confirm-text');
+            
+            // --- State ---
+            let allData = { subjects: [], lessons: [], users: [] };
+            let lessonQuestions = [];
+            let pendingQuestions = [];
+            let currentUser = null;
+            let currentLessonId = null;
+            let currentEditingQuestion = null;
+            let itemToDeleteId = null;
+            let questionListener = null;
+            let qaCurrentImageUrl = ''; // Image URL for Quick Add form
+            let editCurrentImageUrl = ''; // Image URL for Edit form
+            let imgbbApiKeys = [];
+            let currentImgbbKeyIndex = 0;
+            let groqKeys = [];  // Cho AI
+            let extractedQuestions = []; // Lưu trữ kết quả từ AI
+
+            // --- Reusable Form HTML Generator ---
+            const generateQuestionFormHTML = (prefix) => `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="md:col-span-2">
+                        <label for="${prefix}-q-type" class="block text-sm font-medium text-gray-700">Loại câu hỏi</label>
+                        <select id="${prefix}-q-type" class="form-input mt-1">
+                            <option value="multiple_choice">Trắc nghiệm nhiều lựa chọn</option>
+                            <option value="true_false_group">Trắc nghiệm Đúng/Sai</option>
+                            <option value="short_answer">Trả lời ngắn</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="${prefix}-q-difficulty" class="block text-sm font-medium text-gray-700">Độ khó</label>
+                        <select id="${prefix}-q-difficulty" class="form-input mt-1">
+                            <option value="nhan_biet">Nhận biết</option>
+                            <option value="thong_hieu">Thông hiểu</option>
+                            <option value="van_dung">Vận dụng</option>
+                            <option value="van_dung_cao">Vận dụng cao</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label for="${prefix}-q-content" class="block text-sm font-medium text-gray-700">Nội dung câu hỏi / Dẫn đề</label>
+                    <div id="${prefix}-q-content" contenteditable="true" class="editable-div form-input" style="min-height: 8rem;"></div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Hình ảnh đính kèm (tùy chọn)</label>
+                    <div id="${prefix}-image-drop-zone" class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md cursor-pointer hover:bg-slate-50 transition-colors">
+                        <div class="space-y-1 text-center">
+                            <div id="${prefix}-image-preview-container" class="hidden">
+                                <img id="${prefix}-q-image-preview" src="" alt="Image preview" class="mx-auto h-24 w-auto rounded-md">
+                                <button type="button" id="${prefix}-q-image-remove-btn" class="mt-2 text-sm text-red-600 hover:text-red-800 font-semibold">Xóa ảnh</button>
+                            </div>
+                            <div id="${prefix}-image-placeholder">
+                                <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                                <div class="flex text-sm text-gray-600">
+                                    <label for="${prefix}-q-image-input" class="relative cursor-pointer bg-white rounded-md font-medium text-teal-600 hover:text-teal-500 focus-within:outline-none"><span >Tải lên một file</span><input id="${prefix}-q-image-input" type="file" class="sr-only" accept="image/*"></label>
+                                    <p class="pl-1">hoặc kéo thả, hoặc dán</p>
+                                </div>
+                                <p class="text-xs text-gray-500">PNG, JPG, GIF</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="${prefix}-mc-options-wrapper">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Các lựa chọn và đáp án đúng</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="flex items-center"><span class="font-semibold mr-2">A</span><input type="text" id="${prefix}-q-option-a" class="form-input flex-1 !mt-0"></div>
+                        <div class="flex items-center"><span class="font-semibold mr-2">B</span><input type="text" id="${prefix}-q-option-b" class="form-input flex-1 !mt-0"></div>
+                        <div class="flex items-center"><span class="font-semibold mr-2">C</span><input type="text" id="${prefix}-q-option-c" class="form-input flex-1 !mt-0"></div>
+                        <div class="flex items-center"><span class="font-semibold mr-2">D</span><input type="text" id="${prefix}-q-option-d" class="form-input flex-1 !mt-0"></div>
+                    </div>
+                    <div class="mt-4"><label for="${prefix}-q-mc-answer" class="text-sm font-medium text-gray-700">Đáp án đúng:</label><select id="${prefix}-q-mc-answer" class="ml-2 form-input w-auto inline-block !mt-0 py-1 pl-2 pr-8"><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></div>
+                </div>
+                <div id="${prefix}-true-false-group-wrapper" class="hidden space-y-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Các mệnh đề và đáp án Đúng/Sai</label>
+                    ${[...Array(4)].map((_, i) => `
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-slate-50 p-2 rounded">
+                            <div class="md:col-span-9"><textarea id="${prefix}-q-tf-statement-${i+1}" placeholder="Nội dung mệnh đề ${i+1}" class="form-input !mt-0" rows="1"></textarea></div>
+                            <div class="md:col-span-3 flex items-center space-x-3 justify-end md:justify-start">
+                                <label class="inline-flex items-center"><input type="radio" name="${prefix}-q-tf-answer-${i+1}" value="true" class="h-4 w-4 text-teal-600 border-gray-300 focus:ring-teal-500"> <span class="ml-1 text-sm">Đúng</span></label>
+                                <label class="inline-flex items-center"><input type="radio" name="${prefix}-q-tf-answer-${i+1}" value="false" class="h-4 w-4 text-teal-600 border-gray-300 focus:ring-teal-500"> <span class="ml-1 text-sm">Sai</span></label>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div id="${prefix}-short-answer-wrapper" class="hidden">
+                    <label for="${prefix}-q-sa-answer" class="block text-sm font-medium text-gray-700">Đáp án đúng</label>
+                    <input type="text" id="${prefix}-q-sa-answer" class="form-input mt-1">
+                </div>
+                <div>
+                    <label for="${prefix}-q-explanation" class="block text-sm font-medium text-gray-700">Giải thích chi tiết (tùy chọn)</label>
+                    <textarea id="${prefix}-q-explanation" rows="3" class="form-input mt-1"></textarea>
+                </div>
+            `;
+            
+            quickAddForm.innerHTML = generateQuestionFormHTML('qa');
+            editForm.innerHTML = generateQuestionFormHTML('edit');
+
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+                const icon = type === 'success' ? 'check-circle' : 'alert-circle';
+                toast.className = `toast show ${bgColor} text-white p-4 rounded-lg shadow-lg flex items-center space-x-3`;
+                toast.innerHTML = `<i data-feather="${icon}" class="w-5 h-5"></i><span>${message}</span>`;
+                toastContainer.appendChild(toast);
+                feather.replace();
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    toast.addEventListener('transitionend', () => toast.remove());
+                }, 3000);
+            }
+
+            function renderMathWithKaTeX(elem) {
+                if (window.renderMathInElement) {
+                    window.renderMathInElement(elem, {
+                        delimiters: [ {left: "$$", right: "$$", display: true}, {left: "$", right: "$", display: false} ]
+                    });
+                }
+            }
+            
+            function cleanPrefix(text) {
+                if (!text) return '';
+                return text.replace(/^(Câu|Bài|Phần|Mục)\s*[\dIVXLC]+\s*[:.]?\s*/i, '').trim();
+            }
+
+             function stripStyling(htmlString) {
+                const cleanHtml = DOMPurify.sanitize(htmlString, {
+                    ALLOWED_TAGS: ['p', 'br', 'b', 'i', 'u', 'em', 'strong', 'sub', 'sup', 'ol', 'ul', 'li', 'span', 'div', 'img'],
+                    FORBID_ATTR: ['style', 'face', 'size', 'color', 'class']
+                });
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = cleanHtml;
+                tempDiv.querySelectorAll('font').forEach(fontEl => {
+                    const spanEl = document.createElement('span');
+                    while (fontEl.firstChild) {
+                        spanEl.appendChild(fontEl.firstChild);
+                    }
+                    fontEl.parentNode.replaceChild(spanEl, fontEl);
+                });
+                return tempDiv.innerHTML;
+            }
+
+            function populateSelect(selectElement, data, placeholder, shouldCleanPrefix = false) {
+                selectElement.innerHTML = `<option value="">${placeholder}</option>`;
+                data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.id;
+                    option.textContent = shouldCleanPrefix ? cleanPrefix(item.name) : (item.name || '');
+                    selectElement.appendChild(option);
+                });
+            }
+            
+            onAuthStateChanged(auth, async (user) => {
+                 if (user) {
+                    currentUser = user;
+                    const docSnap = await getDoc(doc(db, "users", user.uid));
+                    if (docSnap.exists() && docSnap.data().role === 'admin') {
+                        const userData = docSnap.data();
+                        document.getElementById('user-name').textContent = userData.name || 'Admin';
+                        const nameInitial = (userData.name || 'A').charAt(0).toUpperCase();
+                        document.getElementById('user-avatar').src = `https://placehold.co/40x40/DC2626/FFFFFF?text=${nameInitial}`;
+                        initQuestionsPage();
+                    } else {
+                        const userRole = docSnap.data()?.role;
+                        window.location.href = userRole ? `../${userRole}/index.html` : '../auth.html';
+                    }
+                 } else {
+                    window.location.href = '../auth.html';
+                 }
+            });
+
+            async function initQuestionsPage() {
+                try {
+                    const [subjectsSnap, lessonsSnap, usersSnap, apiKeysSnap] = await Promise.all([
+                        getDocs(collection(db, "subjects")),
+                        getDocs(collection(db, "lessons")),
+                        getDocs(collection(db, "users")),
+                        getDoc(doc(db, "system_settings", "api_keys"))
+                    ]);
+                    allData.subjects = subjectsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    allData.lessons = lessonsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    allData.users = usersSnap.docs.map(d => ({ id: d.id, uid: d.id, ...d.data() }));
+                    
+                    if (apiKeysSnap.exists()) {
+                        const keys = apiKeysSnap.data();
+                        imgbbApiKeys = keys.imgbb_keys || [];
+                        // THAY ĐỔI: Lấy trường groq_keys
+                        groqKeys = keys.groq_keys || []; 
+                    }
+
+                    setupFilters();
+                    setupEventListeners();
+                    handleUrlParamsAndLoad(); 
+                } catch (error) {
+                    console.error("Initialization Error: ", error);
+                    showToast("Lỗi khi tải dữ liệu ban đầu.", "error");
+                }
+            }
+
+            function handleUrlParamsAndLoad() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const lessonId = urlParams.get('lessonId');
+
+                if (lessonId) {
+                    const targetLesson = allData.lessons.find(l => l.id === lessonId);
+                    if (targetLesson) {
+                        filters.subject.value = targetLesson.subjectId;
+                        filters.subject.dispatchEvent(new Event('change'));
+                        filters.grade.value = targetLesson.grade;
+                        filters.grade.dispatchEvent(new Event('change'));
+                        filters.lesson.value = lessonId;
+                        filters.lesson.dispatchEvent(new Event('change'));
+                    }
+                }
+            }
+
+            function setupFilters() {
+                const sortedSubjects = [...allData.subjects].sort((a,b) => (a.name || '').localeCompare(b.name || ''));
+                populateSelect(filters.subject, sortedSubjects, 'Chọn Môn học');
+                
+                filters.subject.addEventListener('change', () => {
+                    const subjectId = filters.subject.value;
+                    resetFilters(['grade', 'lesson']);
+                    if (subjectId) {
+                        const subjectLessons = allData.lessons.filter(l => l.subjectId === subjectId);
+                        const grades = [...new Set(subjectLessons.map(l => l.grade))].sort((a,b) => a-b);
+                        populateSelect(filters.grade, grades.map(g => ({id: g, name: `Lớp ${g}`})), 'Chọn Lớp');
+                        filters.grade.disabled = false;
+                    }
+                });
+
+                filters.grade.addEventListener('change', () => {
+                    const subjectId = filters.subject.value;
+                    const grade = filters.grade.value;
+                    resetFilters(['lesson']);
+                    if (grade) {
+                        const lessons = allData.lessons.filter(l => l.subjectId === subjectId && l.grade == grade).sort((a,b) => (a.order ?? Infinity) - (b.order ?? Infinity));
+                        populateSelect(filters.lesson, lessons, 'Chọn Bài học', true);
+                        filters.lesson.disabled = false;
+                    }
+                });
+                
+                filters.lesson.addEventListener('change', () => {
+                    currentLessonId = filters.lesson.value;
+                    if (currentLessonId) {
+                        listenForQuestions(currentLessonId);
+                        hideQuickAddModal();
+                        pendingQuestions = [];
+                        updatePendingCount();
+                    }
+                    else renderInitialView();
+                });
+            }
+
+            function listenForQuestions(lessonId) {
+                if (questionListener) questionListener();
+                renderQuestionsSkeleton();
+                const q = query(collection(db, "questions"), where("lessonId", "==", lessonId), orderBy("createdAt", "desc"));
+                questionListener = onSnapshot(q, (snapshot) => {
+                    lessonQuestions = snapshot.docs.map(d => ({ id: d.id, ...d.data()}));
+                    renderQuestionsForLesson(lessonId);
+                }, (error) => {
+                    const qWithoutOrder = query(collection(db, "questions"), where("lessonId", "==", lessonId));
+                    questionListener = onSnapshot(qWithoutOrder, (snapshot) => {
+                        lessonQuestions = snapshot.docs.map(d => ({ id: d.id, ...d.data()})).sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+                        renderQuestionsForLesson(lessonId);
+                    });
+                });
+            }
+            
+            function renderQuestionsForLesson(lessonId) {
+                const lesson = allData.lessons.find(l => l.id === lessonId);
+                questionsArea.innerHTML = `
+                    <div class="bg-white rounded-lg shadow-sm">
+                        <div class="p-4 border-b flex justify-between items-center">
+                             <h2 class="text-xl font-bold text-slate-800">Câu hỏi cho: ${cleanPrefix(lesson.name)}</h2>
+                             <div class="flex space-x-2">
+                                <button data-action="ai-import-btn" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 text-sm rounded-lg flex items-center transition-colors"><i data-feather="cpu" class="mr-2 w-4 h-4"></i>Import từ File (AI)</button>
+                                <button data-action="add-question-btn" class="cta-button text-white px-3 py-2 text-sm rounded-lg flex items-center"><i data-feather="plus" class="mr-2 w-4 h-4"></i>Thêm thủ công</button>
+                             </div>
+                        </div>
+                        <div id="questions-table-container" class="overflow-x-auto">
+                            ${renderQuestionsTable(lessonQuestions)}
+                        </div>
+                    </div>`;
+                renderMathWithKaTeX(questionsArea);
+                feather.replace();
+            }
+
+            function renderQuestionsTable(questions) {
+                if (questions.length === 0) return `<p class="p-4 text-center text-slate-500">Bài học này chưa có câu hỏi nào.</p>`;
+                
+                const getStatusBadge = (status) => {
+                    if (status === 'approved') return `<span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Đã duyệt</span>`;
+                    if (status === 'rejected') return `<span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Bị từ chối</span>`;
+                    return `<span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">Chờ duyệt</span>`;
+                };
+
+                let tableHTML = `<table class="w-full text-sm text-left">
+                    <thead class="bg-slate-50"><tr>
+                        <th class="p-4 font-semibold text-slate-700">Nội dung</th>
+                        <th class="p-4 font-semibold text-center text-slate-700">Người tạo</th>
+                        <th class="p-4 font-semibold text-center text-slate-700">Trạng thái</th>
+                        <th class="p-4 font-semibold text-right text-slate-700">Hành động</th>
+                    </tr></thead><tbody>`;
+                questions.forEach(q => {
+                    const author = allData.users.find(u => u.uid === q.authorId);
+                    const authorName = author ? author.name : 'Không rõ';
+                    const isPendingTeacherQuestion = author && author.role === 'teacher' && q.status !== 'approved' && q.status !== 'rejected';
+                    
+                    tableHTML += `<tr class="border-t hover:bg-slate-50 transition-colors">
+                        <td class="p-4 max-w-xl">
+                            ${q.imageUrl ? `<img src="${q.imageUrl}" class="max-w-[150px] rounded-md mb-2 border block" onerror="this.style.display='none'">` : ''}
+                            <div class="prose prose-sm text-slate-800">${cleanPrefix(q.content)}</div>
+                        </td>
+                        <td class="p-4 text-center text-slate-500 whitespace-nowrap">${authorName}</td>
+                        <td class="p-4 text-center whitespace-nowrap">${getStatusBadge(q.status)}</td>
+                        <td class="p-4 text-right whitespace-nowrap">
+                           <div class="flex items-center justify-end space-x-2">
+                                ${isPendingTeacherQuestion ? `<button title="Duyệt" data-action="approve" data-id="${q.id}" class="p-2 text-green-600 hover:bg-green-100 rounded-md transition-colors"><i data-feather="check" class="w-4 h-4"></i></button><button title="Từ chối" data-action="reject" data-id="${q.id}" class="p-2 text-red-600 hover:bg-red-100 rounded-md transition-colors"><i data-feather="x" class="w-4 h-4"></i></button>` : ''}
+                                <button title="Chỉnh sửa" data-action="edit-question" data-id="${q.id}" class="p-2 text-slate-500 hover:bg-slate-200 rounded-md transition-colors"><i data-feather="edit-2" class="w-4 h-4"></i></button>
+                                <button title="Xóa" data-action="delete-question" data-id="${q.id}" class="p-2 text-slate-500 hover:bg-red-100 hover:text-red-600 rounded-md transition-colors"><i data-feather="trash-2" class="w-4 h-4"></i></button>
+                           </div>
+                        </td>
+                    </tr>`;
+                });
+                tableHTML += `</tbody></table>`;
+                return tableHTML;
+            }
+
+            function setupEventListeners() {
+                document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+                
+                filters.subject.addEventListener('change', () => {
+                    const subjectId = filters.subject.value;
+                    resetFilters(['grade', 'lesson']);
+                    if (subjectId) {
+                        const subjectLessons = allData.lessons.filter(l => l.subjectId === subjectId);
+                        const grades = [...new Set(subjectLessons.map(l => l.grade))].sort((a,b) => a-b);
+                        populateSelect(filters.grade, grades.map(g => ({id: g, name: `Lớp ${g}`})), 'Chọn Lớp');
+                        filters.grade.disabled = false;
+                    }
+                });
+
+                filters.grade.addEventListener('change', () => {
+                    const subjectId = filters.subject.value;
+                    const grade = filters.grade.value;
+                    resetFilters(['lesson']);
+                    if (grade) {
+                        const lessons = allData.lessons.filter(l => l.subjectId === subjectId && l.grade == grade).sort((a,b) => (a.order ?? Infinity) - (b.order ?? Infinity));
+                        populateSelect(filters.lesson, lessons, 'Chọn Bài học', true);
+                        filters.lesson.disabled = false;
+                    }
+                });
+                
+                filters.lesson.addEventListener('change', () => {
+                    currentLessonId = filters.lesson.value;
+                    if (currentLessonId) {
+                        listenForQuestions(currentLessonId);
+                        hideQuickAddModal();
+                        pendingQuestions = [];
+                        updatePendingCount();
+                    }
+                    else renderInitialView();
+                });
+                
+                document.body.addEventListener('click', (e) => {
+                    const button = e.target.closest('button[data-action]');
+                    if(!button) return;
+                    
+                    const action = button.dataset.action;
+                    const id = button.dataset.id;
+                    
+                    if (action === 'add-question-btn') {
+                        showQuickAddModal();
+                    } else if (action === 'ai-import-btn') {
+                        showAiImportModal();
+                    } else if(action === 'edit-question') {
+                        const questionData = lessonQuestions.find(q => q.id === id);
+                        if (questionData) showEditModal(questionData);
+                    } else if (action === 'delete-question') {
+                        showDeleteConfirmModal(id);
+                    } else if (action === 'approve') {
+                        updateQuestionStatus(id, 'approved');
+                    } else if (action === 'reject') {
+                         updateQuestionStatus(id, 'rejected');
+                    }
+                });
+
+                closeQuickAddBtn.onclick = hideQuickAddModal;
+                saveAndAddAnotherBtn.onclick = handleSaveAndAddAnother;
+                saveAllPendingBtn.onclick = handleSaveAllPending;
+                
+                editForm.onsubmit = handleEditFormSubmit;
+                editCancelBtn.onclick = hideEditModal;
+
+                deleteConfirmBtn.onclick = handleDeleteQuestion;
+                deleteCancelBtn.onclick = hideDeleteConfirmModal;
+                
+                quickAddForm.querySelector('#qa-q-type').onchange = () => toggleAnswerFields(quickAddForm, 'qa');
+                editForm.querySelector('#edit-q-type').onchange = () => toggleAnswerFields(editForm, 'edit');
+
+                setupImageUpload('qa');
+                setupImageUpload('edit');
+
+                // --- AI Import Listeners ---
+                closeAiImportBtn.onclick = hideAiImportModal;
+                aiDropZone.addEventListener('click', () => aiFileInput.click());
+                aiDropZone.addEventListener('dragover', (e) => { e.preventDefault(); aiDropZone.classList.add('border-purple-500', 'bg-purple-50'); });
+                aiDropZone.addEventListener('dragleave', (e) => { e.preventDefault(); aiDropZone.classList.remove('border-purple-500', 'bg-purple-50'); });
+                aiDropZone.addEventListener('drop', (e) => {
+                    e.preventDefault(); aiDropZone.classList.remove('border-purple-500', 'bg-purple-50');
+                    if (e.dataTransfer.files[0]) handleFileSelection(e.dataTransfer.files[0]);
+                });
+                aiFileInput.addEventListener('change', (e) => { if(e.target.files[0]) handleFileSelection(e.target.files[0]); });
+                startAiScanBtn.onclick = handleAiScan;
+                importSelectedBtn.onclick = handleImportSelectedQuestions;
+            }
+
+            // ... (keep existing question manual handlers) ...
+            function getQuestionPayloadFromForm(formElement, prefix) {
+                const type = formElement.querySelector(`#${prefix}-q-type`).value;
+                const rawContent = formElement.querySelector(`#${prefix}-q-content`).innerHTML.trim();
+                const sanitizedContent = stripStyling(rawContent);
+
+                const payload = {
+                    content: sanitizedContent,
+                    type: type,
+                    difficulty: formElement.querySelector(`#${prefix}-q-difficulty`).value,
+                    explanation: formElement.querySelector(`#${prefix}-q-explanation`).value.trim(),
+                    imageUrl: prefix === 'qa' ? qaCurrentImageUrl : editCurrentImageUrl,
+                };
+
+                if (type === 'multiple_choice') {
+                    payload.options = [...'abcd'].map(c => formElement.querySelector(`#${prefix}-q-option-${c}`).value.trim());
+                    payload.correctAnswer = formElement.querySelector(`#${prefix}-q-mc-answer`).value;
+                } else if (type === 'short_answer') {
+                    payload.correctAnswer = formElement.querySelector(`#${prefix}-q-sa-answer`).value.trim();
+                } else if (type === 'true_false_group') {
+                    payload.statements = {}; payload.answers = {};
+                    [...Array(4)].forEach((_, i) => {
+                        const statement = formElement.querySelector(`#${prefix}-q-tf-statement-${i+1}`).value.trim();
+                        if (statement) {
+                            payload.statements[i+1] = statement;
+                            const answerRadio = formElement.querySelector(`input[name="${prefix}-q-tf-answer-${i+1}"]:checked`);
+                            payload.answers[i+1] = answerRadio ? (answerRadio.value === 'true') : null;
+                        }
+                    });
+                }
+                return payload;
+            }
+
+            function handleSaveAndAddAnother() {
+                const payload = getQuestionPayloadFromForm(quickAddForm, 'qa');
+                if (!payload.content) {
+                    showToast('Vui lòng nhập nội dung câu hỏi.', 'error');
+                    return;
+                }
+                pendingQuestions.push(payload);
+                updatePendingCount();
+                resetQuickAddForm();
+                showToast(`Đã thêm 1 câu hỏi vào hàng đợi.`, 'success');
+            }
+
+            async function handleSaveAllPending() {
+                if (pendingQuestions.length === 0) {
+                    showToast('Không có câu hỏi nào trong hàng đợi.', 'error');
+                    return;
+                }
+                saveAllPendingBtn.disabled = true;
+                saveAllPendingBtn.innerHTML = `<i data-feather="loader" class="animate-spin w-4 h-4 sm:mr-2"></i><span class="hidden sm:inline">Đang lưu...</span>`;
+                feather.replace();
+
+                try {
+                    const batch = writeBatch(db);
+                    const q = query(collection(db, 'questions'), where('lessonId', '==', currentLessonId));
+                    const snapshot = await getDocs(q);
+                    let maxOrder = snapshot.docs.reduce((max, doc) => Math.max(max, doc.data().order || 0), 0);
+
+                    pendingQuestions.forEach(questionPayload => {
+                        maxOrder++;
+                        const newDocRef = doc(collection(db, 'questions'));
+                        batch.set(newDocRef, {
+                            ...questionPayload,
+                            lessonId: currentLessonId,
+                            authorId: currentUser.uid,
+                            status: 'approved',
+                            createdAt: serverTimestamp(),
+                            order: maxOrder
+                        });
+                    });
+                    await batch.commit();
+                    showToast(`Đã lưu thành công ${pendingQuestions.length} câu hỏi!`, 'success');
+                    pendingQuestions = [];
+                    updatePendingCount();
+                    resetQuickAddForm();
+                    hideQuickAddModal();
+                } catch (error) {
+                    console.error("Error saving pending questions:", error);
+                    showToast('Lỗi khi lưu câu hỏi.', 'error');
+                } finally {
+                    saveAllPendingBtn.disabled = false;
+                    saveAllPendingBtn.innerHTML = `<i data-feather="save" class="w-4 h-4 sm:mr-2"></i><span class="hidden sm:inline">Lưu tất cả</span>`;
+                    feather.replace();
+                }
+            }
+            
+            function updatePendingCount() {
+                pendingCountDisplay.textContent = pendingQuestions.length;
+                saveAllPendingBtn.disabled = pendingQuestions.length === 0;
+            }
+
+            function showQuickAddModal() {
+                if (!currentLessonId) {
+                    showToast('Vui lòng chọn Bài học trước khi thêm câu hỏi.', 'error');
+                    return;
+                }
+                resetQuickAddForm();
+                quickAddModal.classList.remove('hidden');
+                quickAddModal.classList.add('flex');
+            }
+
+            function hideQuickAddModal() {
+                quickAddModal.classList.add('hidden');
+                quickAddModal.classList.remove('flex');
+            }
+            
+            function showEditModal(questionData) {
+                currentEditingQuestion = questionData;
+                populateForm(editForm, 'edit', questionData);
+                editModal.classList.remove('hidden');
+                editModal.classList.add('flex');
+            }
+
+            function hideEditModal() {
+                editModal.classList.add('hidden');
+                editModal.classList.remove('flex');
+            }
+
+            function populateForm(formElement, prefix, data) {
+                formElement.reset();
+                formElement.querySelector(`#${prefix}-q-content`).innerHTML = data.content || '';
+                formElement.querySelector(`#${prefix}-q-type`).value = data.type || 'multiple_choice';
+                formElement.querySelector(`#${prefix}-q-difficulty`).value = data.difficulty || 'nhan_biet';
+                formElement.querySelector(`#${prefix}-q-explanation`).value = data.explanation || '';
+                
+                removeImage(prefix); 
+                if (data.imageUrl) {
+                    if (prefix === 'qa') qaCurrentImageUrl = data.imageUrl;
+                    else if (prefix === 'edit') editCurrentImageUrl = data.imageUrl;
+
+                    document.getElementById(`${prefix}-q-image-preview`).src = data.imageUrl;
+                    document.getElementById(`${prefix}-image-preview-container`).classList.remove('hidden');
+                    document.getElementById(`${prefix}-image-placeholder`).classList.add('hidden');
+                } else {
+                    if (prefix === 'qa') qaCurrentImageUrl = '';
+                    else if (prefix === 'edit') editCurrentImageUrl = '';
+                }
+                
+                if (data.type === 'multiple_choice') {
+                    (data.options || []).forEach((opt, i) => {
+                        const char = String.fromCharCode(97 + i);
+                        formElement.querySelector(`#${prefix}-q-option-${char}`).value = opt;
+                    });
+                    formElement.querySelector(`#${prefix}-q-mc-answer`).value = data.correctAnswer || 'A';
+                } else if (data.type === 'short_answer') {
+                    formElement.querySelector(`#${prefix}-q-sa-answer`).value = data.correctAnswer || '';
+                } else if (data.type === 'true_false_group') {
+                    [...Array(4)].forEach((_, i) => {
+                        const key = i + 1;
+                        const statementInput = formElement.querySelector(`#${prefix}-q-tf-statement-${key}`);
+                        if(statementInput) statementInput.value = data.statements?.[key] || '';
+                        const answer = data.answers?.[key];
+                        if (answer !== undefined) {
+                            const radio = formElement.querySelector(`input[name="${prefix}-q-tf-answer-${key}"][value="${answer}"]`);
+                            if (radio) radio.checked = true;
+                        }
+                    });
+                }
+                toggleAnswerFields(formElement, prefix);
+            }
+
+            async function handleEditFormSubmit(e) {
+                e.preventDefault();
+                editSubmitBtn.disabled = true;
+                const payload = getQuestionPayloadFromForm(editForm, 'edit');
+                try {
+                    await updateDoc(doc(db, 'questions', currentEditingQuestion.id), payload);
+                    showToast('Cập nhật câu hỏi thành công!', 'success');
+                    hideEditModal();
+                } catch (error) {
+                    showToast('Lỗi khi cập nhật câu hỏi.', 'error');
+                } finally {
+                    editSubmitBtn.disabled = false;
+                }
+            }
+            
+            async function handleDeleteQuestion() {
+                if (!itemToDeleteId) return;
+                deleteConfirmBtn.disabled = true;
+                try {
+                    await deleteDoc(doc(db, 'questions', itemToDeleteId));
+                    showToast('Xóa câu hỏi thành công!');
+                } catch (error) {
+                    showToast('Lỗi khi xóa câu hỏi.', 'error');
+                } finally {
+                    hideDeleteConfirmModal();
+                    itemToDeleteId = null;
+                    deleteConfirmBtn.disabled = false;
+                }
+            }
+
+            async function updateQuestionStatus(id, newStatus) {
+                try {
+                    await updateDoc(doc(db, 'questions', id), { status: newStatus });
+                    showToast(`Đã ${newStatus === 'approved' ? 'duyệt' : 'từ chối'} câu hỏi.`);
+                } catch (error) {
+                    showToast('Lỗi khi cập nhật trạng thái.', 'error');
+                }
+            }
+            
+            function toggleAnswerFields(formElement, prefix) {
+                const type = formElement.querySelector(`#${prefix}-q-type`).value;
+                formElement.querySelector(`#${prefix}-mc-options-wrapper`).classList.toggle('hidden', type !== 'multiple_choice');
+                formElement.querySelector(`#${prefix}-true-false-group-wrapper`).classList.toggle('hidden', type !== 'true_false_group');
+                formElement.querySelector(`#${prefix}-short-answer-wrapper`).classList.toggle('hidden', type !== 'short_answer');
+            }
+            
+            function showDeleteConfirmModal(id) {
+                itemToDeleteId = id;
+                const question = lessonQuestions.find(q => q.id === id);
+                deleteConfirmText.textContent = `Bạn có chắc chắn muốn xóa câu hỏi "${(question.content || "").substring(0, 50)}..." không?`;
+                deleteConfirmModal.classList.remove('hidden');
+                deleteConfirmModal.classList.add('flex');
+            }
+            
+            function hideDeleteConfirmModal() {
+                deleteConfirmModal.classList.add('hidden');
+                deleteConfirmModal.classList.remove('flex');
+            }
+            
+            function renderQuestionsSkeleton() {
+                let skeletonHTML = `<div class="bg-white rounded-lg shadow-sm"><div class="p-4 border-b flex justify-between items-center"><div class="skeleton h-6 w-1/2"></div><div class="skeleton h-9 w-40"></div></div><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="bg-slate-50"><tr><th class="p-3 font-semibold">Nội dung</th><th class="p-3 font-semibold">Loại</th><th class="p-3 font-semibold"></th></tr></thead><tbody>`;
+                for(let i=0; i<3; i++) { skeletonHTML += `<tr class="border-t"><td class="p-3"><div class="skeleton h-4 w-3/4"></div></td><td class="p-3"><div class="skeleton h-4 w-20"></div></td><td class="p-3 text-right"><div class="skeleton h-6 w-16 inline-block"></div></td></tr>`; }
+                skeletonHTML += `</tbody></table></div></div>`;
+                questionsArea.innerHTML = skeletonHTML;
+            }
+
+            function renderInitialView() {
+                questionsArea.innerHTML = `<div class="text-center text-slate-500 bg-white p-10 rounded-lg shadow-sm">
+                    <i data-feather="list" class="w-12 h-12 mx-auto"></i>
+                    <p class="mt-4">Vui lòng chọn một bài học từ bộ lọc ở trên để xem câu hỏi.</p>
+                </div>`;
+                feather.replace();
+            }
+
+            function resetFilters(filterNames) {
+                filterNames.forEach(name => {
+                    const filterEl = document.getElementById(`filter-${name}`);
+                    if (filterEl) {
+                        const placeholder = { grade: 'Chọn Lớp', lesson: 'Chọn Bài học'}[name] || '';
+                        filterEl.innerHTML = `<option value="">${placeholder}</option>`;
+                        filterEl.disabled = true;
+                    }
+                });
+            }
+
+            // --- Image Upload Functions ---
+            function getNextImgbbApiKey() {
+                if (imgbbApiKeys.length === 0) return null;
+                const key = imgbbApiKeys[currentImgbbKeyIndex];
+                currentImgbbKeyIndex = (currentImgbbKeyIndex + 1) % imgbbApiKeys.length;
+                return key;
+            }
+
+            function setupImageUpload(prefix) {
+                const dropZone = document.getElementById(`${prefix}-image-drop-zone`);
+                const input = document.getElementById(`${prefix}-q-image-input`);
+                const removeBtn = document.getElementById(`${prefix}-q-image-remove-btn`);
+                const contentDiv = document.getElementById(`${prefix}-q-content`);
+
+                input.addEventListener('change', (e) => handleFileSelect(e.target.files[0], prefix));
+                contentDiv.addEventListener('paste', (e) => handlePaste(e, prefix));
+                removeBtn.addEventListener('click', () => removeImage(prefix));
+                dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-teal-500'); });
+                dropZone.addEventListener('dragleave', (e) => { e.preventDefault(); dropZone.classList.remove('border-teal-500'); });
+                dropZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dropZone.classList.remove('border-teal-500');
+                    handleFileSelect(e.dataTransfer.files[0], prefix);
+                });
+            }
+            
+            function handleFileSelect(file, prefix) {
+                if (file && file.type.startsWith('image/')) {
+                    uploadImage(file, prefix);
+                }
+            }
+
+            function handlePaste(e, prefix) {
+                e.preventDefault();
+                const clipboardData = e.clipboardData || window.clipboardData;
+                const items = clipboardData.items;
+                let imageFound = false;
+                for (const item of items) {
+                    if (item.kind === 'file' && item.type.startsWith('image/')) {
+                        const file = item.getAsFile();
+                        uploadImage(file, prefix);
+                        imageFound = true;
+                        break; 
+                    }
+                }
+                if (!imageFound) {
+                    const pastedData = clipboardData.getData('text/html') || clipboardData.getData('text/plain');
+                    const cleanedData = stripStyling(pastedData);
+                    document.execCommand('insertHTML', false, cleanedData);
+                }
+            }
+
+            async function uploadImage(file, prefix) {
+                const apiKey = getNextImgbbApiKey();
+                if (!apiKey) {
+                    showToast("Chưa cấu hình ImgBB API Key.", "error");
+                    return;
+                }
+
+                showToast("Đang tải ảnh lên...");
+                
+                const formData = new FormData();
+                formData.append('image', file);
+
+                try {
+                    const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Tải ảnh lên thất bại.');
+                    }
+                    
+                    const result = await response.json();
+                    
+                    if (result.data && result.data.url) {
+                        const downloadURL = result.data.url;
+                        if (prefix === 'qa') qaCurrentImageUrl = downloadURL;
+                        else if (prefix === 'edit') editCurrentImageUrl = downloadURL;
+                        
+                        const contentDiv = document.getElementById(`${prefix}-q-content`);
+                        const imgTag = `<img src="${downloadURL}" alt="Uploaded image" />`;
+                        contentDiv.innerHTML += imgTag;
+
+                        showToast("Tải ảnh thành công!", "success");
+                    } else {
+                        throw new Error('Phản hồi từ ImgBB không hợp lệ.');
+                    }
+
+                } catch (error) {
+                    showToast(error.message, "error");
+                    console.error("ImgBB Upload failed:", error);
+                }
+            }
+            
+            function removeImage(prefix) {
+                if (prefix === 'qa') qaCurrentImageUrl = '';
+                else if (prefix === 'edit') editCurrentImageUrl = '';
+            }
+
+            function resetQuickAddForm() {
+                quickAddForm.reset();
+                quickAddForm.querySelector('#qa-q-content').innerHTML = '';
+                qaCurrentImageUrl = '';
+                toggleAnswerFields(quickAddForm, 'qa');
+            }
+
+            // ============================================
+            // === AI IMPORT LOGIC
+            // ============================================
+            
+            function showAiImportModal() {
+                if (!currentLessonId) {
+                    showToast("Vui lòng chọn Bài học trước khi Import.", "error");
+                    return;
+                }
+                if (openRouterKeys.length === 0) {
+                    showToast("Chưa cấu hình API Key AI (OpenRouter).", "error");
+                    return;
+                }
+                extractedQuestions = [];
+                aiPreviewList.innerHTML = '<p class="text-center text-slate-400 py-10">Kết quả sẽ hiển thị tại đây...</p>';
+                extractedCountEl.textContent = '0';
+                startAiScanBtn.disabled = true;
+                importSelectedBtn.disabled = true;
+                if(aiStatus) aiStatus.classList.add('hidden'); // Fix: Check if element exists before accessing classList
+                fileNameDisplay.textContent = '';
+                fileInfo.classList.add('hidden');
+                
+                // Reset progress
+                const aiProgressContainer = document.getElementById('ai-progress-container');
+                if (aiProgressContainer) {
+                    aiProgressContainer.classList.add('hidden');
+                    document.getElementById('ai-progress-bar').style.width = '0%';
+                }
+
+                aiImportModal.classList.remove('hidden');
+                aiImportModal.classList.add('flex');
+            }
+
+            function hideAiImportModal() {
+                aiImportModal.classList.add('hidden');
+                aiImportModal.classList.remove('flex');
+            }
+
+            function handleFileSelection(file) {
+                if (file) {
+                    fileNameDisplay.textContent = file.name;
+                    fileInfo.classList.remove('hidden');
+                    startAiScanBtn.disabled = false;
+                    
+                    // Simple file type check
+                    if (!['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'].includes(file.type)) {
+                        showToast("Định dạng file chưa được hỗ trợ tốt (Nên dùng: .docx, .pdf, .txt)", "error");
+                    }
+                }
+            }
+            
+            // --- HELPER FOR PROGRESS BAR ---
+            function simulateProgress(duration, steps) {
+                const aiProgressContainer = document.getElementById('ai-progress-container');
+                if (!aiProgressContainer) return () => {}; // Safety check
+
+                aiProgressContainer.classList.remove('hidden');
+                const progressBar = document.getElementById('ai-progress-bar');
+                const processStep = document.getElementById('ai-process-step');
+                const processPercent = document.getElementById('ai-process-percent');
+                
+                let currentPercent = 0;
+                let stepIndex = 0;
+                const intervalTime = duration / 100;
+
+                const interval = setInterval(() => {
+                    if (currentPercent >= 90) { // Stop at 90% and wait for real finish
+                        clearInterval(interval);
+                    } else {
+                        currentPercent++;
+                        progressBar.style.width = `${currentPercent}%`;
+                        processPercent.textContent = `${currentPercent}%`;
+                        
+                        // Change text based on progress
+                        if (currentPercent < 30) processStep.textContent = steps[0];
+                        else if (currentPercent < 60) processStep.textContent = steps[1];
+                        else processStep.textContent = steps[2];
+                    }
+                }, intervalTime);
+                
+                return () => {
+                    clearInterval(interval);
+                    progressBar.style.width = '100%';
+                    processPercent.textContent = '100%';
+                    processStep.textContent = 'Hoàn tất!';
+                }; // Return function to complete progress
+            }
+
+            async function handleAiScan() {
+                const file = aiFileInput.files[0];
+                if (!file) return;
+
+                startAiScanBtn.disabled = true;
+                if(aiStatus) aiStatus.classList.remove('hidden'); // Fix: Check element existence
+                aiDropZone.classList.add('ai-processing');
+                
+                const completeProgress = simulateProgress(15000, ["Đang đọc tài liệu...", "Đang phân tích cấu trúc...", "Đang định dạng JSON..."]);
+
+                try {
+                    let text = '';
+                    if (file.type === 'application/pdf') {
+                        text = await extractTextFromPDF(file);
+                    } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+                        text = await extractTextFromDocx(file);
+                    } else {
+                        text = await file.text();
+                    }
+
+                    if (!text || text.length < 50) throw new Error("Không trích xuất được đủ nội dung văn bản.");
+
+                    const questions = await processTextWithAI(text);
+                    completeProgress(); 
+
+                    extractedQuestions = questions;
+                    renderAiPreview(questions);
+                    
+                    showToast(`Đã quét được ${questions.length} câu hỏi!`, "success");
+                    importSelectedBtn.disabled = questions.length === 0;
+
+                } catch (error) {
+                    console.error("AI Scan Error:", error);
+                    showToast(`Lỗi: ${error.message}`, "error");
+                    const pContainer = document.getElementById('ai-progress-container');
+                    if(pContainer) pContainer.classList.add('hidden');
+                } finally {
+                    startAiScanBtn.disabled = false;
+                    if(aiStatus) aiStatus.classList.add('hidden'); // Fix: Check element existence
+                    aiDropZone.classList.remove('ai-processing');
+                }
+            }
+
+            async function extractTextFromPDF(file) {
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                let fullText = '';
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    const pageText = textContent.items.map(item => item.str).join(' ');
+                    fullText += pageText + '\n';
+                }
+                return fullText;
+            }
+
+            async function extractTextFromDocx(file) {
+                const arrayBuffer = await file.arrayBuffer();
+                const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
+                return result.value;
+            }
+
+            async function processTextWithAI(text) {
+                // Chọn một key ngẫu nhiên từ danh sách Groq Keys để chia tải
+                const apiKey = groqKeys[Math.floor(Math.random() * groqKeys.length)];
+                if (!apiKey) throw new Error("Chưa cấu hình API Key cho Groq.");
+
+                const prompt = `
+                    Bạn là một trợ lý AI chuyên gia soạn câu hỏi trắc nghiệm Địa lý. 
+                    Hãy phân tích văn bản sau và trích xuất các câu hỏi dưới dạng JSON.
+                    Văn bản: "${text.substring(0, 15000)}"
+                    
+                    Yêu cầu Output JSON Array, mỗi object có cấu trúc:
+                    {
+                        "content": "Nội dung câu hỏi",
+                        "type": "multiple_choice" | "true_false_group" | "short_answer",
+                        "difficulty": "nhan_biet" | "thong_hieu" | "van_dung",
+                        "options": ["Nội dung A", "Nội dung B", "Nội dung C", "Nội dung D"], 
+                        "correctAnswer": "A", 
+                        "statements": { "1": "Mệnh đề 1", "2": "Mệnh đề 2" },
+                        "answers": { "1": true, "2": false },
+                        "explanation": "Giải thích tại sao đáp án đó đúng"
+                    }
+                    Trả về JSON thuần túy, không bao gồm các ký tự markdown như \`\`\`json.
+                `;
+
+                // THAY ĐỔI: Endpoint và Cấu trúc gọi Groq API
+                const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${apiKey}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        model: "llama-3.3-70b-versatile", // Sử dụng Model mới nhất
+                        messages: [
+                            { role: "system", content: "Bạn là một máy trích xuất dữ liệu JSON chính xác. Chỉ trả về mảng JSON, không giải thích gì thêm." },
+                            { role: "user", content: prompt }
+                        ],
+                        temperature: 0.2, // Giữ độ chính xác cao cho dữ liệu cấu trúc
+                        max_tokens: 4096
+                    })
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.error?.message || "Lỗi kết nối Groq AI");
+                }
+
+                const data = await response.json();
+                let content = data.choices[0].message.content;
+                
+                // Làm sạch chuỗi JSON nếu AI vô tình trả về markdown
+                content = content.replace(/```json|```/g, '').trim();
+                
+                try {
+                    return JSON.parse(content);
+                } catch (e) {
+                    console.error("Dữ liệu AI trả về không phải JSON hợp lệ:", content);
+                    throw new Error("AI trả về định dạng không hợp lệ, vui lòng thử lại.");
+                }
+            }
+
+            function renderAiPreview(questions) {
+                extractedCountEl.textContent = questions.length;
+                if (questions.length === 0) {
+                    aiPreviewList.innerHTML = '<p class="text-center text-red-500">AI không tìm thấy câu hỏi nào.</p>';
+                    return;
+                }
+
+                aiPreviewList.innerHTML = '';
+                questions.forEach((q, idx) => {
+                    const div = document.createElement('div');
+                    div.className = 'p-3 bg-white border rounded shadow-sm hover:shadow-md transition-shadow';
+                    
+                    let detailHTML = '';
+                    if(q.type === 'multiple_choice') {
+                        detailHTML = `<ul class="text-xs text-slate-500 mt-1 ml-4 list-disc">
+                            ${(q.options || []).map((o, i) => `<li class="${String.fromCharCode(65+i) === q.correctAnswer ? 'text-green-600 font-bold' : ''}">${o}</li>`).join('')}
+                        </ul>`;
+                    } else if (q.type === 'true_false_group') {
+                        detailHTML = `<div class="text-xs text-slate-500 mt-1 ml-4 space-y-1">
+                            ${Object.keys(q.statements || {}).map(k => `<div>${k}) ${q.statements[k]} - <b>${q.answers[k] ? 'Đúng' : 'Sai'}</b></div>`).join('')}
+                        </div>`;
+                    } else {
+                        detailHTML = `<p class="text-xs text-green-600 mt-1 ml-4">Đáp án: ${q.correctAnswer}</p>`;
+                    }
+
+                    div.innerHTML = `
+                        <div class="flex items-start">
+                            <input type="checkbox" checked class="mt-1 mr-3 h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500 question-checkbox" data-index="${idx}">
+                            <div class="flex-grow">
+                                <p class="text-sm font-semibold text-slate-800">${q.content}</p>
+                                ${detailHTML}
+                                <div class="mt-2 flex gap-2">
+                                    <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-500 uppercase">${q.type}</span>
+                                    <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-500 uppercase">${q.difficulty}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    aiPreviewList.appendChild(div);
+                });
+                // Render math
+                if (window.renderMathInElement) {
+                    renderMathInElement(aiPreviewList, {
+                        delimiters: [{left: "$$", right: "$$", display: true}, {left: "$", right: "$", display: false}]
+                    });
+                }
+            }
+
+            async function handleImportSelectedQuestions() {
+                const checkboxes = document.querySelectorAll('.question-checkbox:checked');
+                if (checkboxes.length === 0) {
+                    showToast("Vui lòng chọn ít nhất 1 câu hỏi để nhập.", "error");
+                    return;
+                }
+
+                importSelectedBtn.disabled = true;
+                importSelectedBtn.innerHTML = '<span class="animate-spin h-4 w-4 border-2 border-white rounded-full border-t-transparent mr-2"></span> Đang lưu...';
+
+                try {
+                    const batch = writeBatch(db);
+                    
+                    // Lấy order hiện tại
+                    const qSnapshot = await getDocs(query(collection(db, 'questions'), where('lessonId', '==', currentLessonId)));
+                    let maxOrder = qSnapshot.size;
+
+                    let addedCount = 0;
+                    checkboxes.forEach(cb => {
+                        const index = parseInt(cb.dataset.index);
+                        const questionData = extractedQuestions[index];
+                        if (questionData) {
+                            const newRef = doc(collection(db, 'questions'));
+                            batch.set(newRef, {
+                                ...questionData,
+                                lessonId: currentLessonId,
+                                authorId: currentUser.uid,
+                                status: 'approved',
+                                createdAt: serverTimestamp(),
+                                order: ++maxOrder,
+                                imageUrl: '' 
+                            });
+                            addedCount++;
+                        }
+                    });
+
+                    await batch.commit();
+                    showToast(`Thành công! Đã nhập ${addedCount} câu hỏi.`, "success");
+                    hideAiImportModal();
+                    
+                } catch (error) {
+                    console.error("Import Error:", error);
+                    showToast("Lỗi khi lưu câu hỏi vào cơ sở dữ liệu.", "error");
+                } finally {
+                    importSelectedBtn.disabled = false;
+                    importSelectedBtn.innerHTML = '<i data-feather="check-circle" class="w-4 h-4 mr-2 inline"></i>Lưu vào Ngân hàng';
+                }
+            }
+
+            feather.replace();
+        });

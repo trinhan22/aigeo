@@ -6,92 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tài liệu tham khảo - AIGEO</title>
     
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/src/main.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/feather-icons"></script>
     
-    <style>
-        :root {
-            --primary-teal: #0D9488;
-            --primary-emerald: #10B981;
-            --text-dark: #1E293B;
-            --text-light: #475569;
-        }
-        body { 
-            font-family: 'Be Vietnam Pro', sans-serif; 
-            background-color: #f1f5f9; /* Màu nền chung của dự án */
-        }
-        
-        /* Menu Ngang (Header) */
-        .glass-header { 
-            background-color: rgba(255, 255, 255, 0.65); 
-            backdrop-filter: blur(16px); 
-            -webkit-backdrop-filter: blur(16px); 
-            border-bottom: 1px solid rgba(0,0,0,0.05); 
-        }
-        .cta-button {
-            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.3);
-        }
-        .cta-button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(13, 148, 136, 0.4);
-        }
-
-        /* Định dạng văn bản */
-        .gradient-text {
-            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        /* Tùy chỉnh lớp .prose cho trang tài liệu */
-        .prose h1 {
-            color: var(--text-dark);
-            font-weight: 800;
-        }
-        .prose h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #1e293b;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid #e2e8f0;
-            margin-top: 3.5rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-        }
-        .prose h2 svg {
-            width: 1.25rem;
-            height: 1.25rem;
-            margin-right: 0.75rem;
-            color: var(--primary-teal);
-        }
-        .prose p {
-            line-height: 1.75;
-            color: #475569;
-            text-align: justify;
-            /* Style cho "hanging indent" (thụt lề dòng 2) */
-            text-indent: -2rem;
-            padding-left: 2rem;
-            margin-bottom: 1rem;
-        }
-        .prose a {
-            color: var(--primary-teal);
-            font-weight: 500;
-            text-decoration: none;
-            /* Giúp link không bị gạch chân vỡ dòng */
-            word-break: break-all;
-        }
-        .prose a:hover { text-decoration: underline; }
-        .prose i {
-            font-style: italic;
-        }
-
-    </style>
+    <link rel="stylesheet" href="/src/css/tai-lieu-tham-khao.css">
 </head>
 <body class="antialiased">
 
@@ -180,22 +101,6 @@
         </div>
     </main>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            feather.replace();
-
-            // --- Menu Mobile ---
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
-            if (mobileMenuButton) {
-                mobileMenuButton.addEventListener('click', () => {
-                    mobileMenu.classList.toggle('hidden');
-                    const icon = mobileMenuButton.querySelector('i');
-                    icon.setAttribute('data-feather', mobileMenu.classList.contains('hidden') ? 'menu' : 'x');
-                    feather.replace();
-                });
-            }
-        });
-    </script>
+    <script type="module" src="/src/js/tai-lieu-tham-khao.js"></script>
 </body>
 </html>

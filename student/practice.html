@@ -5,42 +5,10 @@
     <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AIGEO - Luyện tập</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/src/main.css">
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/feather-icons"></script>
-    <style>
-        :root {
-            --primary-teal: #0D9488;
-            --primary-emerald: #10B981;
-        }
-        body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #f1f5f9; }
-        .sidebar-link { display: flex; align-items: center; padding: 0.75rem 1rem; border-radius: 0.5rem; transition: background-color 0.2s, color 0.2s; }
-        .sidebar-link:hover { background-color: #e2e8f0; color: #0f172a; }
-        .sidebar-link.active { 
-            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
-            color: white; 
-            font-weight: 600; 
-            box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2);
-        }
-        .sidebar-link.active:hover { background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald)); }
-        .sidebar-link.active svg { color: white; }
-        .sidebar-link svg { margin-right: 0.75rem; }
-        
-        .brand-gradient-text {
-            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .cta-button {
-            background: linear-gradient(90deg, var(--primary-teal), var(--primary-emerald));
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.2);
-        }
-        .cta-button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(13, 148, 136, 0.3);
-        }
-    </style>
+    <link rel="stylesheet" href="/src/css/student/practice.css">
 </head>
 <body class="flex h-screen">
 
@@ -95,54 +63,7 @@
         </div>
     </main>
     
-    <script src="../firebase-config.js"></script>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            const app = initializeApp(firebaseConfig);
-            const auth = getAuth(app);
-            const db = getFirestore(app);
-
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    const docSnap = await getDoc(doc(db, "users", user.uid));
-                    if (docSnap.exists()) {
-                        const userData = docSnap.data();
-                        if (userData.role !== 'student') {
-                           if (userData.role === 'admin' || userData.role === 'teacher') {
-                               window.location.href = `../${userData.role}/index.html`;
-                           } else {
-                               window.location.href = '../auth.html';
-                           }
-                           return;
-                        }
-                        document.getElementById('user-name').textContent = userData.name || 'Học sinh';
-                        const nameInitial = (userData.name || 'S').charAt(0).toUpperCase();
-                        document.getElementById('user-avatar').src = `https://placehold.co/40x40/10B981/FFFFFF?text=${nameInitial}`;
-                    } else {
-                         window.location.href = '../auth.html';
-                    }
-                } else {
-                    window.location.href = '../auth.html';
-                }
-            });
-
-            document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
-            
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    document.body.style.opacity = '0';
-                    setTimeout(() => { window.location.href = this.href; }, 200);
-                });
-            });
-            document.body.style.transition = 'opacity 0.2s ease-in-out';
-
-            feather.replace();
-        });
-    </script>
+    <script type="module" src="../firebase-config.js"></script>
+    <script type="module" src="/src/js/student/practice.js"></script>
 </body>
 </html>

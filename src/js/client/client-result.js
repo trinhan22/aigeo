@@ -1,0 +1,271 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+            
+            // --- CÁC HÀM XỬ LÝ LOGIC ---
+
+            async function initResultPage() {
+                try {
+                    const resultId = sessionStorage.getItem('latestGuestResultId');
+                    if (!resultId) throw new Error("Không tìm thấy mã bài làm.");
+                    
+                    const snap = await getDoc(doc(db, "guest_submissions", resultId));
+                    if (!snap.exists()) throw new Error("Dữ liệu kết quả không tồn tại.");
+                    
+                    const data = snap.data();
+                    
+                    // --- HIỂN THỊ THÔNG SỐ CHUNG ---
+                    const tenScore = (data.score / data.totalQuestions) * 10 || 0;
+                    document.getElementById('score-display').textContent = tenScore.toFixed(tenScore % 1 === 0 ? 0 : 1);
+                    document.getElementById('raw-score-display').textContent = `${data.score}/${data.totalQuestions}`;
+                    document.getElementById('test-name-title').textContent = data.testName || "Kết quả bài luyện tập";
+                    
+                    const m = Math.floor(data.timeTaken / 60);
+                    const s = data.timeTaken % 60;
+                    document.getElementById('time-taken-display').textContent = `${m}p ${s}s`;
+                    document.getElementById('completed-at-display').textContent = data.completedAt?.toDate().toLocaleDateString('vi-VN') || '--/--';
+
+                    if (tenScore >= 8) launchConfetti();
+
+                    // --- LOGIC NẠP CÂU HỎI THÔNG MINH (FIX LỖI TẠI ĐÂY) ---
+                    let questionsToRender = data.questionsData || []; 
+
+                    // Nếu questionsData bị thiếu, tiến hành gọi từ Database dựa trên mảng ID
+                    if (questionsToRender.length === 0 && data.questionIds && data.questionIds.length > 0) {
+                        console.log("Đang nạp câu hỏi dự phòng từ Database...");
+                        questionsToRender = await fetchQuestionsByIds(data.questionIds);
+                    }
+
+                    const allLessons = await getDocs(collection(db, "lessons")).then(s => s.docs.map(d => ({id: d.id, ...d.data()})));
+
+                    // Gọi hàm render hiển thị chi tiết
+                    renderReview(questionsToRender, data.userAnswers, allLessons);
+
+                    // --- HIỂN THỊ CHỦ ĐỀ SAI ---
+                    const wrongLessonIds = [...new Set((data.incorrectQuestions || []).map(q => q.lessonId).filter(Boolean))];
+                    const topics = allLessons.filter(l => wrongLessonIds.includes(l.id));
+                    document.getElementById('review-topics').innerHTML = topics.length > 0 
+                        ? topics.map(t => `<li class="p-3 bg-slate-50 rounded-xl text-sm font-bold text-slate-700 border-l-4 border-l-red-400">${t.name}</li>`).join('')
+                        : `<li class="p-3 bg-teal-50 rounded-xl text-sm font-bold text-teal-700 border-l-4 border-l-teal-400">Bạn đã nắm vững kiến thức!</li>`;
+
+                    getAiFeedback(data, topics);
+
+                } catch (e) {
+                    console.error(e);
+                    document.body.innerHTML = `<div class="flex items-center justify-center h-screen flex-col gap-4">
+                        <i class="fas fa-exclamation-triangle text-red-500 text-5xl"></i>
+                        <p class="font-bold text-slate-600">${e.message}</p>
+                        <a href="client-practice.html" class="btn-modern btn-primary">Quay lại</a>
+                    </div>`;
+                }
+            }
+
+            async function fetchQuestionsByIds(ids) {
+                if (!ids.length) return [];
+                const fetched = [];
+                const chunks = [];
+                for (let i = 0; i < ids.length; i += 30) chunks.push(ids.slice(i, i + 30));
+                
+                for (const chunk of chunks) {
+                    const snap = await getDocs(query(collection(db, "questions"), where("__name__", "in", chunk)));
+                    snap.forEach(d => fetched.push({id: d.id, ...d.data()}));
+                }
+                return fetched.sort((a,b) => ids.indexOf(a.id) - ids.indexOf(b.id));
+            }
+
+            function renderReview(questions, answers, lessons) {
+                const container = document.getElementById('review-container');
+                
+                // Nếu vẫn không có câu hỏi để hiển thị
+                if (!questions || questions.length === 0) {
+                    container.innerHTML = `
+                        <div class="p-10 text-center bg-white rounded-3xl border-2 border-dashed border-slate-100">
+                            <p class="text-slate-400 font-bold">Không tìm thấy chi tiết câu hỏi để hiển thị.</p>
+                            <p class="text-xs text-slate-300 mt-2">Lưu ý: Chỉ những bài làm mới nhất sau khi cập nhật hệ thống mới có thể xem lại chi tiết.</p>
+                        </div>`;
+                    return;
+                }
+
+                container.innerHTML = questions.map((q, i) => {
+                    const lesson = (lessons || []).find(l => l.id === q.lessonId);
+                    const userAns = answers ? answers[q.id] : null;
+                    let html = '';
+
+                    if (q.type === 'multiple_choice') {
+                        // Logic xáo trộn hoặc mặc định
+                        const currentOptions = q.shuffledOptions || (q.options || []).map((content, idx) => ({
+                            original: String.fromCharCode(65 + idx),
+                            content: content
+                        }));
+
+                        html = currentOptions.map((opt, idx) => {
+                            const letter = String.fromCharCode(65 + idx);
+                            let cls = '';
+                            if (opt.original === q.correctAnswer) cls = 'correct';
+                            else if (letter === userAns) cls = 'incorrect';
+                            return `<div class="answer-box ${cls}"><span class="font-black">${letter}.</span><span>${opt.content}</span></div>`;
+                        }).join('');
+                    } 
+                    else if (q.type === 'short_answer') {
+                        const isCorrect = String(userAns || "").trim().toLowerCase() === String(q.correctAnswer || "").trim().toLowerCase();
+                        html = `<div class="mt-4 space-y-2">
+                            <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest">ĐÁP ÁN ĐÚNG:</div><div class="p-3 bg-teal-50 text-teal-700 rounded-lg font-bold">${q.correctAnswer}</div>
+                            <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest">BẠN VIẾT:</div><div class="p-3 ${isCorrect ? 'bg-teal-50 text-teal-700' : 'bg-red-50 text-red-700'} rounded-lg font-bold">${userAns || '(Trống)'}</div>
+                        </div>`;
+                    }
+                    else {
+                        html = `<div class="p-4 bg-slate-50 rounded-2xl italic text-xs text-slate-400 text-center">Câu hỏi Đúng/Sai đang được tải...</div>`;
+                    }
+
+                    return `<div class="question-review-card shadow-sm">
+                        <div class="flex justify-between items-start mb-6">
+                            <div><span class="text-xs font-black text-teal-600 bg-teal-50 px-2 py-1 rounded uppercase tracking-wider">Câu hỏi ${i+1}</span></div>
+                            <div class="text-[10px] font-bold text-slate-300 uppercase tracking-tighter">${lesson ? lesson.name : 'Kiến thức chung'}</div>
+                        </div>
+                        <div class="font-bold text-lg text-slate-900 mb-6 leading-relaxed">${q.content}</div>
+                        ${q.imageUrl ? `<img src="${q.imageUrl}" class="rounded-2xl mb-8 border max-h-80 mx-auto shadow-sm">` : ''}
+                        <div class="space-y-2">${html}</div>
+                        ${q.explanation ? `<div class="mt-6 p-4 bg-slate-50 rounded-xl text-sm text-slate-600 border-l-4 border-l-teal-500"><b>Giải thích:</b> ${q.explanation}</div>` : ''}
+                    </div>`;
+                }).join('');
+                
+                if (window.renderMathInElement) {
+                    renderMathInElement(container, { delimiters: [{left: "$$", right: "$$", display: true}, {left: "$", right: "$", display: false}] });
+                }
+                feather.replace();
+            }
+
+            async function getAiFeedback(data, topics) {
+                const target = document.getElementById('ai-feedback');
+                try {
+                    const keySnap = await getDoc(doc(db, "system_settings", "api_keys"));
+                    // THAY ĐỔI: Lấy mảng groq_keys thay vì openrouter_keys
+                    const groqKeys = keySnap.data()?.groq_keys || []; 
+                    if (groqKeys.length === 0) throw new Error("No API Key found");
+
+                    // Chọn một API Key ngẫu nhiên từ mảng để chia tải
+                    const apiKey = groqKeys[Math.floor(Math.random() * groqKeys.length)];
+
+                    const prompt = `Học sinh đạt ${data.score}/${data.totalQuestions} điểm môn Địa lý. Các chủ đề bị sai: ${topics.map(t=>t.name).join(', ')}. Dựa trên kết quả này, hãy đưa ra nhận xét ngắn gọn, khích lệ và chỉ ra hướng cải thiện kiến thức.`;
+
+                    // THAY ĐỔI: Sử dụng Endpoint và Model của Groq
+                    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                        method: "POST",
+                        headers: { 
+                            "Authorization": `Bearer ${apiKey}`, 
+                            "Content-Type": "application/json" 
+                        },
+                        body: JSON.stringify({
+                            model: "llama-3.3-70b-versatile", // Model Llama 3.3 70B
+                            messages: [
+                                { 
+                                    role: "system", 
+                                    content: "Bạn là một trợ lý giáo dục chuyên nghiệp. Hãy đưa ra lời nhận xét bài làm bằng tiếng Việt, trình bày đẹp bằng các thẻ HTML (p, strong, br). Hãy xưng hô là 'AIGEO' và gọi học sinh là 'bạn'." 
+                                },
+                                { role: "user", content: prompt }
+                            ],
+                            temperature: 0.6, // Giữ độ sáng tạo vừa phải cho nhận xét
+                            max_tokens: 1024
+                        })
+                    });
+
+                    if (!res.ok) throw new Error("Groq API Error");
+
+                    const resData = await res.json();
+                    const aiResponse = resData.choices[0].message.content;
+                    
+                    // Hiển thị nội dung nhận xét lên giao diện
+                    target.innerHTML = aiResponse;
+
+                } catch (e) {
+                    console.error("AI Feedback Error:", e);
+                    target.innerHTML = "<b>Phân tích:</b> Bạn đã hoàn thành bài làm. Hãy xem lại chi tiết các câu sai bên dưới để củng cố kiến thức nhé!";
+                }
+            }
+
+            function launchConfetti() {
+                const canvas = document.getElementById('confetti-canvas');
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                
+                const duration = 4000; // 4000ms = 4 giây
+                const startTime = Date.now();
+                
+                let pieces = [];
+                for (let i = 0; i < 150; i++) {
+                    pieces.push({ 
+                        x: Math.random() * canvas.width, 
+                        y: Math.random() * canvas.height - canvas.height, 
+                        r: Math.random() * 6 + 2, 
+                        color: ['#0D9488', '#10B981', '#F59E0B'][Math.floor(Math.random() * 3)], 
+                        v: Math.random() * 3 + 2,
+                        d: Math.random() * 150
+                    });
+                }
+
+                function draw() {
+                    // Kiểm tra nếu quá 4 giây thì dừng và xóa canvas
+                    if (Date.now() - startTime > duration) {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        return; 
+                    }
+
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    pieces.forEach(p => {
+                        ctx.beginPath(); 
+                        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); 
+                        ctx.fillStyle = p.color; 
+                        ctx.fill();
+                        p.y += p.v; 
+                        if (p.y > canvas.height) p.y = -20;
+                    });
+                    requestAnimationFrame(draw);
+                }
+                draw();
+            }
+
+            initResultPage();
+        });
+
+// 1. Chặn Chuột phải (Để ẩn menu "Inspect/Kiểm tra" và "View Source/Xem nguồn")
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        // Không hiện thông báo gì cả để trải nghiệm mượt mà hơn
+    });
+
+    // 2. Chặn các phím tắt Developer Tools
+    document.addEventListener('keydown', function(e) {
+        // Chặn F12
+        if (e.key === 'F12' || e.keyCode === 123) {
+            e.preventDefault();
+            return false;
+        }
+
+        // Chặn các tổ hợp phím Ctrl + ...
+        if (e.ctrlKey) {
+            switch (e.key.toLowerCase()) {
+                case 'u': // Chặn Ctrl + U (Xem source code)
+                case 's': // Chặn Ctrl + S (Lưu trang web)
+                case 'p': // Chặn Ctrl + P (In trang web - thường hiện code)
+                // Lưu ý: KHÔNG chặn 'c' (Copy) và 'a' (Select All)
+                    e.preventDefault();
+                    return false;
+            }
+
+            // Chặn Ctrl + Shift + ... (Các phím mở DevTools)
+            if (e.shiftKey) {
+                switch (e.key.toLowerCase()) {
+                    case 'i': // Inspect Element
+                    case 'j': // Console
+                    case 'c': // Element Inspector
+                        e.preventDefault();
+                        return false;
+                }
+            }
+        }
+    });

@@ -1,0 +1,202 @@
+:root {
+            --primary: #0D9488;
+            --secondary: #10B981;
+            --text-main: #1E293B;
+            --text-light: #64748B;
+            --bg-body: #F8FAFC;
+            --primary-gradient: linear-gradient(135deg, #0D9488 0%, #10B981 100%);
+        }
+
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body); color: var(--text-main); overflow: hidden; }
+
+        /* --- SIDEBAR STYLE (Đồng bộ) --- */
+        .sidebar { width: 280px; background: white; border-right: 1px solid #E2E8F0; height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; }
+        .nav-group-title { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #94A3B8; padding: 1.5rem 1.5rem 0.5rem; }
+        .sidebar-link { display: flex; align-items: center; padding: 0.8rem 1.5rem; color: var(--text-light); font-weight: 600; font-size: 0.9rem; transition: 0.3s; gap: 12px; }
+        .sidebar-link:hover { color: var(--primary); background: #F0FDFA; }
+        .sidebar-link.active { background: var(--primary-gradient); color: white; border-radius: 12px; margin: 0 12px; box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.2); }
+
+        /* --- MONITORING CARD STYLE --- */
+        .student-monitor-card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            border: 2px solid transparent;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-online { border-color: #5EEAD4 !important; box-shadow: 0 10px 25px -5px rgba(13, 148, 136, 0.1); }
+        .card-locked { border-color: #F87171 !important; background-color: #FEF2F2 !important; }
+        .card-waiting { border-color: #FBBF24 !important; background-color: #FFFBEB !important; }
+        .card-finished { border-color: #E2E8F0 !important; background-color: #F8FAFC !important; opacity: 0.7; }
+
+        .badge-status { padding: 4px 12px; border-radius: 100px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; display: inline-block; }
+        
+        .avatar-box { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem; }
+        .btn-action { padding: 10px 16px; border-radius: 12px; font-weight: 800; font-size: 0.75rem; text-transform: uppercase; transition: 0.3s; border: none; cursor: pointer; }
+
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0D9488; }
+
+/* ============================================================
+   AIGEO CLASSROOMS MOBILE OPTIMIZATION - PROFESSIONAL UI
+   ============================================================ */
+
+@media (max-width: 768px) {
+    /* 1. SỬA LỖI KHÔNG CUỘN ĐƯỢC & CHIỀU CAO */
+    html, body {
+        overflow-x: hidden !important;
+        overflow-y: auto !important; 
+        height: auto !important;     
+        position: relative !important;
+        display: block !important;    /* Hủy flex h-screen */
+    }
+
+    /* 2. HEADER - Tối giản & Sticky */
+    header {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 50 !important;
+        height: 60px !important;
+        background: rgba(255, 255, 255, 0.9) !important;
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid #E2E8F0;
+    }
+
+    /* 3. BOTTOM NAVIGATION (SIDEBAR) */
+    .sidebar {
+        width: 100% !important;
+        height: 65px !important;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        flex-direction: row !important;
+        border-right: none !important;
+        border-top: 1px solid #E2E8F0 !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(15px);
+        z-index: 1000 !important;
+        padding: 0 !important;
+        display: flex !important;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.03);
+    }
+
+    .sidebar .p-8, .nav-group-title, .sidebar .p-4.border-t {
+        display: none !important; /* Ẩn logo, tiêu đề và nút phụ */
+    }
+
+    .sidebar nav {
+        display: flex !important;
+        flex-direction: row !important;
+        width: 100% !important;
+        justify-content: space-around !important;
+        align-items: center !important;
+        padding: 0 5px !important;
+    }
+
+    .sidebar-link {
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        height: 100% !important;
+        font-size: 0 !important; /* Ẩn chữ */
+        color: #94A3B8 !important;
+        position: relative !important;
+    }
+
+    .sidebar-link i, .sidebar-link svg {
+        width: 22px !important;
+        height: 22px !important;
+        margin: 0 !important;
+    }
+
+    /* Chỉ dấu Active tinh tế */
+    .sidebar-link.active {
+        background: transparent !important;
+        color: var(--primary) !important;
+        box-shadow: none !important;
+    }
+
+    .sidebar-link.active::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 20px;
+        height: 4px;
+        background: var(--primary);
+        border-radius: 0 0 4px 4px;
+    }
+
+    /* 4. MAIN CONTENT AREA */
+    main {
+        display: block !important;
+        padding-bottom: 80px !important; /* Tránh menu che khuất */
+    }
+
+    .bg-slate-50\/50 {
+        padding: 20px 16px !important; /* Giảm padding tổng quát */
+    }
+
+    /* 5. TITLE & JOIN BUTTON */
+    .flex-col.md\:flex-row {
+        gap: 16px !important;
+        margin-bottom: 30px !important;
+    }
+
+    h1.text-4xl {
+        font-size: 1.8rem !important; /* Thu nhỏ tiêu đề chính */
+        text-align: left;
+    }
+
+    .cta-button {
+        width: 100% !important; /* Nút "Tham gia lớp mới" rộng 100% */
+        justify-content: center !important;
+        padding: 14px !important;
+        font-size: 14px !important;
+    }
+
+    /* 6. CLASS CARDS GRID */
+    #classrooms-grid {
+        grid-template-columns: 1fr !important; /* Một lớp một dòng */
+        gap: 20px !important;
+    }
+
+    .class-card {
+        padding: 24px !important; /* Thu hẹp padding card */
+        border-radius: 28px !important;
+    }
+
+    .class-card h3 {
+        font-size: 1.25rem !important;
+    }
+
+    /* 7. TOASTS & MODALS */
+    #toast-container {
+        bottom: 85px !important; /* Đẩy lên trên Bottom Nav */
+        left: 16px !important;
+        right: 16px !important;
+    }
+
+    .modal-backdrop > div {
+        width: 92% !important;
+        padding: 24px !important;
+        border-radius: 30px !important;
+    }
+
+    /* Phản hồi chạm (Touch Feedback) */
+    .class-card:active {
+        transform: scale(0.98);
+        transition: 0.1s;
+    }
+}

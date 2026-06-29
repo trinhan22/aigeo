@@ -1,0 +1,90 @@
+:root { 
+            --primary: #0D9488; 
+            --primary-dark: #0F766E; 
+            --secondary: #10B981;
+        }
+        
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F0FDFA; }
+        
+        /* --- BACKGROUND EFFECTS --- */
+        .background-blobs { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; pointer-events: none; }
+        .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; animation: floatBlob 12s infinite alternate; }
+        .blob-1 { width: 500px; height: 500px; background: #99F6E4; top: -100px; left: -100px; }
+        .blob-2 { width: 400px; height: 400px; background: #BBF7D0; bottom: -50px; right: -50px; animation-delay: -5s; }
+        .blob-3 { width: 300px; height: 300px; background: #CCFBF1; top: 40%; left: 40%; animation-delay: -2s; }
+        @keyframes floatBlob { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(40px, 60px) scale(1.1); } }
+
+        /* Thu hẹp khoảng cách phần "Hoặc tiếp tục với" - Đã tăng nhẹ độ giãn */
+        .divider-space {
+            margin-top: 18px !important;    /* Tăng từ 14px lên 24px */
+            margin-bottom: 14px !important; /* Tăng từ 14px lên 20px */
+        }
+
+        /* Compact Size Inputs */
+        .input-field {
+            width: 100%; padding: 10px 14px; background: #F1F5F9; border: 2px solid transparent;
+            border-radius: 12px; font-size: 0.85rem; font-weight: 600; transition: all 0.3s; color: #1E293B;
+        }
+
+        /* Hiệu ứng đơn giản: hiện ra và trồi lên */
+        .fade-up {
+            animation: simpleFadeUp 0.5s ease-out forwards;
+        }
+
+        @keyframes simpleFadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px); /* Bắt đầu ở dưới 20px */
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0); /* Lên vị trí chuẩn */
+            }
+        }
+
+        .input-field:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1); outline: none; }
+        
+        .input-label-mini { display: block; font-size: 9px; font-weight: 800; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; margin-left: 4px; }
+
+        .role-pill-container { display: flex; background: #F1F5F9; padding: 3px; border-radius: 14px; margin-bottom: 15px; position: relative; }
+        .role-pill-btn { flex: 1; padding: 8px; border-radius: 10px; font-size: 10px; font-weight: 800; text-transform: uppercase; z-index: 10; transition: 0.3s; color: #64748B; }
+        .role-pill-btn.active { background: white; color: var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+        /* Custom Checkbox */
+        .checkbox-container { display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; padding: 2px 0; }
+        .custom-checkbox { appearance: none; width: 18px; height: 18px; border: 2px solid #CBD5E1; border-radius: 6px; position: relative; cursor: pointer; transition: 0.2s; background: white; margin: 0 !important; }
+        .custom-checkbox:checked { background-color: var(--primary); border-color: var(--primary); }
+        .custom-checkbox:checked::after { content: "\f00c"; font-family: "Font Awesome 6 Free"; font-weight: 900; font-size: 10px; color: white; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .checkbox-text { font-size: 11px; font-weight: 700; color: #64748B; line-height: 1; }
+
+        /* Buttons */
+        .btn-modern { width: 100%; padding: 12px; border-radius: 14px; font-weight: 800; font-size: 0.85rem; border: none; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-gradient { background: linear-gradient(135deg, #0D9488 0%, #10B981 100%); transition: all 0.3s ease; }
+        .btn-gradient:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(13, 148, 136, 0.3); }
+        .btn-google { background: white; color: #475569; border: 1.5px solid #F1F5F9; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        .btn-google:hover { background: #F8FAFC; border-color: #E2E8F0; }
+
+        .tab-btn { position: relative; transition: 0.3s; color: #94A3B8; }
+        .tab-btn.active { color: var(--primary); }
+        .tab-btn.active::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 3px; background: var(--primary); border-radius: 10px; }
+
+        .left-panel-gradient { background: linear-gradient(135deg, #0D9488 0%, #10B981 100%); position: relative; overflow: hidden; }
+        .left-pattern { position: absolute; inset: 0; opacity: 0.1; background-image: radial-gradient(#fff 1.5px, transparent 1.5px); background-size: 24px 24px; }
+
+        /* Modals */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.3s; }
+        .modal-overlay.show { opacity: 1; visibility: visible; }
+        .modal-content { background: white; padding: 32px; border-radius: 32px; text-align: center; transform: scale(0.9); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2); max-width: 420px; width: 90%; }
+        .modal-overlay.show .modal-content { transform: scale(1); }
+
+        .alert-icon { width: 64px; height: 64px; border-radius: 22px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 20px; }
+        .alert-error .alert-icon { background: #FEE2E2; color: #EF4444; }
+        .alert-success .alert-icon { background: #DCFCE7; color: #10B981; }
+
+        .animate-fade-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Maintenance Specific Styles */
+        .maintenance-card { background: white; border-radius: 40px; overflow: hidden; max-width: 500px; width: 95%; box-shadow: 0 30px 60px -12px rgba(0,0,0,0.25); }
+        .maintenance-glow { animation: maintenancePulse 2s infinite ease-in-out; }
+        @keyframes maintenancePulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
