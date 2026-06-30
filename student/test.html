@@ -100,8 +100,13 @@
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #0D9488; }
-        @media (max-width: 768px) { #question-map { position: fixed; right: 0; top: 72px; bottom: 0; transform: translateX(100%); z-index: 100; transition: 0.4s; } }
+        @media (max-width: 768px) { 
+            #question-map { position: fixed; right: 0; top: 72px; bottom: 0; transform: translateX(100%); z-index: 100; transition: 0.4s; width: 85%; max-width: 320px; background: white; box-shadow: -4px 0 15px rgba(0,0,0,0.1); } 
+            #question-map-toggle:checked ~ #question-map, #question-map-toggle:checked + #question-map, #question-map-toggle:checked ~ #test-body #question-map { transform: translateX(0); }
+        }
     </style>
+
+    <link rel="stylesheet" href="../global-responsive.css?v=5">
 </head>
 <body>
 

@@ -56,146 +56,13 @@
         .toast { transition: 0.3s; transform: translateY(100%); opacity: 0; }
         .toast.show { transform: translateY(0); opacity: 1; }
 
-/* ============================================================
-   AIGEO STUDENT DASHBOARD MOBILE FIX - CUỘN & CĂN CHỈNH
-   ============================================================ */
+        /* --- HERO BANNER --- */
+        .hero-banner { background: var(--primary-gradient); border-radius: 32px; position: relative; overflow: hidden; color: white; }
+        .hero-banner::after { content: ''; position: absolute; right: -20px; bottom: -20px; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%; }
 
-@media (max-width: 768px) {
-    /* 1. FIX LỖI ĐỨNG YÊN (KHÔNG CUỘN ĐƯỢC) */
-    html, body {
-        overflow-x: hidden !important;
-        overflow-y: auto !important; /* Bật lại cuộn dọc */
-        height: auto !important;     /* Bỏ cố định chiều cao */
-        position: relative !important;
-        display: block !important;    /* Hủy flex h-screen của desktop */
-    }
-
-    /* 2. HEADER - Giữ cố định trên đầu khi cuộn */
-    header {
-        position: sticky !important;
-        top: 0 !important;
-        z-index: 50 !important;
-        height: 60px !important;
-        background: rgba(255, 255, 255, 0.9) !important;
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid #E2E8F0;
-    }
-
-    /* 3. FIX LỖI LỆCH NÚT ACTIVE (BOTTOM NAV) */
-    .sidebar {
-        width: 100% !important;
-        height: 65px !important;
-        position: fixed !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        flex-direction: row !important;
-        border-right: none !important;
-        border-top: 1px solid #E2E8F0 !important;
-        background: white !important;
-        z-index: 1000 !important;
-        display: flex !important;
-        padding: 0 !important;
-    }
-
-    .sidebar .p-8, .nav-group-title, .sidebar .p-4.border-t {
-        display: none !important; /* Ẩn logo và các phần thừa */
-    }
-
-    .sidebar nav {
-        display: flex !important;
-        flex-direction: row !important;
-        width: 100% !important;
-        justify-content: space-around !important;
-        align-items: center !important;
-        padding: 0 !important;
-    }
-
-    .sidebar-link {
-        flex: 1 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        height: 100% !important;
-        font-size: 0 !important; /* Ẩn chữ */
-        color: #94A3B8 !important;
-        position: relative !important;
-    }
-
-    .sidebar-link i, .sidebar-link svg {
-        width: 24px !important;
-        height: 24px !important;
-        margin: 0 !important;
-    }
-
-    /* Căn giữa thanh Active và BỎ SHADOW */
-    .sidebar-link.active {
-        background: transparent !important;
-        color: var(--primary) !important;
-        box-shadow: none !important;
-    }
-
-    /* Thanh gạch ngang nhỏ trên đầu icon */
-    .sidebar-link.active::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 20px;
-        height: 4px;
-        background: var(--primary);
-        border-radius: 0 0 4px 4px;
-    }
-
-    /* 4. MAIN CONTENT - Đảm bảo hiển thị hết nội dung */
-    main {
-        display: block !important;
-        height: auto !important;
-        overflow: visible !important;
-        padding-bottom: 80px !important; /* Khoảng trống để không bị menu che */
-    }
-
-    .flex-1.overflow-y-auto {
-        padding: 16px !important;
-        height: auto !important;
-        overflow: visible !important;
-    }
-
-    /* Grid Chỉ số 2x2 */
-    .grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-4 {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 12px !important;
-    }
-
-    /* Hero Banner & Assignments */
-    .grid-cols-1.lg\:grid-cols-12 {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 20px !important;
-    }
-
-    .hero-banner {
-        padding: 30px 20px !important;
-        text-align: center;
-    }
-
-    .hero-banner h1 {
-        font-size: 1.8rem !important;
-    }
-
-    .bento-card {
-        padding: 20px !important;
-    }
-
-    /* Classrooms dọc 100% */
-    #classrooms-container {
-        grid-template-columns: 1fr !important;
-    }
-}
     </style>
+
+    <link rel="stylesheet" href="../global-responsive.css?v=8">
 </head>
 <body class="flex h-screen">
 
@@ -247,7 +114,7 @@
             </div>
         </header>
 
-        <div class="flex-1 overflow-y-auto bg-slate-50/50 p-8">
+        <div class="flex-1 overflow-y-auto bg-slate-50/50 p-4 md:p-8">
             <div class="max-w-7xl mx-auto space-y-10">
                 
                 <!-- Welcome Title -->
@@ -262,26 +129,26 @@
                 </div>
 
                 <!-- Stats Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="bento-card p-6 flex items-center gap-5 border-l-4 border-l-blue-500">
-                        <div class="stat-badge bg-blue-50 text-blue-600"><i data-feather="users" class="w-5"></i></div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6">
+                    <div class="bento-card p-4 md:p-6 flex items-center gap-3 md:gap-5 border-l-4 border-l-blue-500">
+                        <div class="stat-badge bg-blue-50 text-blue-600"><i data-feather="users" class="w-4 md:w-5"></i></div>
                         <div>
-                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tổng số lớp</p>
-                            <h3 id="stats-classes" class="text-2xl font-black text-slate-800">0</h3>
+                            <p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest">Tổng số lớp</p>
+                            <h3 id="stats-classes" class="text-lg md:text-2xl font-black text-slate-800">0</h3>
                         </div>
                     </div>
-                    <div class="bento-card p-6 flex items-center gap-5 border-l-4 border-l-green-500">
-                        <div class="stat-badge bg-green-50 text-green-600"><i data-feather="user" class="w-5"></i></div>
+                    <div class="bento-card p-4 md:p-6 flex items-center gap-3 md:gap-5 border-l-4 border-l-green-500">
+                        <div class="stat-badge bg-green-50 text-green-600"><i data-feather="user" class="w-4 md:w-5"></i></div>
                         <div>
-                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tổng học sinh</p>
-                            <h3 id="stats-students" class="text-2xl font-black text-slate-800">0</h3>
+                            <p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest">Tổng học sinh</p>
+                            <h3 id="stats-students" class="text-lg md:text-2xl font-black text-slate-800">0</h3>
                         </div>
                     </div>
-                    <div class="bento-card p-6 flex items-center gap-5 border-l-4 border-l-orange-500">
-                        <div class="stat-badge bg-orange-50 text-orange-600"><i data-feather="file-text" class="w-5"></i></div>
+                    <div class="bento-card p-4 md:p-6 flex items-center gap-3 md:gap-5 border-l-4 border-l-orange-500">
+                        <div class="stat-badge bg-orange-50 text-orange-600"><i data-feather="file-text" class="w-4 md:w-5"></i></div>
                         <div>
-                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Đề thi đã tạo</p>
-                            <h3 id="stats-tests" class="text-2xl font-black text-slate-800">0</h3>
+                            <p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest">Đề thi đã tạo</p>
+                            <h3 id="stats-tests" class="text-lg md:text-2xl font-black text-slate-800">0</h3>
                         </div>
                     </div>
                 </div>

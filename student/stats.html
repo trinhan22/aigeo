@@ -135,220 +135,10 @@
 
         .modal-backdrop { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); }
         
-/* ============================================================
-   AIGEO STATS PAGE MOBILE OPTIMIZATION
-   ============================================================ */
 
-@media (max-width: 768px) {
-    /* 1. RESET LAYOUT & SCROLL */
-    html, body {
-        overflow-x: hidden !important;
-        overflow-y: auto !important;
-        height: auto !important;
-        display: block !important;
-    }
-
-    /* 2. HEADER - Tối giản & Sticky */
-    header {
-        position: sticky !important;
-        top: 0 !important;
-        z-index: 50 !important;
-        height: 60px !important;
-        background: rgba(255, 255, 255, 0.9) !important;
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid #E2E8F0;
-    }
-
-    .flex.items-center.gap-2.text-xs.font-bold.text-slate-400.uppercase.tracking-widest {
-        display: none !important;
-    }
-
-    /* 2. Ép cụm Avatar/User sang bên phải */
-    /* Target vào container chứa cả dòng chữ và avatar (thường là thẻ header hoặc div cha flex) */
-    header .flex.items-center.justify-between, 
-    main .flex.items-center.justify-between {
-        display: flex !important;
-        justify-content: flex-end !important; /* Đẩy tất cả nội dung còn lại sang phải */
-    }
-
-    /* Đảm bảo khối chứa Avatar có margin-left auto để tự động hít về bên phải */
-    #auth-header-wrapper, .user-pill {
-        margin-left: auto !important;
-    }
-
-    /* 3. FIX LỖI LỆCH NÚT ACTIVE (BOTTOM NAV) */
-    .sidebar {
-        width: 100% !important;
-        height: 65px !important;
-        position: fixed !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        flex-direction: row !important;
-        border-right: none !important;
-        border-top: 1px solid #E2E8F0 !important;
-        background: white !important;
-        z-index: 1000 !important;
-        display: flex !important;
-        padding: 0 !important;
-    }
-
-    .sidebar .p-8, .nav-group-title, .sidebar .p-4.border-t {
-        display: none !important; /* Ẩn logo và các phần thừa */
-    }
-
-    .sidebar nav {
-        display: flex !important;
-        flex-direction: row !important;
-        width: 100% !important;
-        justify-content: space-around !important;
-        align-items: center !important;
-        padding: 0 !important;
-    }
-
-    .sidebar-link {
-        flex: 1 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        height: 100% !important;
-        font-size: 0 !important; /* Ẩn chữ */
-        color: #94A3B8 !important;
-        position: relative !important;
-    }
-
-    .sidebar-link i, .sidebar-link svg {
-        width: 24px !important;
-        height: 24px !important;
-        margin: 0 !important;
-    }
-
-    /* Căn giữa thanh Active và BỎ SHADOW */
-    .sidebar-link.active {
-        background: transparent !important;
-        color: var(--primary) !important;
-        box-shadow: none !important;
-    }
-
-    /* Thanh gạch ngang nhỏ trên đầu icon */
-    .sidebar-link.active::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 20px;
-        height: 4px;
-        background: var(--primary);
-        border-radius: 0 0 4px 4px;
-    }
-
-    /* 4. MAIN CONTENT AREA */
-    main {
-        display: block !important;
-        padding-bottom: 80px !important; /* Tránh menu che khuất */
-    }
-    .p-8 { padding: 24px 16px !important; }
-
-    h1.text-4xl { font-size: 1.8rem !important; }
-
-    /* 5. STATS GRID - Chuyển sang 2x2 */
-    .grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-4 {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 12px !important;
-    }
-
-    .bento-card {
-        padding: 20px !important;
-        border-radius: 24px !important;
-    }
-
-    .stat-icon {
-        width: 36px !important;
-        height: 36px !important;
-        margin-bottom: 12px !important;
-    }
-
-    .bento-card h3 { font-size: 1.5rem !important; }
-
-    /* 6. CHART CONTAINER */
-    #chart-container {
-        height: 250px !important; /* Giảm chiều cao biểu đồ trên mobile */
-    }
-
-    /* 7. LỊCH SỬ LÀM BÀI - Chuyển Grid thành List Card */
-    #history-table-container {
-        padding: 16px !important;
-    }
-
-    .history-header-grid {
-        display: none !important; /* Ẩn tiêu đề bảng trên mobile */
-    }
-
-    .history-row {
-        grid-template-columns: 1fr !important; /* Đưa về 1 cột dọc */
-        position: relative;
-        padding: 16px !important;
-        margin-bottom: 12px;
-        border: 1px solid #F1F5F9;
-        background: #F8FAFC;
-    }
-
-    .test-name {
-        font-size: 0.95rem !important;
-        margin-bottom: 8px;
-        padding-right: 60px; /* Chừa chỗ cho điểm */
-        white-space: normal !important; /* Cho phép xuống dòng nếu tên dài */
-    }
-
-    /* Đưa điểm số lên góc trên bên phải */
-    .history-row > div:nth-child(3) {
-        position: absolute;
-        top: 16px;
-        right: 16px;
-        text-align: right !important;
-    }
-
-    .score-value { font-size: 1.1rem !important; }
-
-    /* Môn học và Ngày làm nằm cạnh nhau */
-    .history-row > div:nth-child(2),
-    .history-row > div:nth-child(4) {
-        display: inline-block !important;
-        margin-right: 12px;
-        margin-top: 4px;
-    }
-
-    .date-text { text-align: left !important; }
-
-    /* Nút "Xem lại" dàn hàng ngang dưới cùng */
-    .history-row > div:nth-child(5) {
-        border-top: 1px dashed #E2E8F0;
-        margin-top: 12px;
-        padding-top: 12px;
-        text-align: center !important;
-    }
-
-    .btn-view {
-        justify-content: center !important;
-        font-size: 0.8rem !important;
-    }
-
-    /* 8. TOASTS & MODALS */
-    #toast-container {
-        bottom: 85px !important;
-        left: 16px; right: 16px;
-    }
-
-    .modal-backdrop > div {
-        width: 95% !important;
-        border-radius: 28px !important;
-        padding: 24px !important;
-    }
-}
     </style>
+
+    <link rel="stylesheet" href="../global-responsive.css?v=5">
 </head>
 <body class="flex h-screen">
 
@@ -402,7 +192,7 @@
         </header>
 
         <!-- Main Content Scroll -->
-        <div class="flex-1 overflow-y-auto bg-slate-50/50 p-8">
+        <div class="flex-1 overflow-y-auto bg-slate-50/50 p-4 md:p-8">
             <div class="max-w-6xl mx-auto space-y-8">
                 
                 <!-- Title -->
@@ -412,26 +202,26 @@
                 </div>
 
                 <!-- Stats Overview Bento -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="bento-card">
-                        <div class="stat-icon bg-teal-50 text-teal-600"><i data-feather="award" class="w-5"></i></div>
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Điểm trung bình</p>
-                        <h3 id="stat-avg-score" class="text-3xl font-black text-slate-800">0</h3>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+                    <div class="bento-card p-4 md:p-6">
+                        <div class="stat-icon bg-teal-50 text-teal-600 mb-2 md:mb-4 w-8 h-8 md:w-11 md:h-11 flex items-center justify-center rounded-lg"><i data-feather="award" class="w-4 md:w-5"></i></div>
+                        <p class="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Điểm trung bình</p>
+                        <h3 id="stat-avg-score" class="text-xl md:text-3xl font-black text-slate-800">0</h3>
                     </div>
-                    <div class="bento-card">
-                        <div class="stat-icon bg-blue-50 text-blue-600"><i data-feather="file-text" class="w-5"></i></div>
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Số bài đã làm</p>
-                        <h3 id="stat-tests-taken" class="text-3xl font-black text-slate-800">0</h3>
+                    <div class="bento-card p-4 md:p-6">
+                        <div class="stat-icon bg-blue-50 text-blue-600 mb-2 md:mb-4 w-8 h-8 md:w-11 md:h-11 flex items-center justify-center rounded-lg"><i data-feather="file-text" class="w-4 md:w-5"></i></div>
+                        <p class="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Số bài đã làm</p>
+                        <h3 id="stat-tests-taken" class="text-xl md:text-3xl font-black text-slate-800">0</h3>
                     </div>
-                    <div class="bento-card">
-                        <div class="stat-icon bg-emerald-50 text-emerald-600"><i data-feather="trending-up" class="w-5"></i></div>
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Môn tốt nhất</p>
-                        <h3 id="stat-best-subject" class="text-3xl font-black text-slate-800 truncate">0</h3>
+                    <div class="bento-card p-4 md:p-6">
+                        <div class="stat-icon bg-emerald-50 text-emerald-600 mb-2 md:mb-4 w-8 h-8 md:w-11 md:h-11 flex items-center justify-center rounded-lg"><i data-feather="trending-up" class="w-4 md:w-5"></i></div>
+                        <p class="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Môn tốt nhất</p>
+                        <h3 id="stat-best-subject" class="text-xl md:text-3xl font-black text-slate-800 truncate">0</h3>
                     </div>
-                    <div class="bento-card">
-                        <div class="stat-icon bg-red-50 text-red-600"><i data-feather="alert-circle" class="w-5"></i></div>
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Cần cải thiện</p>
-                        <h3 id="stat-worst-subject" class="text-3xl font-black text-slate-800 truncate">0</h3>
+                    <div class="bento-card p-4 md:p-6">
+                        <div class="stat-icon bg-red-50 text-red-600 mb-2 md:mb-4 w-8 h-8 md:w-11 md:h-11 flex items-center justify-center rounded-lg"><i data-feather="alert-circle" class="w-4 md:w-5"></i></div>
+                        <p class="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Cần cải thiện</p>
+                        <h3 id="stat-worst-subject" class="text-xl md:text-3xl font-black text-slate-800 truncate">0</h3>
                     </div>
                 </div>
 
@@ -703,14 +493,16 @@
                 }
 
                 let html = `
-                    <div class="history-header-grid">
-                        <div class="header-label">Tên bài làm</div>
-                        <div class="header-label">Môn học</div>
-                        <div class="header-label text-center">Điểm số</div>
-                        <div class="header-label text-center">Ngày thực hiện</div>
-                        <div class="header-label text-right">Thao tác</div>
-                    </div>
-                    <div class="space-y-1">
+                    <div class="overflow-x-auto w-full pb-4">
+                        <div class="min-w-[650px]">
+                            <div class="history-header-grid">
+                                <div class="header-label">Tên bài làm</div>
+                                <div class="header-label">Môn học</div>
+                                <div class="header-label text-center">Điểm số</div>
+                                <div class="header-label text-center">Ngày thực hiện</div>
+                                <div class="header-label text-right">Thao tác</div>
+                            </div>
+                            <div class="space-y-1">
                 `;
 
                 results.forEach(result => {
@@ -750,7 +542,7 @@
                     `;
                 });
 
-                html += '</div>';
+                html += '</div></div></div>';
                 historyTableContainer.innerHTML = html;
                 feather.replace();
             }

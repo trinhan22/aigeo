@@ -47,7 +47,7 @@
         .cta-button { background: var(--primary-gradient); color: white; padding: 12px 24px; border-radius: 14px; font-weight: 800; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; border: none; cursor: pointer; box-shadow: 0 10px 20px rgba(13, 148, 136, 0.15); }
         .cta-button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 15px 25px rgba(13, 148, 136, 0.25); }
 
-        .btn-pill { padding: 6px 16px; border-radius: 100px; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; transition: 0.3s; }
+        .btn-pill { padding: 6px 16px; border-radius: 100px; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; transition: 0.3s; white-space: nowrap; display: inline-block; }
         
         .status-published { background: #DCFCE7; color: #166534; }
         .status-draft { background: #FEF9C3; color: #854D0E; }
@@ -71,180 +71,10 @@
         .skeleton { background: #E2E8F0; animation: pulse 2s infinite; border-radius: 8px; }
         @keyframes pulse { 50% { opacity: .5; } }
 
-/* ============================================================
-   AIGEO CLASSROOMS MOBILE OPTIMIZATION - PROFESSIONAL UI
-   ============================================================ */
 
-@media (max-width: 768px) {
-    /* 1. SỬA LỖI KHÔNG CUỘN ĐƯỢC & CHIỀU CAO */
-    html, body {
-        overflow-x: hidden !important;
-        overflow-y: auto !important; 
-        height: auto !important;     
-        position: relative !important;
-        display: block !important;    /* Hủy flex h-screen */
-    }
-
-    /* 2. HEADER - Tối giản & Sticky */
-    header {
-        position: sticky !important;
-        top: 0 !important;
-        z-index: 50 !important;
-        height: 60px !important;
-        background: rgba(255, 255, 255, 0.9) !important;
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid #E2E8F0;
-    }
-
-    .flex.items-center.gap-2.text-xs.font-bold.text-slate-400.uppercase.tracking-widest {
-        display: none !important;
-    }
-
-    /* 2. Ép cụm Avatar/User sang bên phải */
-    /* Target vào container chứa cả dòng chữ và avatar (thường là thẻ header hoặc div cha flex) */
-    header .flex.items-center.justify-between, 
-    main .flex.items-center.justify-between {
-        display: flex !important;
-        justify-content: flex-end !important; /* Đẩy tất cả nội dung còn lại sang phải */
-    }
-
-    /* Đảm bảo khối chứa Avatar có margin-left auto để tự động hít về bên phải */
-    #auth-header-wrapper, .user-pill {
-        margin-left: auto !important;
-    }
-
-    /* 3. FIX LỖI LỆCH NÚT ACTIVE (BOTTOM NAV) */
-    .sidebar {
-        width: 100% !important;
-        height: 65px !important;
-        position: fixed !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        flex-direction: row !important;
-        border-right: none !important;
-        border-top: 1px solid #E2E8F0 !important;
-        background: white !important;
-        z-index: 1000 !important;
-        display: flex !important;
-        padding: 0 !important;
-    }
-
-    .sidebar .p-8, .nav-group-title, .sidebar .p-4.border-t {
-        display: none !important; /* Ẩn logo và các phần thừa */
-    }
-
-    .sidebar nav {
-        display: flex !important;
-        flex-direction: row !important;
-        width: 100% !important;
-        justify-content: space-around !important;
-        align-items: center !important;
-        padding: 0 !important;
-    }
-
-    .sidebar-link {
-        flex: 1 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        height: 100% !important;
-        font-size: 0 !important; /* Ẩn chữ */
-        color: #94A3B8 !important;
-        position: relative !important;
-    }
-
-    .sidebar-link i, .sidebar-link svg {
-        width: 24px !important;
-        height: 24px !important;
-        margin: 0 !important;
-    }
-
-    /* Căn giữa thanh Active và BỎ SHADOW */
-    .sidebar-link.active {
-        background: transparent !important;
-        color: var(--primary) !important;
-        box-shadow: none !important;
-    }
-
-    /* Thanh gạch ngang nhỏ trên đầu icon */
-    .sidebar-link.active::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 20px;
-        height: 4px;
-        background: var(--primary);
-        border-radius: 0 0 4px 4px;
-    }
-
-    /* 4. MAIN CONTENT AREA */
-    main {
-        display: block !important;
-        padding-bottom: 80px !important; /* Tránh menu che khuất */
-    }
-
-    .bg-slate-50\/50 {
-        padding: 20px 16px !important; /* Giảm padding tổng quát */
-    }
-
-    /* 5. TITLE & JOIN BUTTON */
-    .flex-col.md\:flex-row {
-        gap: 16px !important;
-        margin-bottom: 30px !important;
-    }
-
-    h1.text-4xl {
-        font-size: 1.8rem !important; /* Thu nhỏ tiêu đề chính */
-        text-align: left;
-    }
-
-    .cta-button {
-        width: 100% !important; /* Nút "Tham gia lớp mới" rộng 100% */
-        justify-content: center !important;
-        padding: 14px !important;
-        font-size: 14px !important;
-    }
-
-    /* 6. CLASS CARDS GRID */
-    #classrooms-grid {
-        grid-template-columns: 1fr !important; /* Một lớp một dòng */
-        gap: 20px !important;
-    }
-
-    .class-card {
-        padding: 24px !important; /* Thu hẹp padding card */
-        border-radius: 28px !important;
-    }
-
-    .class-card h3 {
-        font-size: 1.25rem !important;
-    }
-
-    /* 7. TOASTS & MODALS */
-    #toast-container {
-        bottom: 85px !important; /* Đẩy lên trên Bottom Nav */
-        left: 16px !important;
-        right: 16px !important;
-    }
-
-    .modal-backdrop > div {
-        width: 92% !important;
-        padding: 24px !important;
-        border-radius: 30px !important;
-    }
-
-    /* Phản hồi chạm (Touch Feedback) */
-    .class-card:active {
-        transform: scale(0.98);
-        transition: 0.1s;
-    }
-}
     </style>
+
+    <link rel="stylesheet" href="../global-responsive.css?v=5">
 </head>
 <body class="flex h-screen">
 
@@ -290,7 +120,7 @@
         </header>
 
         <!-- Content Area -->
-        <div class="flex-1 overflow-y-auto bg-slate-50/50 p-8">
+        <div class="flex-1 overflow-y-auto bg-slate-50/50 p-4 md:p-8">
             <div class="max-w-7xl mx-auto space-y-8">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
@@ -311,8 +141,8 @@
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto">
-                        <table class="modern-table">
+                    <div class="overflow-x-auto w-full">
+                        <table class="modern-table min-w-[750px]">
                             <thead>
                                 <tr>
                                     <th class="text-left">Tên đề thi</th>
@@ -482,15 +312,15 @@
                     return `
                         <tr class="hover:bg-slate-50 transition">
                             <td class="font-black text-slate-800">${test.name}</td>
-                            <td class="text-center font-bold text-slate-500 text-sm">${test.questionIds?.length || test.questions?.length || 0} câu</td>
-                            <td class="text-center"><span class="btn-pill ${statusClass}">${statusText}</span></td>
+                            <td class="text-center font-bold text-slate-500 text-sm whitespace-nowrap">${test.questionIds?.length || test.questions?.length || 0} câu</td>
+                            <td class="text-center whitespace-nowrap"><span class="btn-pill ${statusClass}">${statusText}</span></td>
                             <td class="text-right">
                                 <div class="flex items-center justify-end gap-2">
-                                    ${showMonitor ? `<button data-action="monitor" data-id="${test.id}" data-name="${test.name}" class="px-4 py-2 bg-amber-500 text-white rounded-xl text-[10px] font-black uppercase shadow-lg shadow-amber-200">Giám sát</button>` : ''}
+                                    ${showMonitor ? `<button data-action="monitor" data-id="${test.id}" data-name="${test.name}" class="whitespace-nowrap px-4 py-2 bg-amber-500 text-white rounded-xl text-[10px] font-black uppercase shadow-lg shadow-amber-200">Giám sát</button>` : ''}
                                     
-                                    <button data-action="assign" data-id="${test.id}" class="px-4 py-2 bg-teal-600 text-white rounded-xl text-[10px] font-black uppercase shadow-lg shadow-teal-200">Giao bài</button>
+                                    <button data-action="assign" data-id="${test.id}" class="whitespace-nowrap px-4 py-2 bg-teal-600 text-white rounded-xl text-[10px] font-black uppercase shadow-lg shadow-teal-200">Giao bài</button>
                                     
-                                    ${isAssigned ? `<button data-action="unassign" data-id="${test.id}" class="px-4 py-2 bg-slate-200 text-slate-600 rounded-xl text-[10px] font-black uppercase">Hủy giao</button>` : ''}
+                                    ${isAssigned ? `<button data-action="unassign" data-id="${test.id}" class="whitespace-nowrap px-4 py-2 bg-slate-200 text-slate-600 rounded-xl text-[10px] font-black uppercase">Hủy giao</button>` : ''}
                                     
                                     <div class="flex gap-1 ml-2">
                                         <a href="test-view-teacher.html?testId=${test.id}" class="p-2 text-slate-400 hover:text-teal-600 transition" title="Xem đề"><i data-feather="eye" class="w-4"></i></a>
