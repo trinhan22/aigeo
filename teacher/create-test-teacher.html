@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+
         :root {
             --primary: #0D9488;
             --primary-light: #F0FDFA;
@@ -25,7 +26,7 @@
 
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body); color: var(--text-main); overflow: hidden; }
 
-        /* --- SIDEBAR STYLE (Đồng bộ) --- */
+        /* --- SIDEBAR STYLE --- */
         .sidebar { width: 280px; background: white; border-right: 1px solid #E2E8F0; height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; }
         .nav-group-title { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #94A3B8; padding: 1.5rem 1.5rem 0.5rem; }
         .sidebar-link { display: flex; align-items: center; padding: 0.8rem 1.5rem; color: var(--text-light); font-weight: 600; font-size: 0.9rem; transition: 0.3s; gap: 12px; }
@@ -37,15 +38,19 @@
         .bento-card { background: white; border-radius: 32px; border: 1px solid #E2E8F0; padding: 32px; transition: 0.3s; }
         
         /* --- STEP INDICATOR --- */
-        .step-pill { padding: 6px 16px; border-radius: 100px; font-weight: 800; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; background: var(--primary-light); color: var(--primary); }
+        .step-pill { padding: 6px 16px; border-radius: 100px; font-weight: 800; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; display: inline-flex; align-items: center; gap: 4px; }
+        .step-active { background: var(--primary-light); color: var(--primary); }
+        .step-done { background: #DCFCE7; color: #166534; }
+        .step-inactive { background: #F1F5F9; color: #94A3B8; }
 
         /* --- FORM STYLES --- */
         .form-label { display: block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #94A3B8; letter-spacing: 0.05em; margin-bottom: 8px; margin-left: 4px; }
-        .form-input { width: 100%; padding: 14px 20px; background: #F8FAFC; border: 2px solid #F1F5F9; border-radius: 16px; font-weight: 700; color: var(--text-main); outline: none; transition: 0.3s; }
-        .form-input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1); }
+        .form-input, .editable-div { width: 100%; padding: 14px 20px; background: #F8FAFC; border: 2px solid #F1F5F9; border-radius: 16px; font-weight: 700; color: var(--text-main); outline: none; transition: 0.3s; }
+        .form-input:focus, .editable-div:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1); }
         .form-input:disabled { opacity: 0.5; cursor: not-allowed; }
+        .editable-div { min-height: 100px; cursor: text; font-weight: 600; }
 
-        /* --- CARD SELECTORS (Source & Monitoring) --- */
+        /* --- CARD SELECTORS --- */
         .source-option { border: 2px solid #F1F5F9; border-radius: 20px; padding: 20px; cursor: pointer; transition: 0.3s; position: relative; display: flex; align-items: flex-start; gap: 16px; }
         .source-option:hover { border-color: var(--primary); background: #F8FAFC; }
         .source-option:has(input:checked) { border-color: var(--primary); background: var(--primary-light); box-shadow: 0 10px 20px -5px rgba(13, 148, 136, 0.1); }
@@ -53,20 +58,27 @@
         .source-icon { width: 44px; height: 44px; border-radius: 12px; background: white; border: 1px solid #F1F5F9; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #94A3B8; transition: 0.3s; flex-shrink: 0; }
         .source-option:has(input:checked) .source-icon { background: var(--primary); color: white; border-color: var(--primary); }
 
+        /* --- QUESTION BLOCK LIST --- */
+        .question-item { background: white; border: 1px solid #F1F5F9; border-radius: 20px; padding: 20px; margin-bottom: 16px; transition: 0.3s; border-left: 4px solid #E2E8F0; }
+        .question-item:hover { border-color: var(--primary); transform: translateX(5px); }
+
         /* --- BUTTONS --- */
-        .cta-button { background: var(--primary-gradient); color: white; padding: 16px 32px; border-radius: 18px; font-weight: 800; transition: 0.3s; display: inline-flex; align-items: center; gap: 10px; border: none; cursor: pointer; box-shadow: 0 10px 20px rgba(13, 148, 136, 0.15); }
+        .cta-button { background: var(--primary-gradient); color: white; padding: 14px 28px; border-radius: 18px; font-weight: 800; transition: 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 10px; border: none; cursor: pointer; box-shadow: 0 10px 20px rgba(13, 148, 136, 0.15); }
         .cta-button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(13, 148, 136, 0.25); }
         .cta-button:disabled { background: #E2E8F0; color: #94A3B8; box-shadow: none; cursor: not-allowed; }
+
+        .btn-ghost { background: #F1F5F9; color: #64748B; font-weight: 700; padding: 10px 20px; border-radius: 12px; transition: 0.3s; }
+        .btn-ghost:hover { background: #E2E8F0; color: var(--text-main); }
 
         /* --- SCROLLBAR --- */
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #0D9488; }
+        
         .skeleton { background: #E2E8F0; animation: pulse 2s infinite; border-radius: 8px; }
         @keyframes pulse { 50% { opacity: .5; } }
         .toast { transition: 0.3s; transform: translateY(100%); opacity: 0; }
         .toast.show { transform: translateY(0); opacity: 1; }
-
 
     </style>
 
@@ -101,14 +113,14 @@
     <main class="flex-1 flex flex-col overflow-hidden">
         <!-- Header -->
         <header class="h-16 bg-white border-b flex items-center justify-between px-8 shrink-0">
-            <div class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">
+            <div class="hidden md:flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">
                 <a href="index.html" class="hover:text-teal-600">Tổng Quan</a>
                 <span>/</span>
                 <a href="tests.html" class="hover:text-teal-600">Quản Lý Đề Thi</a>
                 <span>/</span>
                 <span class="text-slate-800">Tạo Đề Thi</span>
             </div>
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-4 ml-auto">
                 <div id="global-notification-bell" class="mr-2 sm:mr-4 z-50"></div>
                 <div class="text-right hidden sm:block">
                     <p id="user-name" class="text-sm font-black text-slate-800 leading-none">Đang tải...</p>
@@ -120,14 +132,14 @@
 
         <!-- Main Content Area -->
         <div class="flex-1 overflow-y-auto bg-slate-50/50 p-4 md:p-8">
-            <div class="max-w-4xl mx-auto space-y-8 pb-20">
+            <div class="max-w-4xl mx-auto pb-20">
                 
                 <!-- Step Indicator & Title -->
-                <div class="flex flex-col gap-4">
+                <div class="flex flex-col gap-4 mb-10">
                     <div class="flex items-center gap-2">
-                        <span class="step-pill">BƯỚC 1: THIẾT LẬP CƠ BẢN</span>
+                        <span class="step-pill step-active flex items-center gap-1"><i class="fas fa-check-circle text-[10px]"></i> Bước 1: Thiết lập cơ bản</span>
                         <div class="h-[2px] w-8 bg-slate-200"></div>
-                        <span class="text-[10px] font-extrabold text-slate-300 uppercase tracking-widest">BƯỚC 2: SOẠN CÂU HỎI</span>
+                        <span class="step-pill step-inactive">Bước 2: Soạn câu hỏi</span>
                     </div>
                     <h1 class="text-3xl font-black text-slate-900 tracking-tight">Tạo Đề thi Mới</h1>
                     <p class="text-slate-500 font-medium text-sm">Vui lòng điền các thông tin nền tảng để hệ thống khởi tạo bài thi.</p>
@@ -136,10 +148,10 @@
                 <div id="toast-container" class="fixed bottom-10 right-10 z-50 flex flex-col gap-3"></div>
 
                 <!-- Bento Form Section -->
-                <div class="space-y-6">
+                <div class="space-y-6 mb-12">
                     
                     <!-- Basic Info Card -->
-                    <div class="bento-card shadow-sm">
+                    <div class="bento-card shadow-sm border-t-4 border-t-teal-500">
                         <div class="space-y-6">
                             <div>
                                 <label class="form-label">Tên đề thi hiển thị</label>
@@ -154,12 +166,12 @@
                                 <div>
                                     <label class="form-label">Phân loại bài tập</label>
                                     <div id="monitoring-options" class="grid grid-cols-2 gap-3">
-                                        <label class="source-option !p-3">
+                                        <label class="source-option !p-3 !items-center !justify-center">
                                             <input type="radio" name="monitoring" value="true" checked>
                                             <div class="source-icon !w-8 !h-8 !text-xs"><i class="fas fa-shield-alt"></i></div>
                                             <span class="text-xs font-black uppercase text-slate-700">Đề kiểm tra</span>
                                         </label>
-                                        <label class="source-option !p-3">
+                                        <label class="source-option !p-3 !items-center !justify-center">
                                             <input type="radio" name="monitoring" value="false">
                                             <div class="source-icon !w-8 !h-8 !text-xs"><i class="fas fa-home"></i></div>
                                             <span class="text-xs font-black uppercase text-slate-700">Bài tập về nhà</span>
@@ -171,7 +183,7 @@
                     </div>
 
                     <!-- Question Source Card -->
-                    <div class="bento-card shadow-sm border-l-4 border-l-teal-500">
+                    <div class="bento-card shadow-sm border-t-4 border-t-teal-500">
                         <label class="form-label mb-4">Phương thức khởi tạo câu hỏi</label>
                         <div id="source-options" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <label class="source-option">
@@ -187,7 +199,7 @@
                                 <div class="source-icon"><i class="fas fa-keyboard"></i></div>
                                 <div>
                                     <span class="block font-black text-slate-800 text-sm">Tự soạn câu hỏi</span>
-                                    <p class="text-[11px] font-medium text-slate-400 leading-snug mt-1">Tự nhập nội dung câu hỏi mới hoàn toàn dành riêng cho đề thi này.</p>
+                                    <p class="text-[11px] font-medium text-slate-400 leading-snug mt-1">Tự nhập nội dung câu hỏi hoặc TẠO TỰ ĐỘNG bằng AI từ file Word.</p>
                                 </div>
                             </label>
                         </div>
@@ -196,24 +208,24 @@
                     <!-- Scope & Assigning -->
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
                         <!-- Scope -->
-                        <div class="md:col-span-5 bento-card shadow-sm">
+                        <div class="md:col-span-5 bento-card shadow-sm border-t-4 border-t-teal-500">
                             <label class="form-label">Phạm vi kiến thức</label>
                             <div class="space-y-4 mt-4">
                                 <div class="relative">
-                                    <select id="filter-subject" class="form-input appearance-none"></select>
+                                    <select id="filter-subject" class="form-input appearance-none !py-3"></select>
                                     <i class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none"></i>
                                 </div>
                                 <div class="relative">
-                                    <select id="filter-grade" class="form-input appearance-none" disabled></select>
+                                    <select id="filter-grade" class="form-input appearance-none !py-3" disabled></select>
                                     <i class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none"></i>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Classrooms -->
-                        <div class="md:col-span-7 bento-card shadow-sm">
+                        <div class="md:col-span-7 bento-card shadow-sm border-t-4 border-t-teal-500">
                             <label class="form-label">Giao bài cho lớp (Tùy chọn)</label>
-                            <div id="classrooms-list" class="mt-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 max-h-[140px] overflow-y-auto space-y-2">
+                            <div id="classrooms-list" class="mt-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 max-h-[140px] overflow-y-auto space-y-2 custom-scrollbar">
                                 <div class="space-y-3">
                                     <div class="skeleton h-5 w-3/4"></div>
                                     <div class="skeleton h-5 w-1/2"></div>
@@ -224,7 +236,7 @@
                 </div>
 
                 <!-- Footer Action -->
-                <div class="flex justify-between items-center bg-white p-6 rounded-[24px] border border-slate-100 shadow-xl shadow-teal-900/5">
+                <div class="flex justify-between items-center bg-white p-6 rounded-[24px] border border-slate-100 shadow-xl shadow-teal-900/5 mt-8">
                     <div class="flex items-center gap-3 text-slate-400">
                         <i data-feather="info" class="w-4"></i>
                         <p class="text-[10px] font-bold uppercase tracking-wider">Mọi thay đổi sẽ được lưu dưới dạng bản nháp</p>
@@ -244,7 +256,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, collection, getDocs, addDoc, serverTimestamp, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, getDocs, addDoc, updateDoc, arrayUnion, serverTimestamp, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -265,7 +277,7 @@
         let currentUser = null;
 
         // --- UTILS ---
-        function showToast(message, type = 'error') {
+        function _deprecated_showToast(message, type = 'error') {
             const toast = document.createElement('div');
             const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
             toast.className = `toast show ${bgColor} text-white px-4 py-2 rounded-lg shadow-lg`;
@@ -411,6 +423,19 @@
 
             try {
                 const docRef = await addDoc(collection(db, "tests"), testData);
+                
+                // Update all selected classrooms with this new assignment
+                if (selectedClassrooms && selectedClassrooms.length > 0) {
+                    await Promise.all(selectedClassrooms.map(async (classId) => {
+                        await updateDoc(doc(db, "classrooms", classId), {
+                            assignments: arrayUnion({
+                                testId: docRef.id,
+                                assignedAt: new Date().toISOString()
+                            })
+                        });
+                    }));
+                }
+
                 // ĐÃ SỬA LỖI ĐIỀU HƯỚNG: Luôn trỏ đến create-test-teacher-step2.html
                 const destination = `create-test-teacher-step2.html?testId=${docRef.id}&source=${selectedSource}`;
                 
@@ -467,5 +492,6 @@
     });
 </script>
 <script type="module" src="../notifications.js"></script>
+    <script src="../global-ui.js"></script>
 </body>
 </html>

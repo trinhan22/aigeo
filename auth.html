@@ -457,7 +457,7 @@
             }
         };
 
-        window.showAlert = (msg, type = 'error') => {
+        window._deprecated_showAlert = (msg, type = 'error') => {
             const modal = document.getElementById('alert-modal');
             const title = document.getElementById('alert-title');
             const message = document.getElementById('alert-message');
@@ -714,5 +714,6 @@
         // Khởi tạo
         loadSubjects();
     </script>
+    <script src="./global-ui.js"></script>
 </body>
 </html>

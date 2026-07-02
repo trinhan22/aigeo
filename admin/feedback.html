@@ -261,7 +261,7 @@
             let currentFilter = 'new';
             let currentReplyingFeedbackId = null;
 
-            function showToast(message, type = 'success') {
+            function _deprecated_showToast(message, type = 'success') {
                 const toast = document.createElement('div');
                 const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
                 toast.className = `toast show ${bgColor} text-white px-4 py-2 rounded-lg shadow-lg`;
@@ -429,5 +429,6 @@
         });
     </script>
 <script type="module" src="../notifications.js"></script>
+    <script src="../global-ui.js"></script>
 </body>
 </html>

@@ -8,6 +8,7 @@
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/feather-icons"></script>
 
@@ -115,14 +116,14 @@
     <main class="flex-1 flex flex-col overflow-hidden">
         <!-- Header -->
         <header class="h-16 bg-white border-b flex items-center justify-between px-8 shrink-0">
-            <div class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
+            <div class="hidden md:flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
                 <a href="index.html" class="hover:text-teal-600 transition">Tổng Quan</a>
                 <span>/</span>
                 <a href="classrooms.html" class="hover:text-teal-600 transition">Danh Sách Lớp Học</a>
                 <span>/</span>
                 <span class="text-slate-800">Lớp Học Chi Tiết</span>
             </div>
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-4 ml-auto">
                 <div id="global-notification-bell" class="mr-2 sm:mr-4 z-50"></div>
                 <div class="text-right hidden sm:block">
                     <p id="user-name" class="text-sm font-black text-slate-800 leading-none">Đang tải...</p>
@@ -152,7 +153,15 @@
                     </button>
                 </div>
                 
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-8 items-start">
+                <!-- Tabs -->
+                <div class="flex items-center gap-6 border-b border-slate-200 mb-8 overflow-x-auto pb-px">
+                    <button class="student-tab-btn px-1 py-4 text-sm font-bold text-teal-600 border-b-2 border-teal-600 whitespace-nowrap hover:text-teal-700 transition" data-target="assignments-view" onclick="switchStudentTab('assignments-view')">Bài tập được giao</button>
+                    <button class="student-tab-btn px-1 py-4 text-sm font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition whitespace-nowrap" data-target="news-feed-view" onclick="switchStudentTab('news-feed-view')">Bảng tin</button>
+                    <button id="tab-gradebook-btn" class="student-tab-btn px-1 py-4 text-sm font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition whitespace-nowrap" data-target="gradebook-view" onclick="switchStudentTab('gradebook-view')">Bảng điểm</button>
+                </div>
+
+                <!-- View 1: Assignments -->
+                <div id="assignments-view" class="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-8 items-start">
                     <!-- Assignments Section -->
                     <div class="lg:col-span-8 space-y-6">
                         <div class="flex items-center justify-between mb-2 px-2">
@@ -178,7 +187,84 @@
                             </div>
                         </div>
                     </div>
+                </div> <!-- End assignments-view -->
+
+                <!-- View 2: News Feed -->
+                <div id="news-feed-view" class="hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
+                        <!-- Left Column (Feed) -->
+                        <div class="lg:col-span-2 space-y-6">
+                    <div id="posts-feed" class="space-y-6">
+                        <div id="empty-feed-state" class="bg-white rounded-3xl border border-slate-100 p-16 flex flex-col items-center justify-center shadow-sm">
+                            
+                            <p class="text-slate-500 font-semibold mb-6">Chưa có bản tin nào!!</p>
+                        </div>
+                    </div>
+                        </div>
+                        
+                        <!-- Right Column (Quick Actions) -->
+                        <div class="hidden lg:block lg:col-span-1 space-y-4 sticky top-24">
+                            <h3 class="font-bold text-slate-800 uppercase text-xs tracking-wider mb-4 px-2">Lối tắt học tập</h3>
+                            
+                            <a href="classrooms.html" class="flex items-center gap-3 p-4 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all group text-slate-700">
+                                <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition"><i data-feather="book-open" class="w-5 h-5"></i></div>
+                                <div>
+                                    <div class="font-bold text-sm">Lớp học của tôi</div>
+                                    <div class="text-xs text-slate-400 font-medium">Xem danh sách lớp</div>
+                                </div>
+                            </a>
+                            
+                            <a href="practice-hub.html" class="flex items-center gap-3 p-4 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all group text-slate-700">
+                                <div class="w-10 h-10 bg-teal-50 text-teal-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition"><i data-feather="target" class="w-5 h-5"></i></div>
+                                <div>
+                                    <div class="font-bold text-sm">Luyện tập</div>
+                                    <div class="text-xs text-slate-400 font-medium">Làm đề trắc nghiệm</div>
+                                </div>
+                            </a>
+                            
+                            <a href="stats.html" class="flex items-center gap-3 p-4 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all group text-slate-700">
+                                <div class="w-10 h-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition"><i data-feather="pie-chart" class="w-5 h-5"></i></div>
+                                <div>
+                                    <div class="font-bold text-sm">Thống kê</div>
+                                    <div class="text-xs text-slate-400 font-medium">Tiến độ học tập</div>
+                                </div>
+                            </a>
+                            
+                            <a href="chat-bot.html" class="flex items-center gap-3 p-4 bg-teal-600 rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 transition-all group text-white mt-4">
+                                <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition"><i data-feather="message-circle" class="w-5 h-5"></i></div>
+                                <div>
+                                    <div class="font-bold text-sm">Trợ lý AI</div>
+                                    <div class="text-xs text-slate-300 font-medium">Hỏi đáp trực tuyến</div>
+                                </div>
+                            </a>
+                        </div> <!-- End Quick Actions -->
+                    </div>
+                </div> <!-- End news-feed-view -->
+
+                <!-- View 3: Gradebook -->
+                <div id="gradebook-view" class="hidden">
+                    <div class="bg-white rounded-[24px] sm:rounded-3xl border border-slate-100 shadow-sm p-4 sm:p-8">
+                        <div class="flex items-center justify-between mb-8">
+                            <h2 class="text-xl font-bold text-slate-800">Bảng điểm của tôi</h2>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-y border-slate-100 bg-slate-50 text-xs text-slate-500 font-bold uppercase" id="student-gradebook-headers">
+                                        <!-- Headers injected -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-slate-50 hover:bg-slate-50 transition" id="student-gradebook-row">
+                                        <!-- Grades injected -->
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
+
+
             </div>
         </div>
     </main>
@@ -213,7 +299,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, collection, query, where, getDocs, updateDoc, arrayRemove, addDoc, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, query, where, getDocs, updateDoc, arrayRemove, addDoc, serverTimestamp, orderBy, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         document.addEventListener('DOMContentLoaded', () => {
             const app = initializeApp(firebaseConfig);
@@ -222,6 +308,7 @@
 
             // --- State ---
             let currentUser = null;
+            let studentName = '';
 
             // --- Elements ---
             const classroomsGrid = document.getElementById('classrooms-grid');
@@ -232,7 +319,7 @@
             const membersContainer = document.getElementById('members-container');
             
             // --- Utility Functions ---
-            function showToast(message, type = 'success') {
+            function _deprecated_showToast(message, type = 'success') {
                 const toast = document.createElement('div');
                 const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
                 toast.className = `toast show ${bgColor} text-white px-4 py-2 rounded-lg shadow-lg`;
@@ -252,7 +339,12 @@
                     if (docSnap.exists() && docSnap.data().role === 'student') {
                         const userData = docSnap.data();
                         document.getElementById('user-name').textContent = userData.name;
+                        studentName = userData.name;
                         document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=0D9488&color=fff&bold=true`;
+                        
+                        window.currentUser = user;
+                        window.currentUserName = userData.name;
+                        
                         initPage();
                     // --- FEEDBACK LOGIC ---
                     const feedbackModal = document.getElementById('feedback-modal');
@@ -437,6 +529,41 @@
                 feather.replace();
             }
 
+
+        window.renderStudentGrades = () => {
+            const classroom = window.currentClassroomForGrades;
+            if(!classroom || !classroom.showGradesToStudents || !window.currentUser) return;
+            
+            const cols = classroom.gradeColumns || [];
+            const myGrades = (classroom.studentGrades && classroom.studentGrades[window.currentUser.uid]) || {};
+            const gRow = document.getElementById('student-gradebook-row');
+            
+            let totalScore = 0;
+            let colCount = 0;
+            
+            let rowHtml = `
+                <td class="py-4 px-6 border-r border-slate-100 font-bold text-slate-400 text-xs text-center">1</td>
+                <td class="py-4 px-6 border-r border-slate-100 font-semibold text-slate-800" id="student-gradebook-name">${window.currentUserName || 'Học sinh'}</td>
+            `;
+            
+            cols.forEach(c => {
+                let s = myGrades[c.id];
+                if(s !== undefined && s !== '') {
+                    totalScore += parseFloat(s);
+                    colCount++;
+                    rowHtml += `<td class="py-4 px-6 border-r border-slate-100 text-center font-medium">${s}</td>`;
+                } else {
+                    rowHtml += `<td class="py-4 px-6 border-r border-slate-100 text-center text-slate-300">-</td>`;
+                }
+            });
+            
+            let avg = colCount > 0 ? (totalScore / colCount).toFixed(2) : '-';
+            
+            rowHtml += `<td class="py-4 px-6 border-l border-slate-100 text-teal-600 font-black text-center bg-teal-50/30">${avg}</td>`;
+            
+            gRow.innerHTML = rowHtml;
+        };
+
             // --- Cập nhật lại logic initPage để đồng bộ với hàm renderAssignments mới ---
             async function initPage() {
                 const urlParams = new URLSearchParams(window.location.search);
@@ -458,13 +585,72 @@
 
                         // Lấy thông tin Giáo viên
                         const teacherSnap = await getDoc(doc(db, "users", classroom.teacherId));
+                        // Gradebook Logic
+                        window.currentClassroomForGrades = classroom;
+                        if (classroom.showGradesToStudents) {
+                            const gHeaders = document.getElementById('student-gradebook-headers');
+                            const gRow = document.getElementById('student-gradebook-row');
+                            
+                            const cols = classroom.gradeColumns || [];
+                            
+                            if (gHeaders) {
+                                gHeaders.innerHTML = `
+                                    <th class="py-4 px-6 border-r border-slate-100 w-16 text-center">STT</th>
+                                    <th class="py-4 px-6 border-r border-slate-100 min-w-[200px]">Họ và tên</th>
+                                `;
+                                
+                                cols.forEach(c => {
+                                    gHeaders.innerHTML += `<th class="py-4 px-6 border-r border-slate-100 text-center">${c.name}</th>`;
+                                });
+                                
+                                gHeaders.innerHTML += `
+                                    <th class="py-4 px-6 border-l border-slate-100 text-teal-600 bg-teal-50/50">Điểm trung bình</th>
+                                `;
+                            }
+                            
+                            if(window.currentUser && window.currentUserName) {
+                                renderStudentGrades();
+                            }
+                        } else {
+                            document.getElementById('gradebook-view').innerHTML = `
+                                <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-16 flex flex-col items-center justify-center text-center mt-6">
+                                    <div class="w-20 h-20 bg-slate-50 text-slate-300 rounded-full flex items-center justify-center mb-6">
+                                        <i data-feather="lock" class="w-10 h-10"></i>
+                                    </div>
+                                    <h3 class="text-xl font-black text-slate-800 mb-3">Bảng điểm chưa công bố</h3>
+                                    <p class="text-slate-500 font-medium">Giáo viên của bạn chưa công bố bảng điểm cho lớp học này. Vui lòng quay lại sau!</p>
+                                </div>
+                            `;
+                            feather.replace();
+                        }
+
                         
                         // Lấy danh sách học sinh
                         const studentDocs = await fetchDocsInChunks(collection(db, "users"), "__name__", classroom.students);
+                        // Lấy danh sách đề thi (Hỗ trợ cả format cũ là string và format mới là object)
+                        const rawAssignments = classroom.assignments || [];
+                        const testIds = [...new Set(rawAssignments.map(a => typeof a === 'string' ? a : a.testId).filter(id => id))];
+                        let testDocs = await fetchDocsInChunks(collection(db, "tests"), "__name__", testIds);
                         
-                        // Lấy danh sách đề thi
-                        const testIds = (classroom.assignments || []).map(a => a.testId);
-                        const testDocs = await fetchDocsInChunks(collection(db, "tests"), "__name__", testIds);
+                        // Sort theo thời gian giao bài (mới nhất lên đầu)
+                        testDocs.forEach(test => {
+                            const assignmentData = rawAssignments.find(a => 
+                                (typeof a === 'string' && a === test.id) || 
+                                (typeof a === 'object' && a.testId === test.id)
+                            );
+                            
+                            let time = 0;
+                            if (assignmentData && assignmentData.assignedAt) {
+                                time = new Date(assignmentData.assignedAt).getTime();
+                            } else if (test.createdAt && typeof test.createdAt.toMillis === 'function') {
+                                time = test.createdAt.toMillis();
+                            }
+                            
+                            test._sortTime = time;
+                        });
+                        
+                        // Sắp xếp giảm dần (Mới nhất lên trên)
+                        testDocs.sort((a, b) => b._sortTime - a._sortTime);
                         
                         // Lấy danh sách bài làm của học sinh này tại lớp này
                         const submissionsQuery = query(
@@ -478,7 +664,7 @@
                         // Gọi hàm Render Members
                         renderMembers(teacherSnap.data(), studentDocs);
                         
-                        // Gọi hàm Render Assignments (Đã cập nhật logic chỉ hiện 1 nút)
+                        // Gọi hàm Render Assignments
                         renderAssignments(testDocs, submissionData, classId);
                     }
                 } catch (error) {
@@ -505,7 +691,7 @@
                 membersContainer.innerHTML = '';
                 const teacherHTML = `
                     <div class="flex items-center space-x-3 p-3 bg-teal-50 rounded-lg">
-                        <div class="w-10 h-10 rounded-full bg-teal-200 flex items-center justify-center font-bold text-teal-700">${(teacher.name || 'GV').charAt(0)}</div>
+                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(teacher.name || 'GV')}&background=0D9488&color=fff&bold=true" alt="Teacher Avatar" class="w-10 h-10 rounded-full shadow-sm">
                         <div>
                             <p class="font-semibold text-slate-800">${teacher.name}</p>
                             <p class="text-xs text-slate-500">Giáo viên</p>
@@ -515,8 +701,8 @@
                 
                 students.forEach(student => {
                      const studentHTML = `
-                    <div class="flex items-center space-x-3 p-3">
-                        <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-700">${(student.name || 'HS').charAt(0)}</div>
+                    <div class="flex items-center space-x-3 p-3 hover:bg-slate-50 rounded-lg transition">
+                        <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(student.name || 'HS')}&background=0284C7&color=fff&bold=true" alt="Student Avatar" class="w-10 h-10 rounded-full shadow-sm">
                         <div>
                             <p class="font-semibold text-slate-700">${student.name}</p>
                             <p class="text-xs text-slate-500">Học sinh</p>
@@ -537,7 +723,7 @@
                 tests.forEach(test => {
                     const submission = submissions.find(s => s.testId === test.id);
                     const card = document.createElement('div');
-                    card.className = "bg-white p-6 rounded-xl shadow-sm flex items-center justify-between";
+                    card.className = "bg-white p-6 rounded-xl shadow-sm flex items-center justify-between hover:bg-slate-50 transition border border-transparent hover:border-slate-100 cursor-pointer";
                     
                     let buttonHTML = '';
                     if (submission) {
@@ -548,10 +734,15 @@
                         buttonHTML = `<a href="test.html?testId=${test.id}&classId=${classId}" class="cta-button text-white font-semibold px-5 py-2 rounded-lg">Vào thi</a>`;
                     }
 
+                    const isMonitored = test.isMonitored !== false;
+                    const typeBadge = isMonitored 
+                        ? '<span class="ml-3 px-3 py-1 bg-teal-50 text-teal-600 border border-teal-100 rounded-full text-[10px] font-black uppercase tracking-wider inline-flex items-center shadow-sm"><i class="fas fa-shield-alt mr-1.5 opacity-80"></i> Đề kiểm tra</span>'
+                        : '<span class="ml-3 px-3 py-1 bg-blue-50 text-blue-600 border border-blue-100 rounded-full text-[10px] font-black uppercase tracking-wider inline-flex items-center shadow-sm"><i class="fas fa-home mr-1.5 opacity-80"></i> Bài tập về nhà</span>';
+
                     card.innerHTML = `
                         <div>
-                            <h3 class="font-bold text-lg text-slate-800">${test.name}</h3>
-                            <p class="text-sm text-slate-500 mt-1">${test.questionIds?.length || 0} câu - ${test.timeLimit} phút</p>
+                            <div class="flex items-center mb-1"><h3 class="font-bold text-lg text-slate-800">${test.name}</h3> ${typeBadge}</div>
+                            <p class="text-sm text-slate-500">${test.questionIds?.length || 0} câu - ${test.timeLimit} phút</p>
                         </div>
                         <div class="flex-shrink-0 flex items-center space-x-2">${buttonHTML}</div>
                     `;
@@ -584,6 +775,252 @@
                 document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
             }
             
+
+            // --- TABS & NEWS FEED LOGIC ---
+            let unsubscribePosts = null;
+            let unsubscribeComments = {};
+
+                        window.switchStudentTab = (tabId) => {
+                document.querySelectorAll('.student-tab-btn').forEach(btn => {
+                    if (btn.getAttribute('data-target') === tabId) {
+                        btn.classList.remove('text-slate-400', 'border-transparent', 'hover:text-slate-600');
+                        btn.classList.add('text-teal-600', 'border-teal-600', 'hover:text-teal-700');
+                    } else {
+                        btn.classList.add('text-slate-400', 'border-transparent', 'hover:text-slate-600');
+                        btn.classList.remove('text-teal-600', 'border-teal-600', 'hover:text-teal-700');
+                    }
+                });
+
+                document.getElementById('assignments-view').classList.add('hidden');
+                document.getElementById('assignments-view').classList.remove('grid');
+                document.getElementById('news-feed-view').classList.add('hidden');
+                document.getElementById('gradebook-view').classList.add('hidden');
+
+                if(tabId === 'assignments-view') {
+                    document.getElementById('assignments-view').classList.remove('hidden');
+                    document.getElementById('assignments-view').classList.add('grid');
+                } else if(tabId === 'news-feed-view') {
+                    document.getElementById('news-feed-view').classList.remove('hidden');
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const classId = urlParams.get('classId');
+                    if(classId) window.loadPosts(classId);
+                } else if(tabId === 'gradebook-view') {
+                    document.getElementById('gradebook-view').classList.remove('hidden');
+                }
+            };
+
+            window.loadPosts = (classId) => {
+                if (unsubscribePosts) return;
+
+                const q = query(collection(db, "posts"), where("classId", "==", classId));
+                unsubscribePosts = onSnapshot(q, (snapshot) => {
+                    let docs = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
+                    docs.sort((a, b) => {
+                        const timeA = a.createdAt ? a.createdAt.toMillis() : Date.now();
+                        const timeB = b.createdAt ? b.createdAt.toMillis() : Date.now();
+                        return timeB - timeA;
+                    });
+                    const feedContainer = document.getElementById('posts-feed');
+                    if (snapshot.empty) {
+                        feedContainer.innerHTML = `
+                            <div id="empty-feed-state" class="bg-white rounded-3xl border border-slate-100 p-16 flex flex-col items-center justify-center shadow-sm">
+                                
+                                <p class="text-slate-500 font-semibold mb-6">Chưa có bản tin nào!!</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    feedContainer.innerHTML = '';
+                    docs.forEach(post => {
+                        const timeString = post.createdAt ? new Date(post.createdAt.toMillis()).toLocaleString('vi-VN') : "Vừa xong";
+                        
+                        const postEl = document.createElement('div');
+                        postEl.className = 'bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden';
+                        
+                        let imageHtml = '';
+                        if (post.imageUrl) {
+                            imageHtml = `<img src="${post.imageUrl}" class="max-w-full max-h-96 object-contain mt-4 rounded-xl border border-slate-100">`;
+                        }
+
+                        postEl.innerHTML = `
+                            <div class="p-6">
+                                <div class="flex items-center gap-4 mb-4">
+                                    <img src="${post.authorAvatar}" class="w-10 h-10 rounded-full">
+                                    <div>
+                                        <p class="font-bold text-slate-800 text-sm">${post.authorName} <span class="bg-teal-50 text-teal-600 text-[10px] px-2 py-0.5 rounded ml-2 uppercase font-black">Giáo viên</span></p>
+                                        <p class="text-xs text-slate-400 font-medium">${timeString}</p>
+                                    </div>
+                                </div>
+                                <p class="text-slate-700 text-sm whitespace-pre-line">${post.content}</p>
+                                ${imageHtml}
+                            </div>
+                            <div class="bg-slate-50 border-t border-slate-100 p-6" id="comments-container-${post.id}">
+                                <p class="text-xs font-bold text-slate-400 mb-4 uppercase tracking-wider">Bình luận</p>
+                                <div id="comments-list-${post.id}" class="space-y-4 mb-4">
+                                </div>
+                                ${post.allowComments ? `
+                                <div class="flex gap-3">
+                                    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(studentName)}&background=0D9488&color=fff" class="w-8 h-8 rounded-full">
+                                    <div class="flex-1 flex gap-2">
+                                        <input type="text" id="comment-input-${post.id}" class="w-full px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-teal-500" placeholder="Viết bình luận...">
+                                        <button onclick="submitStudentComment('${post.id}')" class="px-4 py-2 bg-teal-600 text-white rounded-xl text-sm font-bold hover:bg-teal-700 transition">Gửi</button>
+                                    </div>
+                                </div>
+                                ` : `<p class="text-xs font-medium text-slate-500 italic text-center">Bình luận đã bị tắt cho bài viết này.</p>`}
+                            </div>
+                        `;
+                        feedContainer.appendChild(postEl);
+
+                        if (!unsubscribeComments[post.id]) {
+                            const cq = query(collection(db, "post_comments"), where("postId", "==", post.id));
+                            unsubscribeComments[post.id] = onSnapshot(cq, (cSnap) => {
+                                const cList = document.getElementById(`comments-list-${post.id}`);
+                                if(!cList) return;
+                                cList.innerHTML = '';
+                                let cDocs = cSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                                cDocs.sort((a, b) => {
+                                    const timeA = a.createdAt ? a.createdAt.toMillis() : Date.now();
+                                    const timeB = b.createdAt ? b.createdAt.toMillis() : Date.now();
+                                    return timeA - timeB;
+                                });
+                                const rootComments = cDocs.filter(c => !c.parentId);
+                                const replies = cDocs.filter(c => c.parentId);
+                                
+                                rootComments.forEach(c => {
+                                    const cTime = c.createdAt ? new Date(c.createdAt.toMillis()).toLocaleString('vi-VN') : "Vừa xong";
+                                    const roleBadge = c.authorRole === 'teacher' ? `<span class="bg-teal-50 text-teal-600 text-[9px] px-1.5 py-0.5 rounded ml-1 uppercase font-black">GV</span>` : ``;
+                                    const deleteBtn = c.authorId === currentUser.uid ? `<button onclick="deleteStudentComment('${c.id}')" class="text-[10px] text-red-400 hover:text-red-600 font-bold opacity-0 group-hover:opacity-100 transition">Xóa</button>` : ``;
+
+                                    let html = `
+                                        <div class="flex gap-3 group">
+                                            <img src="${c.authorAvatar}" class="w-8 h-8 rounded-full">
+                                            <div class="flex-1">
+                                                <div class="bg-white px-4 py-2 rounded-2xl rounded-tl-none border border-slate-100 inline-block shadow-sm">
+                                                    <p class="font-bold text-slate-800 text-xs">${c.authorName} ${roleBadge}</p>
+                                                    <p class="text-slate-600 text-sm mt-0.5 whitespace-pre-line">${c.content}</p>
+                                                </div>
+                                                <div class="flex items-center gap-4 mt-1 ml-2">
+                                                    <span class="text-[10px] text-slate-400 font-medium">${cTime}</span>
+                                                    <button onclick="toggleReplyInput('${c.id}')" class="text-[10px] text-slate-500 font-bold hover:text-slate-800 transition">Phản hồi</button>
+                                                    ${deleteBtn}
+                                                </div>
+                                                
+                                                <div id="reply-box-${c.id}" class="hidden mt-2 flex gap-2">
+                                                    <input type="text" id="reply-input-${c.id}" class="flex-1 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:ring-2 focus:ring-teal-500" placeholder="Viết phản hồi...">
+                                                    <button onclick="submitStudentReply('${post.id}', '${c.id}')" class="px-3 py-1.5 bg-teal-600 text-white rounded-lg text-xs font-bold hover:bg-teal-700 transition">Gửi</button>
+                                                </div>
+                                                
+                                                <div class="mt-3 space-y-3">
+                                    `;
+                                    
+                                    const commentReplies = replies.filter(r => r.parentId === c.id);
+                                    commentReplies.forEach(r => {
+                                        const rTime = r.createdAt ? new Date(r.createdAt.toMillis()).toLocaleString('vi-VN') : "Vừa xong";
+                                        const rBadge = r.authorRole === 'teacher' ? `<span class="bg-teal-50 text-teal-600 text-[9px] px-1.5 py-0.5 rounded ml-1 uppercase font-black">GV</span>` : ``;
+                                        const rDeleteBtn = r.authorId === currentUser.uid ? `<button onclick="deleteStudentComment('${r.id}')" class="text-[9px] text-red-400 hover:text-red-600 font-bold opacity-0 group-hover:opacity-100 transition">Xóa</button>` : ``;
+
+                                        html += `
+                                            <div class="flex gap-2 group ml-4">
+                                                <img src="${r.authorAvatar}" class="w-6 h-6 rounded-full">
+                                                <div class="flex-1">
+                                                    <div class="bg-white px-3 py-1.5 rounded-xl rounded-tl-none border border-slate-100 inline-block shadow-sm">
+                                                        <p class="font-bold text-slate-800 text-[11px]">${r.authorName} ${rBadge}</p>
+                                                        <p class="text-slate-600 text-xs mt-0.5 whitespace-pre-line">${r.content}</p>
+                                                    </div>
+                                                    <div class="flex items-center gap-3 mt-1 ml-2">
+                                                        <span class="text-[9px] text-slate-400 font-medium">${rTime}</span>
+                                                        ${rDeleteBtn}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        `;
+                                    });
+                                    
+                                    html += `</div></div></div>`;
+                                    cList.innerHTML += html;
+                                });
+                            });
+                        }
+                    });
+                });
+            };
+
+            window.submitStudentComment = async (postId) => {
+                const input = document.getElementById(`comment-input-${postId}`);
+                const content = input.value.trim();
+                if (!content) return;
+                
+                input.disabled = true;
+                try {
+                    await addDoc(collection(db, "post_comments"), {
+                        postId: postId,
+                        authorId: currentUser.uid,
+                        authorName: studentName,
+                        authorAvatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(studentName)}&background=0D9488&color=fff`,
+                        authorRole: 'student',
+                        content: content,
+                        createdAt: serverTimestamp()
+                    });
+                    input.value = "";
+                } catch (error) {
+                    console.error("Comment error:", error);
+                    alert("Lỗi đăng bình luận!");
+                } finally {
+                    input.disabled = false;
+                    input.focus();
+                }
+            };
+
+
+            window.toggleReplyInput = (commentId) => {
+                const box = document.getElementById(`reply-box-${commentId}`);
+                if(box) {
+                    box.classList.toggle('hidden');
+                    if(!box.classList.contains('hidden')) {
+                        document.getElementById(`reply-input-${commentId}`).focus();
+                    }
+                }
+            };
+
+            window.submitStudentReply = async (postId, parentId) => {
+                const input = document.getElementById(`reply-input-${parentId}`);
+                const content = input.value.trim();
+                if (!content) return;
+                
+                input.disabled = true;
+                try {
+                    await addDoc(collection(db, "post_comments"), {
+                        postId: postId,
+                        parentId: parentId,
+                        authorId: currentUser.uid,
+                        authorName: currentUserName,
+                        authorAvatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUserName)}&background=0284C7&color=fff`,
+                        authorRole: 'student',
+                        content: content,
+                        createdAt: serverTimestamp()
+                    });
+                    input.value = "";
+                    toggleReplyInput(parentId);
+                } catch (error) {
+                    console.error("Reply error:", error);
+                    alert("Lỗi đăng phản hồi!");
+                } finally {
+                    input.disabled = false;
+                }
+            };
+
+            window.deleteStudentComment = async (commentId) => {
+                if(!confirm("Bạn có chắc chắn muốn xóa bình luận này?")) return;
+                try {
+                    await deleteDoc(doc(db, "post_comments", commentId));
+                } catch(e) {
+                    console.error("Lỗi xóa bình luận", e);
+                    alert("Lỗi khi xóa bình luận.");
+                }
+            };
+            // -----------------------------
+
             setupEventListeners();
             feather.replace();
         });
@@ -629,5 +1066,6 @@
     });
 </script>
 <script type="module" src="../notifications.js"></script>
+    <script src="../global-ui.js"></script>
 </body>
 </html>

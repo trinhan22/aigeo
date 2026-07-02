@@ -70,7 +70,41 @@
         ::-webkit-scrollbar-thumb:hover { background: #0D9488; }
         
 
+
+        /* --- MOBILE OPTIMIZATIONS --- */
+        @media (max-width: 768px) {
+            header { padding: 0 16px; }
+            #question-map {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                height: 100vh;
+                z-index: 1000;
+                transition: right 0.3s ease;
+                box-shadow: -5px 0 25px rgba(0,0,0,0.1);
+            }
+            #question-map.active {
+                right: 0;
+            }
+            .map-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(15, 23, 42, 0.6);
+                backdrop-filter: blur(4px);
+                z-index: 999;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.3s ease;
+            }
+            .map-overlay.show {
+                opacity: 1;
+                pointer-events: auto;
+            }
+            #main-content-scroll { padding: 16px; }
+            .question-card { padding: 20px; border-radius: 16px; }
+        }
     </style>
+
 
     <link rel="stylesheet" href="../global-responsive.css?v=5">
 </head>
@@ -103,18 +137,18 @@
     <div class="main-layout">
         <!-- Header (Đồng bộ Thanh trên) -->
         <header>
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2 sm:gap-4">
                 <a href="tests.html" class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center border border-slate-100 hover:bg-slate-100 transition text-slate-400">
                     <i data-feather="chevron-left" class="w-5"></i>
                 </a>
-                <h1 id="test-name-header" class="text-lg font-black text-slate-800 uppercase tracking-tighter truncate max-w-md">Đang tải đề...</h1>
+                <h1 id="test-name-header" class="text-base sm:text-lg font-black text-slate-800 uppercase tracking-tighter truncate max-w-[120px] sm:max-w-xs md:max-w-md">Đang tải đề...</h1>
             </div>
 
-            <div class="flex items-center gap-4">
-                <a id="edit-btn" href="#" class="px-5 py-2.5 bg-slate-100 text-slate-600 font-extrabold text-[10px] uppercase tracking-widest rounded-xl hover:bg-slate-200 transition">Chỉnh sửa</a>
-                <button id="assign-btn" class="cta-button text-[10px] uppercase tracking-widest px-6 py-2.5 shadow-none">Giao bài</button>
+            <div class="flex items-center gap-2 sm:gap-4">
+                <a id="edit-btn" href="#" class="px-3 sm:px-5 py-2.5 bg-slate-100 text-slate-600 font-extrabold text-[10px] uppercase tracking-widest rounded-xl hover:bg-slate-200 transition">Chỉnh sửa</a>
+                <button id="assign-btn" class="cta-button text-[10px] uppercase tracking-widest px-4 sm:px-6 py-2.5 shadow-none">Giao bài</button>
                 <div class="h-8 w-[1px] bg-slate-100 mx-2"></div>
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-4 ml-auto">
                     <div id="global-notification-bell" class="mr-2 sm:mr-4 z-50"></div>
                 <div class="text-right hidden sm:block">
                         <p id="user-name" class="text-sm font-black text-slate-800 leading-none">Đang tải...</p>
@@ -152,7 +186,7 @@
     
     <!-- Modal Giao bài -->
     <div id="assign-confirm-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop p-4">
-        <div class="bg-white rounded-[32px] p-8 w-full max-w-lg shadow-2xl">
+        <div class="bg-white rounded-[24px] sm:rounded-[32px] p-6 sm:p-8 w-full max-w-lg shadow-2xl">
             <h2 class="text-2xl font-black text-slate-800 mb-2 tracking-tight">Giao bài cho lớp</h2>
             <p id="assign-modal-test-name" class="text-[10px] font-black text-teal-600 uppercase tracking-widest mb-8"></p>
             <div id="classrooms-list" class="space-y-2 max-h-60 overflow-y-auto p-4 bg-slate-50 rounded-2xl border border-slate-100 mb-8">
@@ -203,7 +237,7 @@
             let questions = [];
             let testToAssign = null;
 
-            function showToast(message, type = 'success') {
+            function _deprecated_showToast(message, type = 'success') {
                 const toast = document.createElement('div');
                 const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
                 toast.className = `toast show ${bgColor} text-white px-4 py-2 rounded-lg shadow-lg`;
@@ -599,5 +633,6 @@
     });
 </script>
 <script type="module" src="../notifications.js"></script>
+    <script src="../global-ui.js"></script>
 </body>
 </html>

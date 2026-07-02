@@ -105,7 +105,7 @@
         <!-- Header -->
         <header class="h-16 bg-white border-b flex items-center justify-between px-8 shrink-0">
             <h2 id="welcome-header" class="text-sm font-bold text-slate-400 uppercase tracking-widest">Xin chào!</h2>
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-4 ml-auto">
                 <div id="global-notification-bell" class="mr-2 sm:mr-4 z-50"></div>
                 <div class="text-right hidden sm:block">
                     <p id="user-name" class="text-sm font-black text-slate-800 leading-none">Đang tải...</p>
@@ -288,7 +288,7 @@
         const feedbackListContainer = document.getElementById('feedback-list-container');
 
 
-        function showToast(message, type = 'success') {
+        function _deprecated_showToast(message, type = 'success') {
             const toast = document.createElement('div');
             const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
             toast.className = `toast show ${bgColor} text-white px-4 py-2 rounded-lg shadow-lg`;
@@ -618,5 +618,6 @@
     });
 </script>
 <script type="module" src="../notifications.js"></script>
+    <script src="../global-ui.js"></script>
 </body>
 </html>

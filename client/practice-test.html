@@ -125,6 +125,9 @@
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #0D9488; }
+        @media (max-width: 768px) {
+            #global-notification-bell { display: none !important; }
+        }
     </style>
 
     <link rel="stylesheet" href="../global-responsive.css?v=5">
@@ -493,5 +496,6 @@
     });
 </script>
 <script type="module" src="../notifications.js"></script>
+    <script src="../global-ui.js"></script>
 </body>
 </html>

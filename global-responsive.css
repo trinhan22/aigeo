@@ -298,3 +298,156 @@ p { font-size: clamp(0.9rem, 1.5vw, 1rem); }
         flex-direction: row;
     }
 }
+
+
+/* ==========================================================================
+   AIGEO GLOBAL UI (TOASTS & ALERTS)
+   ========================================================================== */
+
+/* --- TOAST CONTAINER --- */
+#aigeo-toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none;
+}
+
+@media (max-width: 768px) {
+    #aigeo-toast-container {
+        bottom: 80px; /* Above mobile bottom nav */
+        left: 16px;
+        right: 16px;
+        align-items: center;
+    }
+}
+
+/* --- TOAST NOTIFICATION --- */
+.aigeo-toast {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 10px 40px -10px rgba(13, 148, 136, 0.15);
+    border-radius: 16px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 300px;
+    max-width: 100%;
+    pointer-events: auto;
+    animation: toastSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    transform-origin: bottom center;
+}
+
+.aigeo-toast.toast-hiding {
+    animation: toastFadeOut 0.3s ease forwards;
+}
+
+.aigeo-toast-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.aigeo-toast-icon.success { background: #F0FDFA; color: #0D9488; }
+.aigeo-toast-icon.error { background: #FEF2F2; color: #EF4444; }
+.aigeo-toast-icon.info { background: #EFF6FF; color: #3B82F6; }
+
+.aigeo-toast-text {
+    color: #1E293B;
+    font-weight: 700;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    flex: 1;
+}
+
+@keyframes toastSlideIn {
+    0% { opacity: 0; transform: translateY(30px) scale(0.9); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes toastFadeOut {
+    0% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0.9); }
+}
+
+/* --- CUSTOM ALERT MODAL --- */
+.aigeo-alert-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    animation: alertFadeIn 0.3s ease forwards;
+}
+
+.aigeo-alert-box {
+    background: white;
+    border-radius: 24px;
+    width: 100%;
+    max-width: 400px;
+    padding: 32px 24px 24px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    text-align: center;
+    transform: scale(0.95);
+    animation: alertScaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.aigeo-alert-icon {
+    width: 64px;
+    height: 64px;
+    background: #F0FDFA;
+    color: #0D9488;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+
+.aigeo-alert-icon svg { width: 32px; height: 32px; }
+
+.aigeo-alert-text {
+    color: #1E293B;
+    font-weight: 700;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    margin-bottom: 32px;
+}
+
+.aigeo-alert-btn {
+    background: linear-gradient(135deg, #0D9488 0%, #10B981 100%);
+    color: white;
+    font-weight: 800;
+    font-size: 1rem;
+    padding: 14px 24px;
+    border-radius: 100px;
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 10px 20px -5px rgba(13, 148, 136, 0.3);
+    transition: all 0.3s;
+}
+
+.aigeo-alert-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px -5px rgba(13, 148, 136, 0.4);
+}
+
+@keyframes alertFadeIn { to { opacity: 1; } }
+@keyframes alertScaleIn { to { transform: scale(1); } }
+.aigeo-alert-overlay.alert-hiding { animation: alertFadeOut 0.3s ease forwards; }
+@keyframes alertFadeOut { from { opacity: 1; } to { opacity: 0; } }

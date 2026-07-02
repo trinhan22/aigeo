@@ -222,7 +222,7 @@
                     <i data-feather="trash-2" class="w-3"></i> Xóa hội thoại
                 </button>
             </div>
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-4 ml-auto">
                 <div id="global-notification-bell" class="mr-2 sm:mr-4 z-50"></div>
                 <div class="text-right hidden sm:block">
                     <p id="user-name" class="text-sm font-black text-slate-800 leading-none">Đang tải...</p>
@@ -317,7 +317,7 @@
             const clearChatBtn = document.getElementById('clear-chat-btn');
         
             // --- THÊM HÀM NÀY VÀO TRƯỚC onAuthStateChanged ---
-            function showToast(msg, type = 'success') {
+            function _deprecated_showToast(msg, type = 'success') {
                 const toastContainer = document.getElementById('toast-container');
                 if(!toastContainer) return;
                 const toast = document.createElement('div');
@@ -663,5 +663,6 @@
     });
 </script>
 <script type="module" src="../notifications.js"></script>
+    <script src="../global-ui.js"></script>
 </body>
 </html>

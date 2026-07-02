@@ -483,7 +483,7 @@
             quickAddForm.innerHTML = generateQuestionFormHTML('qa');
             editForm.innerHTML = generateQuestionFormHTML('edit');
 
-            function showToast(message, type = 'success') {
+            function _deprecated_showToast(message, type = 'success') {
                 const toast = document.createElement('div');
                 const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
                 const icon = type === 'success' ? 'check-circle' : 'alert-circle';
@@ -1472,5 +1472,6 @@
         });
     </script>
 <script type="module" src="../notifications.js"></script>
+    <script src="../global-ui.js"></script>
 </body>
 </html>

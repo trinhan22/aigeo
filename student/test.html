@@ -497,7 +497,8 @@
                     studentId: currentUser.uid, testId: currentTestId, classId: currentClassId,
                     testName: testData.name, score, totalQuestions: questions.length,
                     timeTaken: timeLimitInSeconds - timeLeft, completedAt: serverTimestamp(),
-                    questionIds: questions.map(q => q.id), userAnswers
+                    questionIds: questions.map(q => q.id), userAnswers,
+                    isMonitored: testData.isMonitored !== false
                 });
                 await deleteDoc(doc(db, 'test_sessions', currentSessionId));
                 window.location.href = 'result.html?id=' + subId;
@@ -547,5 +548,6 @@
     });
 </script>
 <script type="module" src="../notifications.js"></script>
+    <script src="../global-ui.js"></script>
 </body>
 </html>

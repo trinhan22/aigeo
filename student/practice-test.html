@@ -149,7 +149,9 @@
         }
 
         /* Hide the global notification bell on the test page to reduce distraction */
-        #global-notification-bell { display: none !important; }
+        @media (max-width: 768px) {
+            #global-notification-bell { display: none !important; }
+        }
     </style>
 
     <link rel="stylesheet" href="../global-responsive.css?v=5">
@@ -775,5 +777,6 @@
     });
 </script>
 <script type="module" src="../notifications.js"></script>
+    <script src="../global-ui.js"></script>
 </body>
 </html>

@@ -84,7 +84,7 @@
 
     <!-- Header Pill -->
     <header class="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[1200px] z-50">
-        <nav class="glass px-8 py-3 rounded-full flex justify-between items-center">
+        <nav class="glass px-5 sm:px-8 py-3 rounded-full flex justify-between items-center">
             <a href="javascript:history.back()" class="flex items-center gap-3 no-underline">
                 <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" alt="AIGEO" class="h-10 w-10 bg-white rounded-lg p-1">
                 <span class="text-xl font-black text-teal-600">AIGEO</span>
@@ -123,7 +123,7 @@
             
             <!-- Tab 1: Theo bài -->
             <div id="lesson-practice" class="tab-content active">
-                <div class="bg-white rounded-[32px] p-8 shadow-xl shadow-slate-200/50 border border-slate-100">
+                <div class="bg-white rounded-[24px] sm:rounded-[32px] p-5 sm:p-8 shadow-xl shadow-slate-200/50 border border-slate-100">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
                         <div>
                             <h2 class="text-2xl font-black mb-3 anime-title">Luyện tập theo bài</h2>
@@ -150,8 +150,8 @@
                         <input id="question-count-slider-lesson" type="range" min="5" max="50" value="10">
                     </div>
 
-                    <div class="flex justify-end">
-                        <button id="start-lesson-practice-btn" class="btn-modern btn-primary px-10 py-4 text-lg" disabled>
+                    <div class="flex justify-center sm:justify-end">
+                        <button id="start-lesson-practice-btn" class="btn-modern btn-primary w-full sm:w-auto px-6 sm:px-10 py-3 sm:py-4 text-base sm:text-lg" disabled>
                             Bắt đầu làm bài <i class="fas fa-play ml-2"></i>
                         </button>
                     </div>
@@ -160,7 +160,7 @@
 
             <!-- Tab 2: Tổng hợp (Bố cục tương tự nhưng hỗ trợ Multiple Select) -->
             <div id="comprehensive-practice" class="tab-content">
-                <div class="bg-white rounded-[32px] p-8 shadow-xl shadow-slate-200/50 border border-slate-100">
+                <div class="bg-white rounded-[24px] sm:rounded-[32px] p-5 sm:p-8 shadow-xl shadow-slate-200/50 border border-slate-100">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
                         <div>
                             <h2 class="text-2xl font-black mb-3 anime-title">Luyện tập tổng hợp</h2>
@@ -184,8 +184,8 @@
                         <input id="question-count-slider-comprehensive" type="range" min="10" max="50" value="20">
                     </div>
 
-                    <div class="flex justify-end">
-                        <button id="start-comprehensive-practice-btn" class="btn-modern btn-primary px-10 py-4 text-lg" disabled>
+                    <div class="flex justify-center sm:justify-end">
+                        <button id="start-comprehensive-practice-btn" class="btn-modern btn-primary w-full sm:w-auto px-6 sm:px-10 py-3 sm:py-4 text-base sm:text-lg" disabled>
                             Bắt đầu (0 bài đã chọn)
                         </button>
                     </div>
@@ -194,7 +194,7 @@
 
             <!-- Tab 3: Luyện đề (List Style) -->
             <div id="admin-practice" class="tab-content">
-                <div class="bg-white rounded-[32px] p-8 shadow-xl border border-slate-100">
+                <div class="bg-white rounded-[24px] sm:rounded-[32px] p-5 sm:p-8 shadow-xl border border-slate-100">
                     <h2 class="text-2xl font-black mb-3 anime-title">Luyện Đề từ Ngân hàng chung</h2>
                     <p class="text-slate-500 text-sm font-medium mb-8">Đây là danh sách các đề thi đã được xuất bản, phù hợp cho việc ôn tập và củng cố kiến thức tổng quát.</p>
                     
@@ -289,15 +289,15 @@
             // Render Đề thi hệ thống
             function renderTestsList(tests, container) {
                 container.innerHTML = tests.length > 0 ? tests.map(test => `
-                    <div class="bg-white border border-slate-100 p-6 rounded-2xl flex items-center justify-between hover:bg-slate-50 transition-all group shadow-sm">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center"><i class="fas fa-file-signature"></i></div>
-                            <div>
-                                <h3 class="font-black text-slate-800 group-hover:text-indigo-600 transition">${test.name}</h3>
-                                <p class="text-xs font-bold text-slate-400 uppercase tracking-tighter">${test.questionIds?.length || 0} câu • ${test.timeLimit || 45} phút</p>
+                    <div class="bg-white border border-slate-100 p-4 sm:p-6 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-slate-50 transition-all group shadow-sm">
+                        <div class="flex items-center gap-3 sm:gap-4 min-w-0 w-full">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 shrink-0 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center"><i class="fas fa-file-signature text-sm sm:text-base"></i></div>
+                            <div class="min-w-0 flex-1">
+                                <h4 class="font-bold text-sm sm:text-base text-slate-800 group-hover:text-indigo-600 transition truncate">${test.name}</h4>
+                                <p class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-tighter mt-0.5">${test.questionIds?.length || 0} câu • ${test.timeLimit || 45} phút</p>
                             </div>
                         </div>
-                        <a href="practice-test.html?testId=${test.id}" class="btn-modern btn-primary py-2 px-6 text-sm">Làm đề</a>
+                        <a href="practice-test.html?testId=${test.id}" class="btn-modern btn-primary py-2 px-4 sm:px-6 text-xs sm:text-sm shrink-0 whitespace-nowrap w-full sm:w-auto !m-0 justify-center">Làm đề</a>
                     </div>
                 `).join('') : '<p class="text-slate-400 font-bold p-10 text-center col-span-2">Chưa có đề thi nào.</p>';
             }
@@ -406,7 +406,7 @@
                 el.innerHTML = `<option value="">${placeholder}</option>` + data.map(i => `<option value="${i.id}">${i.name}</option>`).join('');
             }
 
-            function showToast(msg) {
+            function _deprecated_showToast(msg) {
                 const t = document.createElement('div');
                 t.className = "bg-slate-900 text-white px-6 py-3 rounded-2xl shadow-2xl font-bold animate-bounce";
                 t.innerText = msg;
@@ -464,5 +464,6 @@
     });
 </script>
 <script type="module" src="../notifications.js"></script>
+    <script src="../global-ui.js"></script>
 </body>
 </html>
