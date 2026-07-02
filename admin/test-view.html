@@ -208,7 +208,8 @@
                     <i data-feather="send" class="w-4 h-4 mr-2"></i>Phân phối Đề thi
                 </button>
                 <div class="flex items-center border-l pl-4 ml-2">
-                    <span id="user-name" class="font-semibold text-gray-700 mr-4">Đang tải...</span>
+                    <div id="global-notification-bell" class="mr-2 sm:mr-4 z-50"></div>
+                <span id="user-name" class="font-semibold text-gray-700 mr-4">Đang tải...</span>
                     <img id="user-avatar" class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/40x40/E2E8F0/475569?text=A" alt="Admin Avatar">
                 </div>
             </div>
@@ -563,5 +564,6 @@
             feather.replace();
         });
     </script>
+<script type="module" src="../notifications.js"></script>
 </body>
 </html>

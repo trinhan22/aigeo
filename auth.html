@@ -109,6 +109,14 @@
     </style>
 
     <link rel="stylesheet" href="./global-responsive.css">
+
+    <!-- Dark Mode Initializer -->
+    <link rel="stylesheet" href="dark-mode.css?v=9">
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
 
@@ -126,7 +134,7 @@
             <div class="left-pattern"></div>
             <a href="/">
                 <div class="relative z-10 flex items-center gap-4">
-                    <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-lg border border-white/30">
+                    <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-lg border border-white/30" style="background-color: white !important;">
                         <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" class="w-8 h-8 object-contain">
                     </div>
                     <div>

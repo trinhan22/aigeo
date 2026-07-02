@@ -24,6 +24,14 @@
     </style>
 
     <link rel="stylesheet" href="./global-responsive.css">
+
+    <!-- Dark Mode Initializer -->
+    <link rel="stylesheet" href="dark-mode.css?v=9">
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
 </head>
 <body class="bg-pattern flex items-center justify-center h-screen">
     <div class="text-center p-8">

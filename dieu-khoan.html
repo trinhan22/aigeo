@@ -105,6 +105,14 @@
     </style>
 
     <link rel="stylesheet" href="./global-responsive.css">
+
+    <!-- Dark Mode Initializer -->
+    <link rel="stylesheet" href="dark-mode.css?v=9">
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
 </head>
 <body class="antialiased">
 

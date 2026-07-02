@@ -17,6 +17,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
     <script src="https://unpkg.com/feather-icons"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 
@@ -334,7 +339,7 @@
             align-items: center;
             justify-content: center;
             gap: 10px; /* Khoảng cách giữa icon và chữ */
-            padding: 12px 28px;
+            padding: 13px 32px;
             border-radius: 100px;
             font-weight: 700;
             font-size: 1rem;
@@ -541,6 +546,14 @@
     </style>
 
     <link rel="stylesheet" href="./global-responsive.css">
+
+    <!-- Dark Mode Initializer -->
+    <link rel="stylesheet" href="dark-mode.css?v=9">
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
 </head>
 <body>
 
@@ -562,7 +575,23 @@
             <a href="#testimonials" class="font-semibold hover:text-teal-600 transition">Đánh giá</a>
             <a href="#about" class="font-semibold hover:text-teal-600 transition">Về chúng tôi</a>
         </nav>
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-6">
+            
+            <button id="theme-toggle-index" class="group relative w-[60px] h-8 rounded-full bg-[#E2E8F0] dark:bg-[#0F172A] border border-transparent dark:border-slate-700 transition-colors duration-300 flex items-center px-1 focus:outline-none flex-shrink-0 shadow-inner" title="Chuyển đổi giao diện">
+                <!-- Background Icons -->
+                <div class="absolute left-1 w-6 h-6 flex items-center justify-center text-slate-400 dark:text-slate-500 pointer-events-none">
+                    <i data-feather="sun" class="w-3.5 h-3.5"></i>
+                </div>
+                <div class="absolute right-1 w-6 h-6 flex items-center justify-center text-slate-400 dark:text-slate-500 pointer-events-none">
+                    <i data-feather="moon" class="w-3.5 h-3.5" style="fill: currentColor;"></i>
+                </div>
+                
+                <!-- Slider Handle -->
+                <div class="relative z-10 h-6 w-6 group-active:w-8 rounded-full bg-white dark:bg-[#1E293B] shadow-sm transform translate-x-0 dark:translate-x-7 dark:group-active:translate-x-5 flex items-center justify-center pointer-events-none dark:ring-1 dark:ring-slate-600" style="transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);">
+                    <i data-feather="sun" class="absolute w-3.5 h-3.5 text-orange-500 transition-opacity duration-300 dark:opacity-0" style="fill: currentColor;"></i>
+                    <i data-feather="moon" class="absolute w-3 h-3 text-yellow-400 transition-opacity duration-300 opacity-0 dark:opacity-100" style="fill: currentColor;"></i>
+                </div>
+            </button>
             <!-- Container xử lý đăng nhập -->
             <div class="relative" id="auth-header-wrapper">
                 <!-- Nút hiển thị khi CHƯA đăng nhập -->
@@ -1131,5 +1160,35 @@
         }
     });
 </script>
+
+    <script>
+        // Dark mode toggle logic for index
+        (function() {
+            const toggleBtn = document.getElementById('theme-toggle-index');
+            const moonIcon = document.getElementById('icon-moon-index');
+            const sunIcon = document.getElementById('icon-sun-index');
+            
+            function updateIcons() {
+                if (!moonIcon || !sunIcon) return;
+                if (document.documentElement.classList.contains('dark')) {
+                    moonIcon.classList.add('hidden');
+                    sunIcon.classList.remove('hidden');
+                } else {
+                    moonIcon.classList.remove('hidden');
+                    sunIcon.classList.add('hidden');
+                }
+            }
+
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', () => {
+                    document.documentElement.classList.toggle('dark');
+                    const isDark = document.documentElement.classList.contains('dark');
+                    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                    updateIcons();
+                });
+                updateIcons();
+            }
+        })();
+    </script>
 </body>
 </html>

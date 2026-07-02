@@ -138,17 +138,18 @@
             #question-map { position: fixed; right: 0; top: 72px; bottom: 0; transform: translateX(100%); z-index: 100; transition: 0.4s; }
         }
 
+        /* Fix cho thiết bị siêu nhỏ */
+        @media (max-width: 360px) {
+            #test-name-header {
+                max-width: 100px;
+            }
+            .question-grid {
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
+        }
 
-
-/* Fix cho thiết bị siêu nhỏ */
-@media (max-width: 360px) {
-    #test-name-header {
-        max-width: 100px;
-    }
-    .question-grid {
-        grid-template-columns: repeat(3, 1fr) !important;
-    }
-}
+        /* Hide the global notification bell on the test page to reduce distraction */
+        #global-notification-bell { display: none !important; }
     </style>
 
     <link rel="stylesheet" href="../global-responsive.css?v=5">
@@ -161,6 +162,7 @@
             <img id="user-avatar" class="h-10 w-10 rounded-xl bg-slate-100 object-cover">
             <div>
                 <h1 id="test-name-header" class="font-black text-slate-800 leading-tight">Đang tải đề...</h1>
+                <div id="global-notification-bell" class="mr-2 sm:mr-4 z-50"></div>
                 <p id="user-name" class="text-[10px] font-bold text-teal-600 uppercase tracking-widest">AIGEO Student</p>
             </div>
         </div>
@@ -772,5 +774,6 @@
         }
     });
 </script>
+<script type="module" src="../notifications.js"></script>
 </body>
 </html>

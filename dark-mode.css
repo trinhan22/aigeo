@@ -1,0 +1,284 @@
+/* 
+    ==========================================================================
+    AIGEO GLOBAL DARK MODE
+    ==========================================================================
+    Automatically injected by notifications.js.
+    Overrides Tailwind light classes with a polished dark theme.
+*/
+
+html.dark {
+    color-scheme: dark;
+    --text-main: #f1f5f9 !important;
+    --text-light: #94a3b8 !important;
+    --bg-body: #0f172a !important;
+}
+
+/* Base Body */
+html.dark body {
+    background-color: #0f172a !important; /* bg-slate-900 */
+    color: #f1f5f9 !important; /* text-slate-100 */
+}
+
+/* Custom Component Backgrounds & Borders (Overriding hardcoded <style> tags) */
+html.dark .bg-white,
+html.dark .sidebar,
+html.dark aside,
+html.dark .bento-card,
+html.dark .class-card,
+html.dark .ai-feedback-container,
+html.dark .stat-card,
+html.dark .lesson-card,
+html.dark .question-review-card,
+html.dark .question-card,
+html.dark .limit-card,
+html.dark .modal-content,
+html.dark .maintenance-card,
+html.dark .input-container,
+html.dark .step-card,
+html.dark .about-compact-card,
+html.dark .dropdown-content,
+html.dark .chat-main-container,
+html.dark .limit-card,
+html.dark .practice-category,
+html.dark .result-stats-card,
+html.dark header,
+html.dark #main-auth-container,
+html.dark .section-hero-header,
+html.dark .term-card,
+html.dark .bg-white\/80,
+html.dark #chat-messages,
+html.dark .chat-input-area,
+html.dark .bot .message-content,
+html.dark .tf-btn {
+    background-color: #1e293b !important; /* bg-slate-800 */
+    border-color: #334155 !important;
+}
+html.dark #chat-messages {
+    background-image: radial-gradient(#334155 1.2px, transparent 1px) !important;
+}
+
+/* Secondary Backgrounds (Nested items inside cards) */
+html.dark .bg-slate-50, 
+html.dark .bg-slate-100,
+html.dark .bg-slate-200,
+html.dark .bg-\[\#F8FAFC\],
+html.dark .bg-slate-50\/50,
+html.dark .bg-slate-50\/20,
+html.dark .bg-indigo-50,
+html.dark .option-letter,
+html.dark .input-pill,
+html.dark .history-header-grid,
+html.dark .answer-option,
+html.dark #main-content-scroll,
+html.dark .search-container,
+html.dark .bg-white\/40 {
+    background-color: #0f172a !important; /* bg-slate-900 */
+    border-color: #334155 !important;
+}
+/* If a secondary background is INSIDE a card, make it slate-700 so it stands out */
+html.dark .bento-card .bg-slate-50,
+html.dark .bento-card .bg-slate-100,
+html.dark .bento-card .bg-slate-200,
+html.dark .bento-card .bg-indigo-50,
+html.dark #main-auth-container .bg-slate-50,
+html.dark #main-auth-container .bg-slate-100,
+html.dark .question-card .answer-option,
+html.dark .question-card .bg-slate-50,
+html.dark .question-card .bg-slate-100,
+html.dark .ai-feedback-container .bg-slate-100,
+html.dark .ai-feedback-container .bg-slate-50,
+html.dark .bg-slate-50\/20,
+html.dark .search-container:focus-within,
+html.dark .question-review-card .bg-slate-50,
+html.dark .avatar-box.bg-slate-100 {
+    background-color: #334155 !important; /* bg-slate-700 */
+    border-color: #475569 !important;
+}
+
+html.dark .answer-option:hover {
+    background-color: rgba(20, 184, 166, 0.15) !important;
+}
+html.dark .answer-option.selected {
+    background-color: rgba(20, 184, 166, 0.25) !important;
+    border-color: #2dd4bf !important;
+}
+
+/* Global Text Colors */
+html.dark .text-slate-800,
+html.dark .text-slate-900,
+html.dark .text-gray-700,
+html.dark .text-gray-800,
+html.dark .text-\[\#1E293B\],
+html.dark .bot .message-content,
+html.dark .term-title,
+html.dark .term-content strong {
+    color: #ffffff !important; /* Pure white for max contrast */
+}
+
+html.dark .text-slate-700 {
+    color: #f1f5f9 !important; /* text-slate-100 */
+}
+
+html.dark .text-slate-600,
+html.dark .text-gray-600 {
+    color: #cbd5e1 !important; /* text-slate-300 */
+}
+
+html.dark .text-teal-600 {
+    color: #2dd4bf !important; /* teal-400 for better vibrancy */
+}
+
+/* For very light text like "Không có thông báo nào", use slate-300 instead of slate-400 so it's readable */
+html.dark .text-slate-500,
+html.dark .text-gray-500,
+html.dark .text-slate-400,
+html.dark .term-content {
+    color: #cbd5e1 !important; /* text-slate-300 */
+}
+
+/* Global Borders */
+html.dark .border-slate-100,
+html.dark .border-slate-200,
+html.dark .border-gray-100,
+html.dark .border-gray-200,
+html.dark .border-\[\#E2E8F0\] {
+    border-color: #334155 !important; /* border-slate-700 */
+}
+html.dark .border-b,
+html.dark .border-t,
+html.dark .border-l,
+html.dark .border-r,
+html.dark .border,
+html.dark hr {
+    border-color: #334155 !important;
+}
+
+/* Inputs & Forms */
+html.dark input,
+html.dark textarea,
+html.dark select {
+    background-color: #0f172a !important;
+    color: #f1f5f9 !important;
+    border-color: #334155 !important;
+}
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+    color: #94a3b8 !important; /* text-slate-400 */
+}
+html.dark .input-field, html.dark .input-pill {
+    background-color: #0f172a !important;
+    color: #f1f5f9 !important;
+}
+
+/* Modals and Cards Shadows */
+html.dark .shadow-sm,
+html.dark .shadow-md,
+html.dark .shadow-lg,
+html.dark .shadow-xl,
+html.dark .shadow-2xl {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Hovers & Focus */
+html.dark .hover\:bg-slate-50:hover,
+html.dark .hover\:bg-slate-100:hover,
+html.dark .hover\:bg-teal-100:hover,
+html.dark .hover\:bg-blue-100:hover,
+html.dark .hover\:bg-indigo-100:hover,
+html.dark .history-row:hover,
+html.dark .sidebar-link:hover,
+html.dark .modern-table tr:hover td,
+html.dark .search-container:focus-within {
+    background-color: #334155 !important; /* bg-slate-700 */
+}
+html.dark .hover\:text-slate-600:hover {
+    color: #f8fafc !important; 
+}
+html.dark .sidebar-link.active {
+    background-color: rgba(20, 184, 166, 0.2) !important;
+    color: #2dd4bf !important;
+}
+
+/* Action Buttons */
+html.dark .action-btn {
+    background-color: #0f172a !important;
+}
+
+/* Create Test Options */
+html.dark .source-option:hover {
+    background-color: #334155 !important;
+    border-color: #475569 !important;
+}
+html.dark .source-option:has(input:checked) {
+    background-color: rgba(20, 184, 166, 0.15) !important;
+    border-color: #2dd4bf !important;
+}
+html.dark .source-icon {
+    background-color: #0f172a !important;
+    border-color: #334155 !important;
+}
+html.dark .source-option:has(input:checked) .source-icon {
+    background-color: #2dd4bf !important;
+    border-color: #2dd4bf !important;
+    color: #0f172a !important;
+}
+
+/* Adjust Teal (Primary Color) slightly for dark mode contrast */
+html.dark .text-teal-600, 
+html.dark .text-primary {
+    color: #2dd4bf !important; /* text-teal-400 */
+}
+html.dark .bg-teal-50, html.dark .bg-teal-50\/20 {
+    background-color: rgba(20, 184, 166, 0.15) !important;
+}
+html.dark .bg-teal-100 {
+    background-color: rgba(20, 184, 166, 0.25) !important;
+}
+
+/* Notification Popup specific fixes */
+html.dark #noti-popup {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+}
+html.dark #noti-popup .bg-slate-50\/50, html.dark #noti-popup .bg-slate-50 {
+    background-color: #0f172a !important;
+}
+html.dark #noti-popup .opacity-20 {
+    opacity: 0.5 !important; /* Make icon more visible */
+}
+
+/* Tables */
+html.dark th,
+html.dark th.bg-slate-50 {
+    background-color: #1e293b !important;
+    color: #cbd5e1 !important;
+}
+html.dark thead {
+    border-bottom-color: #334155 !important;
+}
+html.dark td {
+    border-bottom-color: #334155 !important;
+}
+
+/* Buttons */
+html.dark .btn-secondary {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #334155 !important;
+}
+
+/* Skeleton Loading adjustments */
+html.dark .skeleton {
+    background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+    background-size: 200% 100%;
+}
+
+/* Fix dropdown menus (like send notification custom dropdown) */
+html.dark #custom-target-dropdown, 
+html.dark #custom-target-select {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+}
+html.dark #custom-target-dropdown .bg-slate-50 {
+    background-color: #0f172a !important;
+}
