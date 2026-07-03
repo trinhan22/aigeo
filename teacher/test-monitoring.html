@@ -76,8 +76,8 @@
         <nav class="flex-grow overflow-y-auto">
             <a href="index.html" class="sidebar-link"><i data-feather="grid"></i> Tổng quan</a>
             <div class="nav-group-title">Quản lý</div>
-            <a href="classrooms.html" class="sidebar-link active"><i data-feather="users"></i> Quản lý Lớp học</a>
-            <a href="tests.html" class="sidebar-link"><i data-feather="file-text"></i> Quản lý đề thi</a>
+            <a href="classrooms.html" class="sidebar-link"><i data-feather="users"></i> Quản lý Lớp học</a>
+            <a href="tests.html" class="sidebar-link active"><i data-feather="file-text"></i> Quản lý đề thi</a>
             <a href="question-bank.html" class="sidebar-link"><i data-feather="database"></i> Ngân hàng câu hỏi</a>
             <div class="nav-group-title">Cá nhân</div>
             <a href="account.html" class="sidebar-link"><i data-feather="user"></i> Tài khoản</a>
@@ -111,13 +111,15 @@
                 
                 <!-- Breadcrumb & Legend -->
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                    <a href="classrooms.html" id="back-to-class" class="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest hover:text-teal-600 transition">
+                    <a href="tests.html" id="back-to-class" class="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest hover:text-teal-600 transition">
                         <i data-feather="arrow-left" class="w-4"></i> Trở lại
                     </a>
                     <div class="flex flex-wrap items-center gap-4 bg-white p-2 px-4 rounded-2xl border border-slate-100 shadow-sm">
-                         <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-green-500"></span><span class="text-[10px] font-bold text-slate-500 uppercase">Đang làm</span></div>
+                         <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-slate-300"></span><span class="text-[10px] font-bold text-slate-500 uppercase">Ngoại tuyến</span></div>
                          <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span><span class="text-[10px] font-bold text-slate-500 uppercase">Phòng chờ</span></div>
+                         <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-green-500"></span><span class="text-[10px] font-bold text-slate-500 uppercase">Đang làm</span></div>
                          <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span><span class="text-[10px] font-bold text-slate-500 uppercase">Bị khóa</span></div>
+                         <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span><span class="text-[10px] font-bold text-slate-500 uppercase">Đã nộp</span></div>
                     </div>
                 </div>
 
@@ -202,6 +204,8 @@
                         ${isLocked ? `
                             <button data-session-id="${session.id}" data-action="resume" class="btn-action flex-1 bg-teal-600 text-white shadow-lg shadow-teal-100 hover:scale-105 transition">Duyệt</button>
                             <button data-session-id="${session.id}" data-action="submit" class="btn-action flex-1 bg-slate-800 text-white hover:bg-black transition">Nộp bài</button>
+                        ` : session.status === 'offline' ? `
+                            <div class="w-full text-center text-[10px] font-black uppercase tracking-widest text-slate-400">Chưa truy cập</div>
                         ` : `
                             <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                                 <div class="h-full bg-teal-500 transition-all duration-700" style="width: ${(progress/total)*100 || 0}%"></div>
@@ -221,6 +225,39 @@
                 const testDoc = await getDoc(doc(db, "tests", testId));
                 if(testDoc.exists()) document.getElementById('test-name').textContent = testDoc.data().name;
 
+                // Load all students in the class as offline first
+                monitoringGrid.innerHTML = '';
+                const classDoc = await getDoc(doc(db, "classrooms", classId));
+                if (classDoc.exists()) {
+                    const studentIds = classDoc.data().students || [];
+                    await Promise.all(studentIds.map(async (sid) => {
+                        try {
+                            const sDoc = await getDoc(doc(db, "users", sid));
+                            if(sDoc.exists()) {
+                                const offlineSession = {
+                                    id: `offline-${sid}`,
+                                    studentId: sid,
+                                    studentName: sDoc.data().name,
+                                    status: 'offline',
+                                    progress: 0,
+                                    totalQuestions: '--',
+                                    warnings: 0
+                                };
+                                const card = document.createElement('div');
+                                card.id = `session-${sid}`;
+                                const colors = getStatusColors('offline');
+                                card.className = `student-monitor-card ${colors.cardCls}`;
+                                card.innerHTML = getCardContent(offlineSession);
+                                monitoringGrid.appendChild(card);
+                            }
+                        } catch(e) {}
+                    }));
+                }
+
+                if (monitoringGrid.children.length === 0) {
+                    monitoringGrid.innerHTML = '<p class="text-slate-400 font-bold col-span-full text-center py-10">Lớp học chưa có học sinh nào.</p>';
+                }
+
                 const q = query(collection(db, "test_sessions"), 
                                 where("teacherId", "==", currentUser.uid),
                                 where("testId", "==", testId), 
@@ -231,7 +268,7 @@
                     
                     snapshot.docChanges().forEach(change => {
                         const session = { id: change.doc.id, ...change.doc.data() };
-                        const existingCard = document.getElementById(`session-${session.id}`);
+                        const existingCard = document.getElementById(`session-${session.studentId}`);
                         
                         if (change.type === "added" || change.type === "modified") {
                             const colors = getStatusColors(session.status);
@@ -240,21 +277,32 @@
                                 existingCard.className = `student-monitor-card ${colors.cardCls}`;
                                 existingCard.innerHTML = getCardContent(session);
                             } else {
-                                // Add new card
+                                // Add new card if student wasn't in roster somehow
                                 const card = document.createElement('div');
-                                card.id = `session-${session.id}`;
+                                card.id = `session-${session.studentId}`;
                                 card.className = `student-monitor-card ${colors.cardCls}`;
                                 card.innerHTML = getCardContent(session);
                                 monitoringGrid.appendChild(card);
                             }
                         } else if (change.type === "removed") {
-                            if (existingCard) existingCard.remove();
+                            if (existingCard) {
+                                // Revert to offline
+                                const offlineSession = {
+                                    id: `offline-${session.studentId}`,
+                                    studentId: session.studentId,
+                                    studentName: session.studentName,
+                                    status: 'offline',
+                                    progress: 0,
+                                    totalQuestions: '--',
+                                    warnings: 0
+                                };
+                                const colors = getStatusColors('offline');
+                                existingCard.className = `student-monitor-card ${colors.cardCls}`;
+                                existingCard.innerHTML = getCardContent(offlineSession);
+                            }
                         }
                     });
 
-                    if (monitoringGrid.children.length === 0) {
-                        monitoringGrid.innerHTML = '<p class="text-slate-400 font-bold col-span-full text-center py-10">Chưa có học sinh tham gia.</p>';
-                    }
                     feather.replace();
                 });
             }
@@ -284,7 +332,8 @@
                     case 'online': return { cardCls: 'card-online', badgeCls: 'bg-green-100 text-green-600' };
                     case 'locked': return { cardCls: 'card-locked', badgeCls: 'bg-red-500 text-white shadow-lg shadow-red-200' };
                     case 'waiting': return { cardCls: 'card-waiting', badgeCls: 'bg-amber-100 text-amber-600' };
-                    case 'finished': return { cardCls: 'card-finished', badgeCls: 'bg-slate-200 text-slate-500' };
+                    case 'finished': return { cardCls: 'border-blue-200 bg-blue-50', badgeCls: 'bg-blue-100 text-blue-600' };
+                    case 'offline': return { cardCls: 'border-slate-200 bg-slate-50 opacity-60 grayscale-[50%]', badgeCls: 'bg-slate-200 text-slate-500' };
                     default: return { cardCls: '', badgeCls: 'bg-slate-100 text-slate-400' };
                 }
             }
@@ -295,6 +344,7 @@
                     case 'locked': return 'Bị khóa';
                     case 'waiting': return 'Phòng chờ';
                     case 'finished': return 'Đã nộp bài';
+                    case 'offline': return 'Ngoại tuyến';
                     default: return status;
                 }
             }
