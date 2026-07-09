@@ -2,9 +2,9 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/BKTVKGMb/FAVICON-GEO.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thầy Nguyễn Minh Khiêm - AIGEO</title>
+    <title>AIGEO Study</title>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -149,8 +149,8 @@
         <div class="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between gap-4">
             <!-- Logo -->
             <a href="/" class="flex items-center gap-2 shrink-0 hover:opacity-80 transition">
-                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" class="h-8 w-auto" style="filter: hue-rotate(160deg) saturate(1.2);">
-                <span class="text-xl font-black text-[#e97b9b] tracking-tight">AIGEO</span>
+                <img src="https://i.ibb.co/BKTVKGMb/FAVICON-GEO.png" class="h-8 w-auto">
+                <span class="text-xl font-black text-[#e97b9b] tracking-tight">AIGEO Study</span>
             </a>
 
             <!-- Desktop Nav -->
@@ -643,5 +643,45 @@
             if (e.target === this) closeComingSoon();
         });
     </script>
+
+<script type="text/javascript">
+    // 1. Chặn Chuột phải (Để ẩn menu "Inspect/Kiểm tra" và "View Source/Xem nguồn")
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        // Không hiện thông báo gì cả để trải nghiệm mượt mà hơn
+    });
+
+    // 2. Chặn các phím tắt Developer Tools
+    document.addEventListener('keydown', function(e) {
+        // Chặn F12
+        if (e.key === 'F12' || e.keyCode === 123) {
+            e.preventDefault();
+            return false;
+        }
+
+        // Chặn các tổ hợp phím Ctrl + ...
+        if (e.ctrlKey) {
+            switch (e.key.toLowerCase()) {
+                case 'u': // Chặn Ctrl + U (Xem source code)
+                case 's': // Chặn Ctrl + S (Lưu trang web)
+                case 'p': // Chặn Ctrl + P (In trang web - thường hiện code)
+                // Lưu ý: KHÔNG chặn 'c' (Copy) và 'a' (Select All)
+                    e.preventDefault();
+                    return false;
+            }
+
+            // Chặn Ctrl + Shift + ... (Các phím mở DevTools)
+            if (e.shiftKey) {
+                switch (e.key.toLowerCase()) {
+                    case 'i': // Inspect Element
+                    case 'j': // Console
+                    case 'c': // Element Inspector
+                        e.preventDefault();
+                        return false;
+                }
+            }
+        }
+    });
+</script>
 </body>
 </html>
