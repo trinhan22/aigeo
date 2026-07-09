@@ -37,7 +37,7 @@
     <script src="https://unpkg.com/feather-icons"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <link rel="stylesheet" href="../global-responsive.css?v=6">
+    <link rel="stylesheet" href="../global-responsive.css?v=7">
 
     <style>
         :root {
@@ -120,7 +120,7 @@
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
+            to { opacity: 1; transform: none; }
         }
         
         /* Card Hover Effects */
@@ -144,10 +144,8 @@
 </head>
 <body class="min-h-screen flex flex-col bg-[var(--bg-body)]">
 
-    <!-- Page Content Wrapper (Animated) -->
-    <div class="flex-1 flex flex-col page-fade-in">
-        <!-- Header -->
-    <header class="bg-white border-b sticky top-0 z-50">
+    <!-- Header -->
+    <header class="bg-white border-b fixed top-0 left-0 w-full z-50">
         <div class="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between gap-4">
             <!-- Logo -->
             <a href="/" class="flex items-center gap-2 shrink-0 hover:opacity-80 transition">
@@ -171,7 +169,7 @@
             <!-- Actions -->
             <div class="flex items-center gap-3 shrink-0">
                 <button class="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-bold text-teal-600 border-2 border-teal-100 rounded-full hover:bg-teal-50 transition" onclick="showComingSoon()">
-                    <i data-feather="shopping-cart" class="w-4 h-4"></i> Kích hoạt
+                    <i data-feather="shopping-cart" class="w-4 h-4"></i> Giỏ hàng
                 </button>
                 <a href="https://aigeo.info.vn/auth" class="flex items-center gap-2 px-5 py-2 text-sm font-bold text-white btn-teal rounded-full shadow-sm hover:shadow-md transition">
                     <i data-feather="user" class="w-4 h-4"></i> Đăng nhập
@@ -179,6 +177,9 @@
             </div>
         </div>
     </header>
+
+    <!-- Page Content Wrapper (Animated) -->
+    <div class="flex-1 flex flex-col pt-16">
 
     <!-- Hero Section -->
     <section class="hero-bg relative pt-12 pb-32 md:pt-20 md:pb-48 overflow-hidden">
@@ -334,7 +335,7 @@
     <!-- Main Content Tabs -->
     <section class="max-w-7xl mx-auto px-4 md:px-8 py-12">
         <!-- Tab Navigation -->
-        <div class="grid grid-cols-3 bg-white border border-slate-200 rounded-t-xl overflow-hidden shadow-sm">
+        <div class="grid grid-cols-3 bg-white border border-slate-200 rounded-t-xl overflow-hidden shadow-sm sticky top-16 z-40">
             <div class="tab-btn active" data-tab="lo-trinh" onclick="switchTab('lo-trinh')">Lộ trình</div>
             <div class="tab-btn" data-tab="khoa-hoc" onclick="switchTab('khoa-hoc')">Khóa học</div>
             <div class="tab-btn" data-tab="giao-trinh" onclick="switchTab('giao-trinh')">Giáo trình</div>
