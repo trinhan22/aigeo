@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thầy Nguyễn Minh Khiêm - AIGEO</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        teal: {
+                            50: '#fdf2f5',
+                            100: '#fae4eb',
+                            200: '#f8a9ba',
+                            300: '#f389a4',
+                            400: '#ed6589',
+                            500: '#e97b9b',
+                            600: '#d94b73',
+                            700: '#b83357',
+                            800: '#9b2b4b',
+                            900: '#842844',
+                        },
+                        emerald: {
+                            500: '#e26186'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="../global-responsive.css?v=5">
+
+    <style>
+        :root {
+            --primary: #e97b9b;
+            --secondary: #d94b73;
+            --text-main: #1E293B;
+            --text-light: #64748B;
+            --bg-body: #FFFFFF;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg-body); 
+            color: var(--text-main);
+        }
+
+        /* Top Hero Background */
+        .hero-bg {
+            background-color: #fdf2f5;
+        }
+
+        /* Tabs styling */
+        .tab-btn {
+            padding: 1rem 0;
+            color: var(--text-light);
+            font-weight: 700;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 0.95rem;
+            text-align: center;
+        }
+        .tab-btn:hover {
+            color: var(--text-main);
+        }
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background-color: #fdf2f5;
+        }
+
+        .review-star { color: #FBBF24; }
+        
+        .modal-overlay {
+            background-color: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            transform: scale(0.95) translateY(10px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .modal-overlay.active .modal-content {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        .btn-teal {
+            background-color: var(--primary);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .btn-teal:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(233, 123, 155, 0.3);
+        }
+        
+        /* Smooth page load transition */
+        .page-fade-in {
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Card Hover Effects */
+        .hover-card-effect {
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .hover-card-effect:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Hide scrollbar for review carousel */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[var(--bg-body)]">
+
+    <!-- Page Content Wrapper (Animated) -->
+    <div class="flex-1 flex flex-col page-fade-in">
+        <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between gap-4">
+            <!-- Logo -->
+            <a href="/" class="flex items-center gap-2 shrink-0 hover:opacity-80 transition">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" class="h-8 w-auto" style="filter: hue-rotate(160deg) saturate(1.2);">
+                <span class="text-xl font-black text-[#e97b9b] tracking-tight">AIGEO</span>
+            </a>
+
+            <!-- Desktop Nav -->
+            <nav class="hidden md:flex items-center gap-6 text-sm font-bold text-slate-600">
+                <a href="#lo-trinh" class="hover:text-teal-600 transition" onclick="switchTab('lo-trinh')">Lộ trình</a>
+                <a href="#khoa-hoc" class="hover:text-teal-600 transition" onclick="switchTab('khoa-hoc')">Khóa học</a>
+                <a href="#giao-trinh" class="hover:text-teal-600 transition" onclick="switchTab('giao-trinh')">Giáo trình</a>
+            </nav>
+
+            <!-- Search Bar -->
+            <div class="hidden md:flex flex-1 max-w-md relative">
+                <i data-feather="search" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                <input type="text" placeholder="Tìm kiếm..." class="w-full bg-slate-50 border border-slate-200 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-teal-500 transition hover:bg-white hover:shadow-sm">
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-3 shrink-0">
+                <button class="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-bold text-teal-600 border-2 border-teal-100 rounded-full hover:bg-teal-50 transition" onclick="showComingSoon()">
+                    <i data-feather="shopping-cart" class="w-4 h-4"></i> Kích hoạt
+                </button>
+                <a href="../auth.html" class="flex items-center gap-2 px-5 py-2 text-sm font-bold text-white btn-teal rounded-full shadow-sm hover:shadow-md transition">
+                    <i data-feather="user" class="w-4 h-4"></i> Đăng nhập
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-bg relative pt-12 pb-32 md:pt-20 md:pb-48 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 grid md:grid-cols-2 gap-12 items-center relative z-10">
+            <!-- Left Info -->
+            <div>
+                <div class="flex items-center mb-4">
+                    <!-- Updated to use an actual image for the logo as requested -->
+                    <img src="logo.png" alt="Logo Thầy Khiêm" class="h-32 w-auto object-contain rounded-2xl p-2">
+                    <!-- Note: Replace the src above with your actual logo URL -->
+                </div>
+                
+                <h1 class="text-3xl md:text-4xl font-black text-teal-900 mb-6 tracking-tight">Thầy Nguyễn Minh Khiêm</h1>
+                
+                <ul class="space-y-3 text-slate-700 font-medium">
+                    <li class="flex items-start gap-2">
+                        <span class="text-teal-600 mt-1 text-lg leading-none">•</span>
+                        <span>Giáo viên Giỏi chuẩn Sư phạm - hơn 10 năm kinh nghiệm luyện thi TN THPT</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-teal-600 mt-1 text-lg leading-none">•</span>
+                        <span>Thủ khoa luận văn Thạc sĩ Lý luận và phương pháp dạy học Địa Lí</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-teal-600 mt-1 text-lg leading-none">•</span>
+                        <span>Có >50 Thủ khoa/ Á khoa các tỉnh/ thành phố nhiều năm</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-teal-600 mt-1 text-lg leading-none">•</span>
+                        <span>4 lần nhận học bổng AMA ngành Sư Phạm</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-teal-600 mt-1 text-lg leading-none">•</span>
+                        <span>4 năm nhận học bổng từ ĐH Cần Thơ</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-teal-600 mt-1 text-lg leading-none">•</span>
+                        <span>Nằm trong đội tuyển HSG Địa Lí năm cấp 2 và cấp 3</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Right Image Placeholder -->
+            <div class="relative flex justify-center items-center h-full">
+                <!-- Background decorative element in AIGEO pink -->
+                <div class="absolute inset-0 bg-[#e97b9b] rounded-3xl transform rotate-3 scale-95 opacity-90 shadow-xl transition-transform duration-700 hover:rotate-6 z-0"></div>
+                
+                <!-- Stars decoration (between background and graphics card) -->
+                <i data-feather="star" class="absolute top-10 left-10 text-yellow-400 w-8 h-8 fill-current z-10 animate-pulse"></i>
+                <i data-feather="star" class="absolute bottom-20 right-10 text-yellow-400 w-6 h-6 fill-current z-10 animate-[pulse_3s_ease-in-out_infinite]"></i>
+
+                <!-- Cutout Image -->
+                <div class="relative z-20 w-full max-w-md aspect-square bg-slate-100 rounded-2xl border-4 border-white shadow-2xl flex items-center justify-center overflow-hidden transition-transform duration-500 hover:scale-[1.02]">
+                    <img src="hero.png" alt="Thầy Nguyễn Minh Khiêm" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Info & Reviews -->
+    <section class="max-w-7xl mx-auto px-4 md:px-8 -mt-16 md:-mt-24 relative z-20 grid md:grid-cols-2 gap-6">
+        <!-- Stats Card -->
+        <div class="bg-white p-8 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 hover-card-effect">
+            <h2 class="text-center text-sm font-black text-slate-800 uppercase tracking-widest mb-8">Thông tin giáo viên</h2>
+            
+            <div class="space-y-6">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl font-black text-slate-800">5000+</span>
+                    <span class="text-sm font-medium text-slate-600">Học viên 2k8</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl font-black text-slate-800">>50</span>
+                    <span class="text-sm font-medium text-slate-600">Thủ khoa/ Á khoa các tỉnh/ thành phố nhiều năm</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl font-black text-slate-800">8+</span>
+                    <span class="text-sm font-medium text-slate-600">Năm kinh nghiệm</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl font-black text-slate-800">8</span>
+                    <span class="text-sm font-medium text-slate-600">đầu sách Địa Lí</span>
+                </div>
+                <p class="text-sm font-bold text-slate-700 pt-2 border-t border-slate-50 mt-4">Điểm Địa trung bình toàn khóa năm 2026: <span class="text-teal-600 text-lg ml-1">9,40</span></p>
+            </div>
+        </div>
+
+        <!-- Review Card -->
+        <div class="bg-white py-8 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 flex flex-col hover-card-effect overflow-hidden">
+            <h2 class="text-center text-sm md:text-base font-black text-slate-800 uppercase tracking-widest mb-8">Đánh giá của học sinh</h2>
+            
+            <!-- Scrollable Reviews Container -->
+            <div id="reviews-slider" class="flex-1 flex overflow-x-auto scroll-smooth snap-x snap-mandatory hide-scrollbar cursor-grab select-none">
+                
+                <!-- Review 1 -->
+                <div class="w-full flex-shrink-0 snap-center flex flex-col justify-center px-8">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h4 class="font-bold text-lg text-slate-800">Em Minh Anh</h4>
+                            <p class="text-sm text-slate-500 italic mt-0.5">Học viên lớp luyện thi</p>
+                        </div>
+                        <div class="flex gap-1 text-sm text-yellow-400">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="text-base md:text-lg text-slate-600 leading-relaxed italic">
+                        <span class="text-teal-200 text-3xl font-serif font-black leading-none mr-1">"</span>Dù chưa từng được gặp thầy ngoài đời thật, nhưng qua màn hình nhỏ, em vẫn cảm nhận rõ sự tận tâm, sự tâm huyết, kiên nhẫn và tình cảm mà thầy dành cho lớp học online này. Giọng nói ấm áp đầy động lực của thầy đã trở thành điểm tựa cho em.
+                    </p>
+                </div>
+                
+                <!-- Review 2 -->
+                <div class="w-full flex-shrink-0 snap-center flex flex-col justify-center px-8">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h4 class="font-bold text-lg text-slate-800">Em Tuấn Anh</h4>
+                            <p class="text-sm text-slate-500 italic mt-0.5">Học viên lớp luyện đề</p>
+                        </div>
+                        <div class="flex gap-1 text-sm text-yellow-400">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="text-base md:text-lg text-slate-600 leading-relaxed italic">
+                        <span class="text-teal-200 text-3xl font-serif font-black leading-none mr-1">"</span>Thầy dạy rất kỹ, em từ một đứa mất gốc Địa nay đã tự tin đạt 9+. Những câu hỏi Vận dụng cao thầy giảng cực kỳ dễ hiểu và dễ nhớ. Cảm ơn thầy vì đã không bao giờ bỏ rơi bất kỳ học sinh nào trong lớp!
+                    </p>
+                </div>
+                
+                <!-- Review 3 -->
+                <div class="w-full flex-shrink-0 snap-center flex flex-col justify-center px-8">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h4 class="font-bold text-lg text-slate-800">Em Hương Giang</h4>
+                            <p class="text-sm text-slate-500 italic mt-0.5">Học viên lớp tổng ôn</p>
+                        </div>
+                        <div class="flex gap-1 text-sm text-yellow-400">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="text-base md:text-lg text-slate-600 leading-relaxed italic">
+                        <span class="text-teal-200 text-3xl font-serif font-black leading-none mr-1">"</span>Bài giảng của thầy không chỉ có kiến thức mà còn rất nhiều kỹ năng sống. Cảm ơn thầy vì đã luôn truyền cảm hứng cho chúng em mỗi khi cảm thấy áp lực vì kỳ thi sắp tới. Thầy là người giáo viên tuyệt vời nhất!
+                    </p>
+                </div>
+
+            </div>
+            
+            <!-- Scroll indicators -->
+            <div id="review-dots" class="flex justify-center items-center gap-2 mt-8 mb-2">
+                <button class="w-2.5 h-2.5 rounded-full bg-teal-500 transition-colors duration-300"></button>
+                <button class="w-2.5 h-2.5 rounded-full bg-slate-200 transition-colors duration-300 hover:bg-slate-300"></button>
+                <button class="w-2.5 h-2.5 rounded-full bg-slate-200 transition-colors duration-300 hover:bg-slate-300"></button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content Tabs -->
+    <section class="max-w-7xl mx-auto px-4 md:px-8 py-12">
+        <!-- Tab Navigation -->
+        <div class="grid grid-cols-3 bg-white border border-slate-200 rounded-t-xl overflow-hidden shadow-sm">
+            <div class="tab-btn active" data-tab="lo-trinh" onclick="switchTab('lo-trinh')">Lộ trình</div>
+            <div class="tab-btn" data-tab="khoa-hoc" onclick="switchTab('khoa-hoc')">Khóa học</div>
+            <div class="tab-btn" data-tab="giao-trinh" onclick="switchTab('giao-trinh')">Giáo trình</div>
+        </div>
+
+        <!-- Tab Content Area -->
+        <div class="bg-slate-50/50 min-h-[400px] border border-t-0 border-slate-200 rounded-b-xl p-6 md:p-8">
+            
+            <!-- Lộ Trình Tab -->
+            <div id="lo-trinh" class="tab-pane hidden page-fade-in">
+                <!-- Roadmap Image Placeholder (Width matches the outer cards) -->
+                <div class="w-full hover-card-effect cursor-pointer" onclick="showComingSoon()">
+                    <!-- Replace the src below with your actual roadmap image URL -->
+                    <img src="https://placehold.co/1200x400/ffffff/cbd5e1?text=Lộ+Trình+Học+Tập+Toàn+Diện" alt="Lộ trình học tập" class="w-full h-auto rounded-2xl shadow-sm border border-slate-200 object-cover">
+                </div>
+            </div>
+
+            <!-- Khóa Học Tab -->
+            <div id="khoa-hoc" class="tab-pane hidden page-fade-in">
+                <div class="space-y-4">
+                    <!-- Course Card 1 -->
+                    <div class="w-full bg-white rounded-2xl shadow-sm hover:shadow-xl border border-slate-100 p-4 md:p-6 flex flex-col md:flex-row gap-6 transition-all duration-500 transform hover:-translate-y-1 group/card">
+                        <!-- Premium Image Container -->
+                        <div class="w-full md:w-64 aspect-video bg-gradient-to-br from-[#fdf2f5] to-[#fae4eb] rounded-xl flex-shrink-0 relative overflow-hidden border border-slate-100 group-hover/card:border-pink-200 transition-colors duration-500">
+                             <img src="khoahoc-1.png" class="absolute inset-0 w-full h-full object-cover z-0 transform group-hover/card:scale-105 transition-transform duration-700">
+                             <!-- Hover Effect removed as requested -->
+                        </div>
+                        
+                        <!-- Content -->
+                        <div class="flex-1 flex flex-col justify-center">
+                            <span class="text-xs font-bold text-[#e97b9b] uppercase tracking-wider mb-1">Địa lý</span>
+                            <h3 class="text-lg font-black text-slate-800 mb-3 group-hover/card:text-[#d94b73] transition-colors duration-300 cursor-pointer" onclick="showComingSoon()">ĐỊA LÍ 12 - KHÓA ÔN THI TOÀN DIỆN CHINH PHỤC 9+ ĐỊA LÍ 2K8 - THẦY NGUYỄN MINH KHIÊM</h3>
+                            <p class="text-sm text-slate-600 mb-3 font-medium">Full Lộ trình ôn thi TOÀN DIỆN Chinh phục 9+ Địa Lí với 3 giai đoạn:</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="text-xs bg-slate-50 border border-slate-100 text-slate-600 px-2 py-1 rounded-md"><i class="fas fa-check text-green-500 mr-1"></i>Tổng ôn 9+</span>
+                                <span class="text-xs bg-slate-50 border border-slate-100 text-slate-600 px-2 py-1 rounded-md"><i class="fas fa-check text-green-500 mr-1"></i>Luyện đề thực chiến</span>
+                                <span class="text-xs bg-slate-50 border border-slate-100 text-slate-600 px-2 py-1 rounded-md"><i class="fas fa-check text-green-500 mr-1"></i>Bứt phá VD&VDC</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Premium Price Action -->
+                        <div class="flex-shrink-0 w-full md:w-48 pt-4 md:pt-0 md:pl-6 md:border-l border-slate-100 flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center">
+                            <div class="text-left md:text-right mb-4">
+                                <p class="text-xs text-slate-400 line-through font-medium">Giá gốc: 2.500.000 đ</p>
+                                <p class="text-sm text-slate-500 mt-1">Chỉ còn <span class="text-xl font-black text-[#e97b9b] block md:inline whitespace-nowrap mt-1 md:mt-0">1.699.000 đ</span></p>
+                            </div>
+                            <button onclick="showComingSoon()" class="w-full bg-gradient-to-r from-[#e97b9b] to-[#f389a4] text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-[0_4px_15px_rgba(233,123,155,0.3)] hover:shadow-[0_6px_20px_rgba(233,123,155,0.4)] hover:-translate-y-0.5 transition-all duration-300 text-center">Chi tiết khóa học</button>
+                        </div>
+                    </div>
+
+                    <!-- Course Card 2 -->
+                    <div class="w-full bg-white rounded-2xl shadow-sm hover:shadow-xl border border-slate-100 p-4 md:p-6 flex flex-col md:flex-row gap-6 transition-all duration-500 transform hover:-translate-y-1 group/card">
+                        <!-- Premium Image Container -->
+                        <div class="w-full md:w-64 aspect-video bg-gradient-to-br from-[#fdf2f5] to-[#fae4eb] rounded-xl flex-shrink-0 relative overflow-hidden border border-slate-100 group-hover/card:border-pink-200 transition-colors duration-500">
+                             <img src="khoahoc-2.png" class="absolute inset-0 w-full h-full object-cover z-0 transform group-hover/card:scale-105 transition-transform duration-700">
+                             <!-- Hover Effect removed as requested -->
+                        </div>
+                        
+                        <!-- Content -->
+                        <div class="flex-1 flex flex-col justify-center">
+                            <span class="text-xs font-bold text-[#e97b9b] uppercase tracking-wider mb-1">Địa lý</span>
+                            <h3 class="text-lg font-black text-slate-800 mb-3 group-hover/card:text-[#d94b73] transition-colors duration-300 cursor-pointer" onclick="showComingSoon()">ĐỊA LÍ 12 - KHÓA TỔNG ÔN 9+ - THẦY NGUYỄN MINH KHIÊM</h3>
+                            <p class="text-sm text-slate-600 leading-relaxed font-medium">Tổng ôn 9+: Học chuyên sâu toàn bộ kiến thức Địa thi TN THPT 2026 CTM từ cơ bản đến nâng cao.</p>
+                        </div>
+                        
+                        <!-- Premium Price Action -->
+                        <div class="flex-shrink-0 w-full md:w-48 pt-4 md:pt-0 md:pl-6 md:border-l border-slate-100 flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center">
+                            <div class="text-left md:text-right mb-4">
+                                <p class="text-xs text-slate-400 line-through font-medium">Giá gốc: 1.200.000 đ</p>
+                                <p class="text-sm text-slate-500 mt-1">Chỉ còn <span class="text-xl font-black text-[#e97b9b] block md:inline whitespace-nowrap mt-1 md:mt-0">899.000 đ</span></p>
+                            </div>
+                            <button onclick="showComingSoon()" class="w-full bg-gradient-to-r from-[#e97b9b] to-[#f389a4] text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-[0_4px_15px_rgba(233,123,155,0.3)] hover:shadow-[0_6px_20px_rgba(233,123,155,0.4)] hover:-translate-y-0.5 transition-all duration-300 text-center">Chi tiết khóa học</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Giáo Trình Tab -->
+            <div id="giao-trinh" class="tab-pane hidden page-fade-in">
+                <!-- Stacked horizontal cards matching course layout width -->
+                <div class="space-y-4 w-full">
+                    
+                    <!-- Book Card 1 -->
+                    <div class="w-full bg-white rounded-2xl shadow-sm hover:shadow-xl border border-slate-100 p-4 md:p-6 flex flex-col md:flex-row gap-6 transition-all duration-500 transform hover:-translate-y-1 group/card">
+                        <!-- Premium Book Showcase -->
+                        <div class="w-full md:w-64 aspect-video bg-gradient-to-br from-[#fdf2f5] to-[#fae4eb] rounded-xl flex-shrink-0 relative overflow-hidden border border-slate-100 group-hover/card:border-pink-200 transition-colors duration-500 flex items-center justify-center p-4">
+                             <!-- Object-contain with drop-shadow creates a 3D book effect inside the 16:9 box -->
+                             <img src="biasach-1.png" class="w-auto h-full object-contain z-10 drop-shadow-2xl transform group-hover/card:scale-110 group-hover/card:rotate-2 transition-transform duration-700">
+                             
+                             <!-- Ambient background glow -->
+                             <div class="absolute inset-0 bg-[#e97b9b]/5 opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 z-0"></div>
+                        </div>
+                        
+                        <!-- Content -->
+                        <div class="flex-1 flex flex-col justify-center">
+                            <span class="text-xs font-bold text-[#e97b9b] uppercase tracking-wider mb-1">Sách Địa lí 12</span>
+                            <h3 class="text-lg font-black text-slate-800 mb-3 group-hover/card:text-[#d94b73] transition-colors duration-300 cursor-pointer" onclick="showComingSoon()">SÁCH CHIẾN LƯỢC BỨT PHÁ 9+ ĐỊA LÍ - THẦY NGUYỄN MINH KHIÊM</h3>
+                            <p class="text-sm text-slate-600 leading-relaxed font-medium">Sổ tay tổng hợp lý thuyết, kỹ năng Địa lí (biểu đồ, bảng số liệu) và kiến thức trọng tâm.</p>
+                        </div>
+                        
+                        <!-- Premium Price Action -->
+                        <div class="flex-shrink-0 w-full md:w-48 pt-4 md:pt-0 md:pl-6 md:border-l border-slate-100 flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center">
+                            <div class="text-left md:text-right mb-4">
+                                <p class="text-xs text-slate-400 line-through font-medium">Giá gốc: 250.000 đ</p>
+                                <p class="text-sm text-slate-500 mt-1">Chỉ còn <span class="text-xl font-black text-[#e97b9b] block md:inline whitespace-nowrap mt-1 md:mt-0">169.000 đ</span></p>
+                            </div>
+                            <button onclick="showComingSoon()" class="w-full bg-gradient-to-r from-[#e97b9b] to-[#f389a4] text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-[0_4px_15px_rgba(233,123,155,0.3)] hover:shadow-[0_6px_20px_rgba(233,123,155,0.4)] hover:-translate-y-0.5 transition-all duration-300 text-center">Chi tiết sách</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Book Card 2 -->
+                    <div class="w-full bg-white rounded-2xl shadow-sm hover:shadow-xl border border-slate-100 p-4 md:p-6 flex flex-col md:flex-row gap-6 transition-all duration-500 transform hover:-translate-y-1 group/card">
+                        <!-- Premium Book Showcase -->
+                        <div class="w-full md:w-64 aspect-video bg-gradient-to-br from-[#fdf2f5] to-[#fae4eb] rounded-xl flex-shrink-0 relative overflow-hidden border border-slate-100 group-hover/card:border-pink-200 transition-colors duration-500 flex items-center justify-center p-4">
+                             <!-- Object-contain with drop-shadow creates a 3D book effect inside the 16:9 box -->
+                             <img src="biasach-2.png" class="w-auto h-full object-contain z-10 drop-shadow-2xl transform group-hover/card:scale-110 group-hover/card:-rotate-2 transition-transform duration-700">
+                             
+                             <!-- Ambient background glow -->
+                             <div class="absolute inset-0 bg-[#e97b9b]/5 opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 z-0"></div>
+                        </div>
+                        
+                        <!-- Content -->
+                        <div class="flex-1 flex flex-col justify-center">
+                            <span class="text-xs font-bold text-[#e97b9b] uppercase tracking-wider mb-1">Sách Địa lí 12</span>
+                            <h3 class="text-lg font-black text-slate-800 mb-3 group-hover/card:text-[#d94b73] transition-colors duration-300 cursor-pointer" onclick="showComingSoon()">BỘ ĐỀ THỰC CHIẾN ĐỊA LÍ - THẦY NGUYỄN MINH KHIÊM</h3>
+                            <p class="text-sm text-slate-600 leading-relaxed font-medium">Tuyển tập 30 đề thi chuẩn cấu trúc BGD, có mức độ phân hóa cao, số liệu cập nhật mới nhất.</p>
+                        </div>
+                        
+                        <!-- Premium Price Action -->
+                        <div class="flex-shrink-0 w-full md:w-48 pt-4 md:pt-0 md:pl-6 md:border-l border-slate-100 flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center">
+                            <div class="text-left md:text-right mb-4">
+                                <p class="text-xs text-slate-400 line-through font-medium">Giá gốc: 200.000 đ</p>
+                                <p class="text-sm text-slate-500 mt-1">Chỉ còn <span class="text-xl font-black text-[#e97b9b] block md:inline whitespace-nowrap mt-1 md:mt-0">149.000 đ</span></p>
+                            </div>
+                            <button onclick="showComingSoon()" class="w-full bg-gradient-to-r from-[#e97b9b] to-[#f389a4] text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-[0_4px_15px_rgba(233,123,155,0.3)] hover:shadow-[0_6px_20px_rgba(233,123,155,0.4)] hover:-translate-y-0.5 transition-all duration-300 text-center">Chi tiết sách</button>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white/70 backdrop-blur-xl border-t border-pink-100 py-10 mt-auto relative z-20">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col items-center gap-8">
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                <a href="../index.html" class="flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl font-bold text-slate-700 bg-white border border-slate-200 hover:border-pink-200 hover:bg-pink-50 hover:text-[#e97b9b] transition-all shadow-sm hover:shadow-md">
+                    <i data-feather="home" class="w-5 h-5"></i>
+                    Trang chủ AIGEO
+                </a>
+                <a href="https://www.facebook.com/dialithaygeo" target="_blank" class="flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl font-bold text-white bg-[#e97b9b] shadow-[0_4px_15px_rgba(233,123,155,0.3)] hover:shadow-[0_6px_20px_rgba(233,123,155,0.4)] hover:-translate-y-0.5 transition-all">
+                    <i class="fab fa-facebook-f text-lg w-5 h-5 flex items-center justify-center"></i>
+                    Fanpage Thầy Geo
+                </a>
+            </div>
+            
+            <p class="text-sm font-bold text-slate-400">© 2025 AIGEO. All rights reserved.</p>
+        </div>
+    </footer>
+    </div> <!-- End Page Content Wrapper -->
+
+    <!-- Coming Soon Modal -->
+    <div id="coming-soon-modal" class="modal-overlay fixed inset-0 z-[100] flex items-center justify-center px-4">
+        <div class="modal-content bg-white w-full max-w-sm rounded-3xl p-8 relative shadow-2xl text-center border border-slate-100">
+            <!-- Close Button -->
+            <button onclick="closeComingSoon()" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-full transition">
+                <i data-feather="x" class="w-5 h-5"></i>
+            </button>
+            
+            <div class="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center mx-auto mb-6 text-teal-600">
+                <i data-feather="loader" class="w-8 h-8 animate-spin"></i>
+            </div>
+            
+            <h3 class="text-xl font-black text-slate-800 mb-2">Tính năng đang phát triển</h3>
+            <p class="text-sm text-slate-500 mb-8 leading-relaxed">
+                Nội dung này hiện đang được chúng tôi xây dựng và sẽ sớm ra mắt trong thời gian tới. Mong bạn thông cảm!
+            </p>
+            
+            <button onclick="closeComingSoon()" class="w-full bg-slate-800 hover:bg-black text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-slate-200">
+                Đóng lại
+            </button>
+        </div>
+    </div>
+
+    <script>
+        feather.replace();
+
+        // Drag to Scroll Logic for Reviews Carousel
+        const slider = document.getElementById('reviews-slider');
+        const dots = document.querySelectorAll('#review-dots button');
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        if (slider) {
+            // Interactive Dots
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    const slideWidth = slider.clientWidth;
+                    slider.scrollTo({
+                        left: index * slideWidth,
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Update active dot on scroll
+            slider.addEventListener('scroll', () => {
+                const scrollPos = slider.scrollLeft;
+                const slideWidth = slider.clientWidth;
+                const activeIndex = Math.round(scrollPos / slideWidth);
+                
+                dots.forEach((dot, index) => {
+                    if (index === activeIndex) {
+                        dot.classList.remove('bg-slate-200');
+                        dot.classList.add('bg-teal-500');
+                    } else {
+                        dot.classList.remove('bg-teal-500');
+                        dot.classList.add('bg-slate-200');
+                    }
+                });
+            });
+
+            // Mouse Drag Logic
+            slider.addEventListener('mousedown', (e) => {
+                isDown = true;
+                slider.style.cursor = 'grabbing';
+                // Remove smooth scroll and snap for instantaneous 1:1 drag tracking
+                slider.classList.remove('scroll-smooth', 'snap-x', 'snap-mandatory');
+                startX = e.pageX - slider.offsetLeft;
+                scrollLeft = slider.scrollLeft;
+            });
+            
+            slider.addEventListener('mouseleave', () => {
+                if (!isDown) return;
+                isDown = false;
+                slider.style.cursor = 'grab';
+                slider.classList.add('scroll-smooth', 'snap-x', 'snap-mandatory');
+            });
+            
+            slider.addEventListener('mouseup', () => {
+                isDown = false;
+                slider.style.cursor = 'grab';
+                // Restore snap to auto-align to closest review
+                slider.classList.add('scroll-smooth', 'snap-x', 'snap-mandatory');
+            });
+            
+            slider.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault(); // Prevent text selection
+                const x = e.pageX - slider.offsetLeft;
+                const walk = (x - startX) * 1.5; // Scroll speed multiplier
+                slider.scrollLeft = scrollLeft - walk;
+            });
+        }
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            // Hide all tab content
+            document.querySelectorAll('.tab-pane').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('block');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // Show selected tab content with a slight delay to allow display:block before adding fade-in
+            const selectedTab = document.getElementById(tabId);
+            if(selectedTab) {
+                selectedTab.classList.remove('hidden');
+                selectedTab.classList.add('block');
+                // Re-trigger animation
+                selectedTab.classList.remove('page-fade-in');
+                void selectedTab.offsetWidth; // Trigger reflow
+                selectedTab.classList.add('page-fade-in');
+            }
+
+            // Highlight selected button
+            const activeBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+            if(activeBtn) {
+                activeBtn.classList.add('active');
+            }
+        }
+
+        // Initialize with default tab (Khóa học) based on reference image
+        switchTab('khoa-hoc');
+
+        // Modal Logic
+        function showComingSoon() {
+            document.getElementById('coming-soon-modal').classList.add('active');
+        }
+
+        function closeComingSoon() {
+            document.getElementById('coming-soon-modal').classList.remove('active');
+        }
+
+        // Close modal on click outside
+        document.getElementById('coming-soon-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeComingSoon();
+        });
+    </script>
+</body>
+</html>
