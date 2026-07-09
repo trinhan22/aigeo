@@ -29,6 +29,7 @@
 html {
     scroll-behavior: smooth;
     font-size: 16px;
+    overflow-y: scroll;
 }
 
 body {
@@ -261,7 +262,21 @@ p { font-size: clamp(0.9rem, 1.5vw, 1rem); }
     }
 }
 
-/* Custom scrollbar removed to allow native OS scrollbar visibility */
+/* Custom Scrollbar for all platforms */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}
 
 /* Utility Animations */
 .fade-up {
