@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Tags - Admin AIGEO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        :root { --primary-teal: #0D9488; --primary-emerald: #10B981; }
+        body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #f1f5f9; }
+        .admin-sidebar { width: 280px; background: #ffffff; border-right: 1px solid #F1F5F9; display: flex; flex-direction: column; height: 100vh; }
+        .nav-section-title { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: #94A3B8; margin: 20px 10px 7px 22px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; margin: 6px 20px; border-radius: 14px; font-size: 0.9rem; font-weight: 600; color: #64748B; transition: all 0.25s ease; }
+        .nav-item:hover { background-color: #F1F5F9; color: #0D9488; }
+        .nav-item.active { background: linear-gradient(135deg, #0D9488 0%, #10B981 100%); color: #ffffff; box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.25); }
+        .nav-item.active i { color: #ffffff; }
+        .brand-box { height: 80px; display: flex; align-items: center; padding: 0 32px; border-bottom: 1px solid #F8FAFC; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0D9488; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); }
+        .modal-content { background-color: #fefefe; margin: 5% auto; padding: 20px; border-radius: 12px; width: 90%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+    </style>
+    <link rel="stylesheet" href="../global-responsive.css?v=5">
+</head>
+<body class="flex h-screen">
+    <aside class="admin-sidebar shadow-sm flex-shrink-0 overflow-hidden">
+        <div class="brand-box">
+            <a href="/index.html" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 bg-teal-600 rounded-xl flex items-center justify-center shadow-lg shadow-teal-600/20 group-hover:rotate-12 transition-transform">
+                    <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" class="h-6 w-auto brightness-0 invert" alt="Logo">
+                </div>
+                <div class="flex flex-col text-left">
+                    <span class="text-xl font-black text-slate-800 tracking-tighter leading-none">AIGEO</span>
+                    <span class="text-[10px] font-bold text-teal-600 uppercase tracking-widest mt-1">Admin Panel</span>
+                </div>
+            </a>
+        </div>
+        <nav class="flex-grow overflow-y-auto pb-10">
+            <p class="nav-section-title">Báo cáo</p>
+            <a href="index.html" class="nav-item"><i data-feather="grid"></i> Tổng quan</a>
+            <!-- Nhóm Khóa học -->
+            <p class="nav-section-title">Khóa học</p>
+            <div class="space-y-1">
+                <a href="courses.html" class="nav-item">
+                    <i data-feather="monitor"></i> Quản lý Khóa học
+                </a>
+                <a href="orders.html" class="nav-item">
+                    <i data-feather="shopping-cart"></i> Quản lý Đơn hàng
+                </a>
+            </div>
+
+            <p class="nav-section-title">Quản trị dữ liệu</p>
+            <div class="space-y-1">
+                <a href="users.html" class="nav-item"><i data-feather="users"></i> Quản lý Người dùng</a>
+                <a href="subjects.html" class="nav-item"><i data-feather="book-open"></i> Quản lý Học liệu</a>
+                <a href="questions.html" class="nav-item"><i data-feather="help-circle"></i> Quản lý Câu hỏi</a>
+                <a href="tests.html" class="nav-item"><i data-feather="file-text"></i> Quản lý Đề thi</a>
+                <a href="tags.html" class="nav-item active"><i data-feather="tag"></i> Quản lý Tags</a>
+                <!-- Hidden courses link remains hidden for now -->
+            </div>
+            <p class="nav-section-title">Kỹ thuật</p>
+            <div class="space-y-1">
+                <a href="apikeys.html" class="nav-item"><i data-feather="key"></i> Quản lý API Key</a>
+                <a href="feedback.html" class="nav-item"><i data-feather="message-square"></i> Quản lý Góp ý</a>
+                <a href="settings.html" class="nav-item"><i data-feather="settings"></i> Cài đặt hệ thống</a>
+            </div>
+        </nav>
+        <div class="p-6 bg-slate-50/50 mt-auto border-t">
+            <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 rounded-xl transition-all">
+                <i data-feather="log-out"></i> Đăng xuất
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden relative">
+        <header class="bg-white shadow-sm h-16 flex items-center justify-end px-6">
+            <div class="flex items-center">
+                <div id="global-notification-bell" class="mr-2 sm:mr-4 z-50"></div>
+                <span id="user-name" class="font-semibold text-gray-700 mr-4">Đang tải...</span>
+                <img id="user-avatar" class="h-10 w-10 rounded-full object-cover" src="https://placehold.co/40x40/E2E8F0/475569?text=A" alt="Admin Avatar">
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-100 p-8">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h1 class="text-3xl font-bold text-slate-800">Quản lý Tags</h1>
+                        <p class="mt-2 text-slate-600">Thêm, sửa, xóa các thẻ (tags) cho khóa học.</p>
+                    </div>
+                    <button onclick="openModal()" class="bg-teal-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-teal-700 transition-colors flex items-center gap-2">
+                        <i data-feather="plus" class="w-4 h-4"></i> Thêm Tag
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <table class="w-full table-auto">
+                        <thead class="bg-slate-50 border-b">
+                            <tr>
+                                <th class="p-4 text-sm font-semibold text-slate-600 text-left">Tên Tag</th>
+                                <th class="p-4 text-sm font-semibold text-slate-600 text-center w-24">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tags-tbody" class="divide-y divide-slate-100">
+                            <tr><td colspan="2" class="p-4 text-center text-gray-500">Đang tải dữ liệu...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Form -->
+    <div id="tagModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center border-b pb-4 mb-4">
+                <h2 id="modal-title" class="text-xl font-bold text-slate-800">Thêm Tag</h2>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-800"><i data-feather="x"></i></button>
+            </div>
+            <form id="tag-form" class="space-y-4">
+                <input type="hidden" id="tag-id">
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-1">Tên Tag *</label>
+                    <input type="text" id="tag-name" required class="w-full p-2 border rounded-lg focus:ring-teal-500 focus:border-teal-500" placeholder="VD: Địa lí 12">
+                </div>
+                <div class="flex justify-end gap-2 pt-4 border-t">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-bold hover:bg-gray-200">Hủy</button>
+                    <button type="submit" id="save-btn" class="px-4 py-2 bg-teal-600 text-white rounded-lg font-bold hover:bg-teal-700 flex items-center">
+                        <i data-feather="save" class="w-4 h-4 mr-2"></i> Lưu Tag
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase Script -->
+    <script src="../firebase-config.js"></script>
+    <script type="module">
+        window.onerror = function(msg, url, line) {
+            const tb = document.getElementById('tags-tbody');
+            if (tb) tb.innerHTML = `<tr><td colspan="2" class="p-4 text-center text-red-500">Global Error: ${msg} at line ${line}</td></tr>`;
+            return false;
+        };
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, getDocs, addDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        let tags = [];
+        let auth, db, tbody, modal, form;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+
+            tbody = document.getElementById('tags-tbody');
+            modal = document.getElementById('tagModal');
+            form = document.getElementById('tag-form');
+
+            window.openModal = (id = null) => {
+                modal.style.display = 'block';
+                form.reset();
+                document.getElementById('tag-id').value = '';
+                document.getElementById('modal-title').innerText = id ? 'Sửa Tag' : 'Thêm Tag';
+                
+                if (id) {
+                    const t = tags.find(x => x.id === id);
+                    if (t) {
+                        document.getElementById('tag-id').value = t.id;
+                        document.getElementById('tag-name').value = t.name || '';
+                    }
+                }
+            };
+            window.closeModal = () => { modal.style.display = 'none'; };
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const id = document.getElementById('tag-id').value;
+                const tagData = {
+                    name: document.getElementById('tag-name').value.trim()
+                };
+
+                const btn = document.getElementById('save-btn');
+                btn.disabled = true;
+                btn.innerText = 'Đang lưu...';
+
+                try {
+                    if (id) {
+                        await updateDoc(doc(db, "tags", id), tagData);
+                    } else {
+                        await addDoc(collection(db, "tags"), tagData);
+                    }
+                    closeModal();
+                    loadTags();
+                } catch(err) {
+                    console.error(err);
+                    alert("Lỗi khi lưu tag: " + err.message);
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i data-feather="save" class="w-4 h-4 mr-2"></i> Lưu Tag';
+                    feather.replace();
+                }
+            });
+
+            window.deleteTag = async (id) => {
+                if (confirm('Bạn có chắc chắn muốn xóa tag này?')) {
+                    try {
+                        await deleteDoc(doc(db, "tags", id));
+                        loadTags();
+                    } catch(err) {
+                        console.error(err);
+                        alert("Lỗi khi xóa tag: " + err.message);
+                    }
+                }
+            };
+
+            async function loadTags() {
+                tbody.innerHTML = '<tr><td colspan="2" class="p-4 text-center text-gray-500">Đang tải dữ liệu...</td></tr>';
+                try {
+                    const snap = await getDocs(collection(db, "tags"));
+                    tags = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    
+                    if (tags.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="2" class="p-4 text-center text-gray-500">Chưa có tag nào.</td></tr>';
+                        return;
+                    }
+                    
+                    let html = '';
+                    tags.forEach(t => {
+                        html += `
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="p-4 text-sm text-slate-800 font-medium">
+                                    <span class="bg-teal-100 text-teal-800 px-2 py-1 rounded text-xs font-bold">#${t.name}</span>
+                                </td>
+                                <td class="p-4 text-center">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <button onclick="openModal('${t.id}')" class="text-slate-400 hover:text-teal-600 transition" title="Sửa"><i data-feather="edit-2" class="w-4 h-4"></i></button>
+                                        <button onclick="deleteTag('${t.id}')" class="text-slate-400 hover:text-red-600 transition" title="Xóa"><i data-feather="trash-2" class="w-4 h-4"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    tbody.innerHTML = html;
+                    feather.replace();
+                } catch (e) {
+                    tbody.innerHTML = `<tr><td colspan="2" class="p-4 text-center text-red-500">Lỗi tải dữ liệu: ${e.message}</td></tr>`;
+                }
+            }
+
+            async function init() {
+                onAuthStateChanged(auth, async (user) => {
+                    try {
+                        if (user) {
+                            const docSnap = await getDoc(doc(db, "users", user.uid));
+                            if (docSnap.exists() && (docSnap.data().role === 'admin' || docSnap.data().role === 'teacher')) {
+                                document.getElementById('user-name').innerText = docSnap.data().name || user.email;
+                                loadTags();
+                            } else {
+                                window.location.href = '../auth.html';
+                            }
+                        } else {
+                            window.location.href = '../auth.html';
+                        }
+                    } catch (err) {
+                        tbody.innerHTML = `<tr><td colspan="2" class="p-4 text-center text-red-500">Lỗi Auth: ${err.message}</td></tr>`;
+                    }
+                });
+                
+                document.getElementById('logout-btn').addEventListener('click', () => {
+                    signOut(auth).then(() => window.location.href = '../auth.html');
+                });
+            }
+            
+            feather.replace();
+            init();
+        });
+    </script>
+    <script type="module" src="../notifications.js"></script>
+    <script src="../global-ui.js"></script>
+</body>
+</html>

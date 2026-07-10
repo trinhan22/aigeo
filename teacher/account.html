@@ -27,11 +27,12 @@
 
         /* --- SIDEBAR STYLE (Đồng bộ) --- */
         .sidebar { width: 280px; background: white; border-right: 1px solid #E2E8F0; height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; }
-        .nav-group-title { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #94A3B8; padding: 1.5rem 1.5rem 0.5rem; }
-        .sidebar-link { display: flex; align-items: center; padding: 0.8rem 1.5rem; color: var(--text-light); font-weight: 600; font-size: 0.9rem; transition: 0.3s; gap: 12px; }
+        .nav-group-title { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #94A3B8; padding: 1.2rem 1.5rem 0.4rem; }
+        .sidebar-link { display: flex; align-items: center; padding: 0.65rem 1rem; margin: 0.15rem 12px; border-radius: 10px; color: #64748B; font-weight: 600; font-size: 0.9rem; transition: 0.2s ease-in-out; gap: 12px; }
         .sidebar-link i { width: 18px; height: 18px; }
-        .sidebar-link:hover { color: var(--primary); background: var(--primary-light); }
-        .sidebar-link.active { background: var(--primary-gradient); color: white; border-radius: 12px; margin: 0 12px; box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.2); }
+        .sidebar-link:hover { color: #0D9488; background: #F1F5F9; }
+        .sidebar-link.active { background: linear-gradient(135deg, #0D9488 0%, #10B981 100%); color: white; box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2); }
+        .sidebar-link.active i { color: white; }
 
         /* --- DASHBOARD CARDS --- */
         .bento-card { background: white; border-radius: 32px; border: 1px solid #E2E8F0; padding: 32px; transition: 0.3s; }
@@ -85,6 +86,10 @@
             <a href="classrooms.html" class="sidebar-link"><i data-feather="users"></i> Quản lý Lớp học</a>
             <a href="tests.html" class="sidebar-link"><i data-feather="file-text"></i> Quản lý đề thi</a>
             <a href="question-bank.html" class="sidebar-link"><i data-feather="database"></i> Ngân hàng câu hỏi</a>
+            <div class="nav-group-title">AIGEO Study</div>
+            <a href="courses.html" class="sidebar-link"><i data-feather="book-open"></i> Quản lý Khóa học</a>
+            <a href="orders.html" class="sidebar-link"><i data-feather="shopping-cart"></i> Quản lý Đơn hàng</a>
+
             <div class="nav-group-title">Cá nhân</div>
             <a href="account.html" class="sidebar-link active"><i data-feather="user"></i> Tài khoản</a>
         </nav>

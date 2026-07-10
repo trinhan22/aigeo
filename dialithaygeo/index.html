@@ -168,12 +168,31 @@
 
             <!-- Actions -->
             <div class="flex items-center gap-3 shrink-0">
-                <button class="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-bold text-teal-600 border-2 border-teal-100 rounded-full hover:bg-teal-50 transition" onclick="showComingSoon()">
+                <button onclick="window.location.href='cart.html'" class="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-bold text-[#e97b9b] border-2 border-pink-100 rounded-full hover:bg-pink-50 transition relative">
                     <i data-feather="shopping-cart" class="w-4 h-4"></i> Giỏ hàng
+                    <span id="cart-badge" class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white hidden">0</span>
                 </button>
-                <a href="https://aigeo.info.vn/auth" class="flex items-center gap-2 px-5 py-2 text-sm font-bold text-white btn-teal rounded-full shadow-sm hover:shadow-md transition">
-                    <i data-feather="user" class="w-4 h-4"></i> Đăng nhập
-                </a>
+                
+                <div class="relative" id="auth-header-wrapper">
+                    <a href="../auth.html" id="btn-login-main" class="bg-gradient-to-r from-[#e97b9b] to-[#f389a4] text-white px-5 py-2.5 rounded-full text-sm font-bold hover:shadow-[0_4px_15px_rgba(233,123,155,0.4)] hover:-translate-y-0.5 transition-all inline-block">Đăng nhập</a>
+                    
+                    <div id="user-logged-pill" class="hidden items-center gap-2 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-full cursor-pointer transition-colors">
+                        <img id="user-avatar-header" src="https://placehold.co/32x32/f389a4/ffffff?text=U" class="w-7 h-7 rounded-full object-cover">
+                        <span id="user-name-header" class="text-sm font-bold text-slate-700 max-w-[100px] truncate"></span>
+                        <i data-feather="chevron-down" class="w-3 h-3 text-slate-400"></i>
+                    </div>
+
+                    <div id="auth-dropdown-menu" class="absolute right-0 mt-2 w-48 bg-white border border-slate-100 rounded-xl shadow-xl hidden flex-col overflow-hidden z-50">
+                        <p class="px-4 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50 mb-1 bg-slate-50">Cá nhân</p>
+                        <a href="#" id="link-to-dashboard" class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-[#fdf2f5] hover:text-[#e97b9b] transition-colors">
+                            <i data-feather="grid" class="w-4 h-4"></i> Bảng điều khiển
+                        </a>
+                        <div class="h-px bg-slate-100 my-1"></div>
+                        <button id="btn-logout-header" class="w-full text-left flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 transition-colors">
+                            <i data-feather="log-out" class="w-4 h-4"></i> Đăng xuất
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
@@ -342,73 +361,22 @@
         </div>
 
         <!-- Tab Content Area -->
-        <div class="bg-slate-50/50 min-h-[400px] border border-t-0 border-slate-200 rounded-b-xl p-6 md:p-8">
+        <div class="bg-slate-50/50 min-h-[200px] border border-t-0 border-slate-200 rounded-b-xl p-6 md:p-8">
             
             <!-- Lộ Trình Tab -->
             <div id="lo-trinh" class="tab-pane hidden page-fade-in">
                 <!-- Roadmap Image Placeholder (Width matches the outer cards) -->
                 <div class="w-full hover-card-effect cursor-pointer" onclick="showComingSoon()">
                     <!-- Replace the src below with your actual roadmap image URL -->
-                    <img src="https://placehold.co/1200x400/ffffff/cbd5e1?text=Lộ+Trình+Học+Tập+Toàn+Diện" alt="Lộ trình học tập" class="w-full h-auto rounded-2xl shadow-sm border border-slate-200 object-cover">
+                    <img src="https://placehold.co/1200x400/ffffff/cbd5e1?text=DEMO" alt="Lộ trình học tập" class="w-full h-auto rounded-2xl shadow-sm border border-slate-200 object-cover">
                 </div>
             </div>
 
             <!-- Khóa Học Tab -->
             <div id="khoa-hoc" class="tab-pane hidden page-fade-in">
-                <div class="space-y-4">
-                    <!-- Course Card 1 -->
-                    <div class="w-full bg-white rounded-2xl shadow-sm hover:shadow-xl border border-slate-100 p-4 md:p-6 flex flex-col md:flex-row gap-6 transition-all duration-500 transform hover:-translate-y-1 group/card">
-                        <!-- Premium Image Container -->
-                        <div class="w-full md:w-64 aspect-video bg-gradient-to-br from-[#fdf2f5] to-[#fae4eb] rounded-xl flex-shrink-0 relative overflow-hidden border border-slate-100 group-hover/card:border-pink-200 transition-colors duration-500">
-                             <img src="khoahoc-1.png" class="absolute inset-0 w-full h-full object-cover z-0 transform group-hover/card:scale-105 transition-transform duration-700">
-                             <!-- Hover Effect removed as requested -->
-                        </div>
-                        
-                        <!-- Content -->
-                        <div class="flex-1 flex flex-col justify-center">
-                            <span class="text-xs font-bold text-[#e97b9b] uppercase tracking-wider mb-1">Địa lý</span>
-                            <h3 class="text-lg font-black text-slate-800 mb-3 group-hover/card:text-[#d94b73] transition-colors duration-300 cursor-pointer" onclick="showComingSoon()">ĐỊA LÍ 12 - KHÓA ÔN THI TOÀN DIỆN CHINH PHỤC 9+ ĐỊA LÍ 2K9 - THẦY NGUYỄN MINH KHIÊM</h3>
-                            <p class="text-sm text-slate-600 mb-3 font-medium">Full Lộ trình ôn thi TOÀN DIỆN Chinh phục 9+ Địa Lí với 3 giai đoạn:</p>
-                            <div class="flex flex-wrap gap-2">
-                                <span class="text-xs bg-slate-50 border border-slate-100 text-slate-600 px-2 py-1 rounded-md"><i class="fas fa-check text-green-500 mr-1"></i>Tổng ôn 9+</span>
-                                <span class="text-xs bg-slate-50 border border-slate-100 text-slate-600 px-2 py-1 rounded-md"><i class="fas fa-check text-green-500 mr-1"></i>Luyện đề thực chiến</span>
-                                <span class="text-xs bg-slate-50 border border-slate-100 text-slate-600 px-2 py-1 rounded-md"><i class="fas fa-check text-green-500 mr-1"></i>Bứt phá VD&VDC</span>
-                            </div>
-                        </div>
-                        
-                        <!-- Premium Price Action -->
-                        <div class="flex-shrink-0 w-full md:w-48 pt-6 md:pt-0 md:pl-6 border-t md:border-t-0 md:border-l border-slate-100 flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center mt-2 md:mt-0">
-                            <div class="text-left md:text-right mb-4">
-                                <p class="text-xs text-slate-400 line-through font-medium">Giá gốc: 2.500.000 đ</p>
-                                <p class="text-sm text-slate-500 mt-1">Chỉ còn <span class="text-xl font-black text-[#e97b9b] block md:inline whitespace-nowrap mt-1 md:mt-0">1.699.000 đ</span></p>
-                            </div>
-                            <button onclick="showComingSoon()" class="w-full bg-gradient-to-r from-[#e97b9b] to-[#f389a4] text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-[0_4px_15px_rgba(233,123,155,0.3)] hover:shadow-[0_6px_20px_rgba(233,123,155,0.4)] hover:-translate-y-0.5 transition-all duration-300 text-center">Chi tiết khóa học</button>
-                        </div>
-                    </div>
-
-                    <!-- Course Card 2 -->
-                    <div class="w-full bg-white rounded-2xl shadow-sm hover:shadow-xl border border-slate-100 p-4 md:p-6 flex flex-col md:flex-row gap-6 transition-all duration-500 transform hover:-translate-y-1 group/card">
-                        <!-- Premium Image Container -->
-                        <div class="w-full md:w-64 aspect-video bg-gradient-to-br from-[#fdf2f5] to-[#fae4eb] rounded-xl flex-shrink-0 relative overflow-hidden border border-slate-100 group-hover/card:border-pink-200 transition-colors duration-500">
-                             <img src="khoahoc-2.png" class="absolute inset-0 w-full h-full object-cover z-0 transform group-hover/card:scale-105 transition-transform duration-700">
-                             <!-- Hover Effect removed as requested -->
-                        </div>
-                        
-                        <!-- Content -->
-                        <div class="flex-1 flex flex-col justify-center">
-                            <span class="text-xs font-bold text-[#e97b9b] uppercase tracking-wider mb-1">Địa lý</span>
-                            <h3 class="text-lg font-black text-slate-800 mb-3 group-hover/card:text-[#d94b73] transition-colors duration-300 cursor-pointer" onclick="showComingSoon()">ĐỊA LÍ 12 - KHÓA TỔNG ÔN 9+ - THẦY NGUYỄN MINH KHIÊM</h3>
-                            <p class="text-sm text-slate-600 leading-relaxed font-medium">Tổng ôn 9+: Học chuyên sâu toàn bộ kiến thức Địa thi TN THPT 2026 CTM từ cơ bản đến nâng cao.</p>
-                        </div>
-                        
-                        <!-- Premium Price Action -->
-                        <div class="flex-shrink-0 w-full md:w-48 pt-6 md:pt-0 md:pl-6 border-t md:border-t-0 md:border-l border-slate-100 flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center mt-2 md:mt-0">
-                            <div class="text-left md:text-right mb-4">
-                                <p class="text-xs text-slate-400 line-through font-medium">Giá gốc: 1.200.000 đ</p>
-                                <p class="text-sm text-slate-500 mt-1">Chỉ còn <span class="text-xl font-black text-[#e97b9b] block md:inline whitespace-nowrap mt-1 md:mt-0">899.000 đ</span></p>
-                            </div>
-                            <button onclick="showComingSoon()" class="w-full bg-gradient-to-r from-[#e97b9b] to-[#f389a4] text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-[0_4px_15px_rgba(233,123,155,0.3)] hover:shadow-[0_6px_20px_rgba(233,123,155,0.4)] hover:-translate-y-0.5 transition-all duration-300 text-center">Chi tiết khóa học</button>
-                        </div>
+                <div id="courses-container" class="space-y-4">
+                    <div class="w-full">
+                        <div class="text-center py-10 text-slate-500 font-medium">Giáo trình đang được cập nhật...</div>
                     </div>
                 </div>
             </div>
@@ -419,14 +387,10 @@
                 <div class="space-y-4 w-full">
                     
                     <!-- Book Card 1 -->
-                    <div class="w-full bg-white rounded-2xl shadow-sm hover:shadow-xl border border-slate-100 p-4 md:p-6 flex flex-col md:flex-row gap-6 transition-all duration-500 transform hover:-translate-y-1 group/card">
-                        <!-- Premium Book Showcase -->
-                        <div class="w-full md:w-64 aspect-video bg-gradient-to-br from-[#fdf2f5] to-[#fae4eb] rounded-xl flex-shrink-0 relative overflow-hidden border border-slate-100 group-hover/card:border-pink-200 transition-colors duration-500 flex items-center justify-center p-4">
-                             <!-- Object-contain with drop-shadow creates a 3D book effect inside the 16:9 box -->
-                             <img src="biasach-1.png" class="w-auto h-full object-contain z-10 drop-shadow-1xl transform group-hover/card:scale-110 group-hover/card:rotate-2 transition-transform duration-700">
-                             
-                             <!-- Ambient background glow -->
-                             <div class="absolute inset-0 bg-[#e97b9b]/5 opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 z-0"></div>
+                    <div class="w-full bg-white rounded-2xl shadow-sm hover:shadow-xl border border-slate-100 p-4 md:p-6 flex flex-col md:flex-row gap-6 transition-all duration-500 transform hover:-translate-y-1 group/card items-start">
+                        <!-- Premium Book Showcase matching course size -->
+                        <div class="w-full md:w-64 aspect-video bg-gradient-to-br from-[#fdf2f5] to-[#fae4eb] rounded-xl flex-shrink-0 relative overflow-hidden border border-slate-100 group-hover/card:border-pink-200 transition-colors duration-500">
+                             <img src="biasach-1.png" class="absolute inset-0 w-full h-full object-contain z-0 transform group-hover/card:scale-105 transition-transform duration-700">
                         </div>
                         
                         <!-- Content -->
@@ -437,24 +401,20 @@
                         </div>
                         
                         <!-- Premium Price Action -->
-                        <div class="flex-shrink-0 w-full md:w-48 pt-6 md:pt-0 md:pl-6 border-t md:border-t-0 md:border-l border-slate-100 flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center mt-2 md:mt-0">
+                        <div class="flex-shrink-0 w-full md:w-48 pt-6 md:pt-0 md:pl-6 border-t md:border-t-0 md:border-l border-slate-100 flex flex-col items-start md:items-end justify-center self-stretch">
                             <div class="text-left md:text-right mb-4">
                                 <p class="text-xs text-slate-400 line-through font-medium">Giá gốc: 250.000 đ</p>
                                 <p class="text-sm text-slate-500 mt-1">Chỉ còn <span class="text-xl font-black text-[#e97b9b] block md:inline whitespace-nowrap mt-1 md:mt-0">169.000 đ</span></p>
                             </div>
-                            <button onclick="showComingSoon()" class="w-full bg-gradient-to-r from-[#e97b9b] to-[#f389a4] text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-[0_4px_15px_rgba(233,123,155,0.3)] hover:shadow-[0_6px_20px_rgba(233,123,155,0.4)] hover:-translate-y-0.5 transition-all duration-300 text-center">Chi tiết sách</button>
+                            <button onclick="showComingSoon()" class="w-full bg-gradient-to-r from-[#e97b9b] to-[#f389a4] text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-[0_4px_15px_rgba(233,123,155,0.3)] hover:shadow-[0_6px_20px_rgba(233,123,155,0.4)] hover:-translate-y-0.5 transition-all duration-300 text-center mt-auto">Chi tiết sách</button>
                         </div>
                     </div>
                     
                     <!-- Book Card 2 -->
-                    <div class="w-full bg-white rounded-2xl shadow-sm hover:shadow-xl border border-slate-100 p-4 md:p-6 flex flex-col md:flex-row gap-6 transition-all duration-500 transform hover:-translate-y-1 group/card">
-                        <!-- Premium Book Showcase -->
-                        <div class="w-full md:w-64 aspect-video bg-gradient-to-br from-[#fdf2f5] to-[#fae4eb] rounded-xl flex-shrink-0 relative overflow-hidden border border-slate-100 group-hover/card:border-pink-200 transition-colors duration-500 flex items-center justify-center p-4">
-                             <!-- Object-contain with drop-shadow creates a 3D book effect inside the 16:9 box -->
-                             <img src="biasach-2.png" class="w-auto h-full object-contain z-10 drop-shadow-1xl transform group-hover/card:scale-110 group-hover/card:-rotate-2 transition-transform duration-700">
-                             
-                             <!-- Ambient background glow -->
-                             <div class="absolute inset-0 bg-[#e97b9b]/5 opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 z-0"></div>
+                    <div class="w-full bg-white rounded-2xl shadow-sm hover:shadow-xl border border-slate-100 p-4 md:p-6 flex flex-col md:flex-row gap-6 transition-all duration-500 transform hover:-translate-y-1 group/card items-start">
+                        <!-- Premium Book Showcase matching course size -->
+                        <div class="w-full md:w-64 aspect-video bg-gradient-to-br from-[#fdf2f5] to-[#fae4eb] rounded-xl flex-shrink-0 relative overflow-hidden border border-slate-100 group-hover/card:border-pink-200 transition-colors duration-500">
+                             <img src="biasach-2.png" class="absolute inset-0 w-full h-full object-contain z-0 transform group-hover/card:scale-105 transition-transform duration-700">
                         </div>
                         
                         <!-- Content -->
@@ -465,12 +425,12 @@
                         </div>
                         
                         <!-- Premium Price Action -->
-                        <div class="flex-shrink-0 w-full md:w-48 pt-6 md:pt-0 md:pl-6 border-t md:border-t-0 md:border-l border-slate-100 flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center mt-2 md:mt-0">
+                        <div class="flex-shrink-0 w-full md:w-48 pt-6 md:pt-0 md:pl-6 border-t md:border-t-0 md:border-l border-slate-100 flex flex-col items-start md:items-end justify-center self-stretch">
                             <div class="text-left md:text-right mb-4">
                                 <p class="text-xs text-slate-400 line-through font-medium">Giá gốc: 200.000 đ</p>
                                 <p class="text-sm text-slate-500 mt-1">Chỉ còn <span class="text-xl font-black text-[#e97b9b] block md:inline whitespace-nowrap mt-1 md:mt-0">149.000 đ</span></p>
                             </div>
-                            <button onclick="showComingSoon()" class="w-full bg-gradient-to-r from-[#e97b9b] to-[#f389a4] text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-[0_4px_15px_rgba(233,123,155,0.3)] hover:shadow-[0_6px_20px_rgba(233,123,155,0.4)] hover:-translate-y-0.5 transition-all duration-300 text-center">Chi tiết sách</button>
+                            <button onclick="showComingSoon()" class="w-full bg-gradient-to-r from-[#e97b9b] to-[#f389a4] text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-[0_4px_15px_rgba(233,123,155,0.3)] hover:shadow-[0_6px_20px_rgba(233,123,155,0.4)] hover:-translate-y-0.5 transition-all duration-300 text-center mt-auto">Chi tiết sách</button>
                         </div>
                     </div>
                     
@@ -683,5 +643,136 @@
         }
     });
 </script>
+    <script>
+        // Cart Badge Logic
+        function updateCartBadge() {
+            const count = parseInt(localStorage.getItem('aigeo_cart_count') || '0');
+            const badge = document.getElementById('cart-badge');
+            if (badge) {
+                if (count > 0) {
+                    badge.textContent = count;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', updateCartBadge);
+        
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'aigeo_cart_count') {
+                updateCartBadge();
+            }
+        });
+    </script>
+    <script src="../firebase-config.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+            const auth = getAuth(app);
+            
+            // --- Header Auth Logic ---
+            const btnLoginMain = document.getElementById('btn-login-main');
+            const userLoggedPill = document.getElementById('user-logged-pill');
+            const authDropdown = document.getElementById('auth-dropdown-menu');
+            const userNameHeader = document.getElementById('user-name-header');
+            const userAvatarHeader = document.getElementById('user-avatar-header');
+            const linkToDashboard = document.getElementById('link-to-dashboard');
+            const btnLogout = document.getElementById('btn-logout-header');
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    if (btnLoginMain) btnLoginMain.style.display = 'none';
+                    if (userLoggedPill) {
+                        userLoggedPill.classList.remove('hidden');
+                        userLoggedPill.classList.add('flex');
+                    }
+                    if (userNameHeader) userNameHeader.textContent = user.displayName || user.email.split('@')[0];
+                    if (userAvatarHeader) userAvatarHeader.src = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || user.email)}&background=f389a4&color=fff`;
+                    
+                    // Determine dashboard link based on role logic (assuming student by default if not set)
+                    if (linkToDashboard) linkToDashboard.href = '../student/index.html'; // Defaulting to student for dialithaygeo buyers
+                } else {
+                    if (btnLoginMain) btnLoginMain.style.display = 'inline-block';
+                    if (userLoggedPill) {
+                        userLoggedPill.classList.add('hidden');
+                        userLoggedPill.classList.remove('flex');
+                    }
+                }
+            });
+
+            if (userLoggedPill) {
+                userLoggedPill.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    authDropdown.classList.toggle('hidden');
+                    authDropdown.classList.toggle('flex');
+                });
+            }
+
+            document.addEventListener('click', (e) => {
+                if (authDropdown && !authDropdown.classList.contains('hidden') && !e.target.closest('#auth-header-wrapper')) {
+                    authDropdown.classList.add('hidden');
+                    authDropdown.classList.remove('flex');
+                }
+            });
+
+            if (btnLogout) {
+                btnLogout.addEventListener('click', async () => {
+                    await signOut(auth);
+                    window.location.reload();
+                });
+            }
+            
+            // --- Courses Loading Logic ---
+            const coursesContainer = document.getElementById('courses-container');
+            if (coursesContainer) {
+                try {
+                    const snap = await getDocs(collection(db, "courses"));
+                    if (snap.empty) {
+                        coursesContainer.innerHTML = '<p class="text-center text-slate-500 py-10 font-medium">Hiện chưa có khóa học nào.</p>';
+                    } else {
+                        coursesContainer.innerHTML = snap.docs.map(doc => {
+                            const c = doc.data();
+                            const tagsHtml = (c.tags || []).map(t => 
+                                `<span class="text-xs bg-slate-50 border border-slate-100 text-slate-600 px-2 py-1 rounded-md whitespace-nowrap"><i class="fas fa-check text-green-500 mr-1"></i>${t}</span>`
+                            ).join('');
+                            
+                            return `
+                                <div class="w-full bg-white rounded-2xl shadow-sm hover:shadow-xl border border-slate-100 p-4 md:p-6 flex flex-col md:flex-row gap-6 transition-all duration-500 transform hover:-translate-y-1 group/card items-start">
+                                    <div class="w-full md:w-64 aspect-video bg-gradient-to-br from-[#fdf2f5] to-[#fae4eb] rounded-xl flex-shrink-0 relative overflow-hidden border border-slate-100 group-hover/card:border-pink-200 transition-colors duration-500">
+                                         <img src="${c.thumbnail || 'https://placehold.co/400x225/f1f5f9/94a3b8?text=No+Image'}" class="absolute inset-0 w-full h-full object-contain z-0 transform group-hover/card:scale-105 transition-transform duration-700">
+                                    </div>
+                                    <div class="flex-1 flex flex-col justify-center w-full">
+                                        <span class="text-xs font-bold text-[#e97b9b] uppercase tracking-wider mb-1">Khóa học</span>
+                                        <h3 class="text-lg font-black text-slate-800 mb-3 group-hover/card:text-[#d94b73] transition-colors duration-300 cursor-pointer" onclick="window.location.href='course-details.html?id=${doc.id}'">${c.title || 'Đang cập nhật'}</h3>
+                                        <p class="text-sm text-slate-600 mb-3 font-medium line-clamp-2">${c.description || ''}</p>
+                                        <div class="flex flex-wrap gap-2">
+                                            ${tagsHtml}
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0 w-full md:w-48 pt-6 md:pt-0 md:pl-6 border-t md:border-t-0 md:border-l border-slate-100 flex flex-col items-start md:items-end justify-center self-stretch">
+                                        <div class="text-left md:text-right mb-4">
+                                            ${c.original_price ? `<p class="text-xs text-slate-400 line-through font-medium">Giá gốc: ${Number(c.original_price).toLocaleString()} đ</p>` : ''}
+                                            <p class="text-sm text-slate-500 mt-1">Chỉ còn <span class="text-xl font-black text-[#e97b9b] block md:inline whitespace-nowrap mt-1 md:mt-0">${c.discount_price ? Number(c.discount_price).toLocaleString() + ' đ' : 'Miễn phí'}</span></p>
+                                        </div>
+                                        <button onclick="window.location.href='course-details.html?id=${doc.id}'" class="w-full bg-gradient-to-r from-[#e97b9b] to-[#f389a4] text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-[0_4px_15px_rgba(233,123,155,0.3)] hover:shadow-[0_6px_20px_rgba(233,123,155,0.4)] hover:-translate-y-0.5 transition-all duration-300 text-center mt-auto">Chi tiết khóa học</button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                } catch(e) {
+                    console.error("Error loading courses:", e);
+                    coursesContainer.innerHTML = '<p class="text-center text-red-500 py-10 font-medium">Lỗi tải danh sách khóa học.</p>';
+                }
+            }
+        });
+    </script>
 </body>
 </html>

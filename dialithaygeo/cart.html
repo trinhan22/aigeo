@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/BKTVKGMb/FAVICON-GEO.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ hàng - AIGEO Study</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        teal: { 50: '#fdf2f5', 100: '#fae4eb', 200: '#f8a9ba', 300: '#f389a4', 400: '#ed6589', 500: '#e97b9b', 600: '#d94b73' }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    
+    <link rel="stylesheet" href="../global-responsive.css?v=7">
+
+    <style>
+        :root {
+            --primary: #e97b9b;
+            --secondary: #d94b73;
+            --text-main: #1E293B;
+            --text-light: #64748B;
+            --bg-body: #f8fafc;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg-body); 
+            color: var(--text-main);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[var(--bg-body)]">
+
+    <!-- Header -->
+    <header class="bg-white border-b fixed top-0 left-0 w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between gap-4">
+            <a href="index.html" class="flex items-center gap-2 shrink-0 hover:opacity-80 transition">
+                <img src="https://i.ibb.co/BKTVKGMb/FAVICON-GEO.png" class="h-8 w-auto">
+                <span class="text-xl font-black text-[#e97b9b] tracking-tight">AIGEO Study</span>
+            </a>
+            
+            <div class="flex items-center gap-3 shrink-0">
+                <div class="relative" id="auth-header-wrapper">
+                    <a href="../auth.html" id="btn-login-main" class="bg-gradient-to-r from-[#e97b9b] to-[#f389a4] text-white px-5 py-2.5 rounded-full text-sm font-bold hover:shadow-[0_4px_15px_rgba(233,123,155,0.4)] hover:-translate-y-0.5 transition-all inline-block">Đăng nhập</a>
+                    
+                    <div id="user-logged-pill" class="hidden items-center gap-2 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-full cursor-pointer transition-colors">
+                        <img id="user-avatar-header" src="https://placehold.co/32x32/f389a4/ffffff?text=U" class="w-7 h-7 rounded-full object-cover">
+                        <span id="user-name-header" class="text-sm font-bold text-slate-700 max-w-[100px] truncate"></span>
+                        <i data-feather="chevron-down" class="w-3 h-3 text-slate-400"></i>
+                    </div>
+
+                    <div id="auth-dropdown-menu" class="absolute right-0 mt-2 w-48 bg-white border border-slate-100 rounded-xl shadow-xl hidden flex-col overflow-hidden z-50">
+                        <p class="px-4 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50 mb-1 bg-slate-50">Cá nhân</p>
+                        <a href="#" id="link-to-dashboard" class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-[#fdf2f5] hover:text-[#e97b9b] transition-colors">
+                            <i data-feather="grid" class="w-4 h-4"></i> Bảng điều khiển
+                        </a>
+                        <div class="h-px bg-slate-100 my-1"></div>
+                        <button id="btn-logout-header" class="w-full text-left flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 transition-colors">
+                            <i data-feather="log-out" class="w-4 h-4"></i> Đăng xuất
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex-1 flex flex-col pt-16">
+        <main class="flex-1 max-w-7xl mx-auto w-full px-4 md:px-8 py-8 md:py-12">
+            <h1 class="text-3xl font-black text-slate-800 mb-8">Giỏ hàng của bạn</h1>
+            
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- Cart Items -->
+                <div class="lg:col-span-2 space-y-4" id="cart-items-container">
+                    <div class="text-center py-20 text-slate-500 bg-white rounded-2xl shadow-sm border border-slate-100">
+                        <i data-feather="loader" class="w-8 h-8 animate-spin text-[#e97b9b] mx-auto mb-4"></i>
+                        <div>Đang tải giỏ hàng...</div>
+                    </div>
+                </div>
+
+                <!-- Summary -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 p-6 sticky top-24">
+                        <h2 class="text-lg font-bold text-slate-800 mb-4">Tóm tắt đơn hàng</h2>
+                        
+                        <div class="space-y-3 text-slate-600 border-b border-gray-100 pb-4 mb-4">
+                            <div class="flex justify-between">
+                                <span>Tạm tính</span>
+                                <span class="font-semibold" id="subtotal-price">0 đ</span>
+                            </div>
+                            <div class="flex justify-between text-green-500">
+                                <span>Giảm giá</span>
+                                <span class="font-semibold">-0 đ</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center mb-6">
+                            <span class="font-bold text-slate-800">Tổng cộng</span>
+                            <span class="text-2xl font-black text-[#e97b9b]" id="total-price">0 đ</span>
+                        </div>
+                        
+                        <button id="checkout-btn" disabled class="w-full bg-[#e97b9b] hover:bg-[#d94b73] text-white font-bold py-3 rounded-xl transition shadow-md opacity-50 cursor-not-allowed flex items-center justify-center gap-2">
+                            Thanh toán ngay
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal: QR Checkout -->
+    <div id="checkout-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-3xl p-6 md:p-8 w-full max-w-md shadow-2xl relative flex flex-col items-center">
+            <button onclick="document.getElementById('checkout-modal').classList.add('hidden'); document.getElementById('checkout-modal').classList.remove('flex');" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i data-feather="x"></i></button>
+            
+            <h2 class="text-2xl font-black text-slate-800 mb-2">Thanh toán Quét mã QR</h2>
+            <p class="text-sm text-slate-500 mb-6 text-center">Vui lòng sử dụng Ứng dụng Ngân hàng để quét mã bên dưới. Đơn hàng của bạn sẽ được duyệt tự động sau khi nhận được thanh toán.</p>
+            
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 mb-6 w-full flex justify-center">
+                <img id="qr-code-img" src="" alt="QR Code" class="w-48 h-48 object-contain">
+            </div>
+            
+            <div class="w-full space-y-2 mb-6 text-sm">
+                <div class="flex justify-between border-b border-slate-100 pb-2">
+                    <span class="text-slate-500">Mã Đơn hàng:</span>
+                    <span id="qr-order-id" class="font-bold text-slate-800 uppercase">...</span>
+                </div>
+                <div class="flex justify-between border-b border-slate-100 pb-2">
+                    <span class="text-slate-500">Số tiền:</span>
+                    <span id="qr-order-amount" class="font-black text-[#e97b9b]">...</span>
+                </div>
+            </div>
+            
+            <button onclick="window.location.href='index.html'" class="w-full bg-slate-100 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 transition">Tôi đã thanh toán xong</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>feather.replace();</script>
+    <script src="../firebase-config.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        
+        let currentUser = null;
+        let cartTotal = 0;
+        let cartItemIds = [];
+
+        // --- Header Auth Logic ---
+        const btnLoginMain = document.getElementById('btn-login-main');
+        const userLoggedPill = document.getElementById('user-logged-pill');
+        const authDropdown = document.getElementById('auth-dropdown-menu');
+        const userNameHeader = document.getElementById('user-name-header');
+        const userAvatarHeader = document.getElementById('user-avatar-header');
+        const linkToDashboard = document.getElementById('link-to-dashboard');
+        const btnLogout = document.getElementById('btn-logout-header');
+
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (user) {
+                if (btnLoginMain) btnLoginMain.style.display = 'none';
+                if (userLoggedPill) {
+                    userLoggedPill.classList.remove('hidden');
+                    userLoggedPill.classList.add('flex');
+                }
+                if (userNameHeader) userNameHeader.textContent = user.displayName || user.email.split('@')[0];
+                if (userAvatarHeader) userAvatarHeader.src = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || user.email)}&background=f389a4&color=fff`;
+                if (linkToDashboard) linkToDashboard.href = '../student/index.html';
+            } else {
+                if (btnLoginMain) btnLoginMain.style.display = 'inline-block';
+                if (userLoggedPill) {
+                    userLoggedPill.classList.add('hidden');
+                    userLoggedPill.classList.remove('flex');
+                }
+            }
+        });
+
+        if (userLoggedPill) {
+            userLoggedPill.addEventListener('click', (e) => {
+                e.stopPropagation();
+                authDropdown.classList.toggle('hidden');
+                authDropdown.classList.toggle('flex');
+            });
+        }
+
+        document.addEventListener('click', (e) => {
+            if (authDropdown && !authDropdown.classList.contains('hidden') && !e.target.closest('#auth-header-wrapper')) {
+                authDropdown.classList.add('hidden');
+                authDropdown.classList.remove('flex');
+            }
+        });
+
+        if (btnLogout) {
+            btnLogout.addEventListener('click', async () => {
+                await signOut(auth);
+                window.location.reload();
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadCart();
+        });
+
+        window.removeItem = function(id) {
+            let cart = JSON.parse(localStorage.getItem('aigeo_cart_items') || '[]');
+            cart = cart.filter(item => item !== id);
+            localStorage.setItem('aigeo_cart_items', JSON.stringify(cart));
+            localStorage.setItem('aigeo_cart_count', cart.length);
+            // Notify other tabs
+            window.dispatchEvent(new Event('storage'));
+            loadCart();
+        };
+
+        async function loadCart() {
+            const container = document.getElementById('cart-items-container');
+            let cart = [];
+            try {
+                cart = JSON.parse(localStorage.getItem('aigeo_cart_items') || '[]');
+            } catch(e) {}
+            
+            if (!Array.isArray(cart) || cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-20 bg-white rounded-2xl shadow-sm border border-slate-100">
+                        <i data-feather="shopping-cart" class="w-16 h-16 mx-auto text-gray-200 mb-4"></i>
+                        <p class="text-slate-500 font-medium mb-4">Giỏ hàng của bạn đang trống</p>
+                        <a href="index.html" class="inline-block bg-slate-100 text-slate-700 px-6 py-2 rounded-lg font-bold hover:bg-slate-200 transition">Tiếp tục tìm kiếm</a>
+                    </div>
+                `;
+                feather.replace();
+                document.getElementById('subtotal-price').innerText = '0 đ';
+                document.getElementById('total-price').innerText = '0 đ';
+                const btn = document.getElementById('checkout-btn');
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+                btn.innerHTML = 'Thanh toán ngay';
+                return;
+            }
+
+            container.innerHTML = '<div class="text-center py-20 text-slate-500 bg-white rounded-2xl shadow-sm border border-slate-100"><i data-feather="loader" class="w-8 h-8 animate-spin text-[#e97b9b] mx-auto"></i></div>';
+            feather.replace();
+
+            let html = '';
+            cartTotal = 0;
+            cartItemIds = [];
+            let cartTeacherIds = [];
+
+            for (const id of cart) {
+                try {
+                    const snap = await getDoc(doc(db, "courses", id));
+                    if (snap.exists()) {
+                        cartItemIds.push(id);
+                        const c = snap.data();
+                        if (c.teacherId && !cartTeacherIds.includes(c.teacherId)) {
+                            cartTeacherIds.push(c.teacherId);
+                        }
+                        const priceNum = c.discount_price ? Number(c.discount_price) : 0;
+                        cartTotal += priceNum;
+                        
+                        html += `
+                            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col sm:flex-row gap-4 items-center transition-all hover:shadow-md">
+                                <div class="w-full sm:w-40 aspect-video bg-gray-100 rounded-lg overflow-hidden shrink-0">
+                                    <img src="${c.thumbnail || 'https://placehold.co/400x225/fdf2f5/d94b73?text=No+Image'}" class="w-full h-full object-contain">
+                                </div>
+                                <div class="flex-1 w-full text-center sm:text-left">
+                                    <h3 class="font-bold text-slate-800 text-lg line-clamp-2 mb-1 cursor-pointer hover:text-[#e97b9b] transition" onclick="window.location.href='course-details.html?id=${id}'">${c.title || 'Chưa cập nhật'}</h3>
+                                    <p class="text-sm text-slate-500 mb-2">Giảng viên: ${c.instructors && c.instructors.length > 0 ? c.instructors[0].name : 'Thầy Geo'}</p>
+                                    <div class="font-black text-[#e97b9b] text-lg">${priceNum > 0 ? priceNum.toLocaleString() + ' đ' : 'Miễn phí'}</div>
+                                </div>
+                                <div class="shrink-0 w-full sm:w-auto mt-2 sm:mt-0 px-2">
+                                    <button onclick="removeItem('${id}')" class="w-full sm:w-auto px-4 py-2 text-red-500 bg-red-50 hover:bg-red-500 hover:text-white rounded-lg font-bold transition text-sm flex items-center justify-center gap-2">
+                                        <i data-feather="trash-2" class="w-4 h-4"></i> Xóa
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // Course doesn't exist, remove it from cart silently
+                        window.removeItem(id);
+                    }
+                } catch(e) {
+                    console.error("Lỗi tải khóa học", id, e);
+                }
+            }
+
+            // Only update DOM if the cart isn't empty after fetching
+            if (cartTotal >= 0 && html !== '') {
+                container.innerHTML = html;
+                feather.replace();
+                document.getElementById('subtotal-price').innerText = cartTotal.toLocaleString() + ' đ';
+                document.getElementById('total-price').innerText = cartTotal.toLocaleString() + ' đ';
+                
+                const btn = document.getElementById('checkout-btn');
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                // Store teacher IDs globally for checkout
+                window.currentCartTeacherIds = cartTeacherIds;
+                btn.onclick = handleCheckout;
+            }
+        }
+
+        window.handleCheckout = async function() {
+            if (!currentUser) {
+                // Not logged in -> save redirect URL and go to auth
+                localStorage.setItem('aigeo_redirect_after_login', '/dialithaygeo/cart.html');
+                window.location.href = '../auth.html';
+                return;
+            }
+            
+            const btn = document.getElementById('checkout-btn');
+            btn.innerHTML = '<i data-feather="loader" class="w-5 h-5 animate-spin mx-auto"></i> Đang xử lý...';
+            btn.disabled = true;
+            feather.replace();
+            
+            try {
+                // 1. Create order in Firestore
+                const orderData = {
+                    userId: currentUser.uid,
+                    userEmail: currentUser.email,
+                    userName: currentUser.displayName || currentUser.email.split('@')[0],
+                    items: cartItemIds,
+                    teacherIds: window.currentCartTeacherIds || [],
+                    totalPrice: cartTotal,
+                    status: 'pending',
+                    createdAt: serverTimestamp()
+                };
+                
+                const docRef = await addDoc(collection(db, "orders"), orderData);
+                const orderId = docRef.id;
+                
+                // 2. Clear cart locally
+                localStorage.setItem('aigeo_cart_items', '[]');
+                localStorage.setItem('aigeo_cart_count', '0');
+                window.dispatchEvent(new Event('storage'));
+                
+                // 3. Show QR Code Modal
+                // Generate a placeholder VietQR using VietQR API (using MB Bank and a dummy account as placeholder)
+                // You should replace these with actual bank details!
+                const bankId = 'MB'; // e.g. MB, VCB
+                const accountNo = '0000000000'; // Replace with actual account number
+                const accountName = 'AIGEO STUDY'; // Replace with actual account name
+                const memo = `AIGEO ${orderId.substring(0, 6).toUpperCase()}`;
+                
+                const qrUrl = `https://img.vietqr.io/image/${bankId}-${accountNo}-compact2.png?amount=${cartTotal}&addInfo=${encodeURIComponent(memo)}&accountName=${encodeURIComponent(accountName)}`;
+                
+                document.getElementById('qr-code-img').src = qrUrl;
+                document.getElementById('qr-order-id').innerText = orderId.substring(0, 6).toUpperCase();
+                document.getElementById('qr-order-amount').innerText = cartTotal.toLocaleString() + ' đ';
+                
+                document.getElementById('checkout-modal').classList.remove('hidden');
+                document.getElementById('checkout-modal').classList.add('flex');
+                
+            } catch (error) {
+                console.error("Error creating order:", error);
+                alert("Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại!");
+                btn.innerHTML = 'Thanh toán ngay';
+                btn.disabled = false;
+            }
+        };
+    </script>
+</body>
+</html>

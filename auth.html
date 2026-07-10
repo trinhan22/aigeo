@@ -537,7 +537,14 @@
                             showMaintenanceUI(true);
                         } else {
                             isRedirecting = true;
-                            window.location.href = `/${userData.role}/index.html`;
+                            // Check for custom redirect
+                            const redirectUrl = localStorage.getItem('aigeo_redirect_after_login');
+                            if (redirectUrl) {
+                                localStorage.removeItem('aigeo_redirect_after_login');
+                                window.location.href = redirectUrl;
+                            } else {
+                                window.location.href = `/${userData.role}/index.html`;
+                            }
                         }
                     }
                 } catch (e) { console.error(e); }

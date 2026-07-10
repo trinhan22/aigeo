@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Khóa học - Admin AIGEO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        :root { --primary-teal: #0D9488; --primary-emerald: #10B981; }
+        body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #f1f5f9; }
+        /* --- SIDEBAR STYLE --- */
+        .sidebar { width: 280px; background: white; border-right: 1px solid #E2E8F0; height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; }
+        .nav-group-title { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #94A3B8; padding: 1.2rem 1.5rem 0.4rem; }
+        .sidebar-link { display: flex; align-items: center; padding: 0.65rem 1rem; margin: 0.15rem 12px; border-radius: 10px; color: #64748B; font-weight: 600; font-size: 0.9rem; transition: 0.2s ease-in-out; gap: 12px; }
+        .sidebar-link i { width: 18px; height: 18px; }
+        .sidebar-link:hover { color: #0D9488; background: #F1F5F9; }
+        .sidebar-link.active { background: linear-gradient(135deg, #0D9488 0%, #10B981 100%); color: white; box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2); }
+        .sidebar-link.active i { color: white; }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0D9488; }
+        /* Modal */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); }
+        .modal-content { background-color: #fefefe; margin: 2% auto; padding: 20px; border-radius: 12px; width: 90%; max-width: 800px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+    </style>
+    <link rel="stylesheet" href="../global-responsive.css?v=5">
+</head>
+<body class="flex h-screen">
+    <aside class="sidebar">
+        <div class="p-8">
+            <a href="/" class="flex items-center gap-3">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" class="h-9 w-auto" alt="Logo">
+                <span class="text-xl font-black text-teal-600 tracking-tight">AIGEO</span>
+            </a>
+        </div>
+
+        <nav class="flex-grow overflow-y-auto">
+            <a href="index.html" class="sidebar-link"><i data-feather="grid"></i> Tổng quan</a>
+            
+            <div class="nav-group-title">Quản lý</div>
+            <a href="classrooms.html" class="sidebar-link"><i data-feather="users"></i> Quản lý lớp học</a>
+            <a href="tests.html" class="sidebar-link"><i data-feather="file-text"></i> Quản lý đề thi</a>
+            <a href="question-bank.html" class="sidebar-link"><i data-feather="database"></i> Ngân hàng câu hỏi</a>
+
+            <div class="nav-group-title">AIGEO Study</div>
+            <a href="courses.html" class="sidebar-link active"><i data-feather="book-open"></i> Quản lý Khóa học</a>
+            <a href="orders.html" class="sidebar-link"><i data-feather="shopping-cart"></i> Quản lý Đơn hàng</a>
+
+            <div class="nav-group-title">Cá nhân</div>
+            <a href="account.html" class="sidebar-link"><i data-feather="user"></i> Tài khoản</a>
+        </nav>
+
+        <div class="p-4 border-t space-y-2">
+            <button id="feedback-btn" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-50 rounded-xl transition">
+                <i data-feather="message-square" class="w-4"></i> Góp ý
+            </button>
+            <button id="view-feedback-btn" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-50 rounded-xl transition">
+                <i data-feather="inbox" class="w-4"></i> Lịch sử góp ý
+            </button>
+            <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-red-500 hover:bg-red-50 rounded-xl transition">
+                <i data-feather="log-out" class="w-4"></i> Đăng xuất
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden relative">
+        <header class="h-16 bg-white border-b flex items-center justify-between px-8 shrink-0">
+            <div class="hidden md:flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">
+                <a href="index.html" class="hover:text-teal-600">Tổng Quan</a>
+                <span>/</span>
+                <span class="text-slate-800">Quản Lý Khóa Học</span>
+            </div>
+            <div class="flex items-center gap-4 ml-auto">
+                <div id="global-notification-bell" class="mr-2 sm:mr-4 z-50"></div>
+                <div class="text-right hidden sm:block">
+                    <p id="user-name" class="text-sm font-black text-slate-800 leading-none">Đang tải...</p>
+                    <span class="text-[10px] font-bold text-teal-600 uppercase">Teacher Account</span>
+                </div>
+                <img id="user-avatar" class="h-10 w-10 rounded-xl border-2 border-slate-100 object-cover shadow-sm">
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto bg-slate-50/50 p-4 md:p-8">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h1 class="text-3xl font-bold text-slate-800">Quản lý Khóa học</h1>
+                        <p class="mt-2 text-slate-600">Thêm, sửa, xóa và quản lý thông tin các khóa học.</p>
+                    </div>
+                    <button onclick="window.location.href='course-editor.html'" class="bg-teal-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-teal-700 transition-colors flex items-center gap-2">
+                        <i data-feather="plus" class="w-4 h-4"></i> Thêm Khóa học
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <table class="w-full table-auto">
+                        <thead class="bg-slate-50 border-b">
+                            <tr>
+                                <th class="p-4 text-sm font-semibold text-slate-600 text-left w-16">Ảnh</th>
+                                <th class="p-4 text-sm font-semibold text-slate-600 text-left">Tên khóa học</th>
+                                <th class="p-4 text-sm font-semibold text-slate-600 text-left">Giáo viên</th>
+                                <th class="p-4 text-sm font-semibold text-slate-600 text-right">Giá bán</th>
+                                <th class="p-4 text-sm font-semibold text-slate-600 text-center w-24">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="courses-tbody" class="divide-y divide-slate-100">
+                            <tr><td colspan="5" class="p-4 text-center text-gray-500">Đang tải dữ liệu...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+
+    <!-- Firebase Script -->
+    <script src="../firebase-config.js"></script>
+    <script type="module">
+        window.onerror = function(msg, url, line) {
+            const tb = document.getElementById('courses-tbody');
+            if (tb) tb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-red-500">Global Error: ${msg} at line ${line}</td></tr>`;
+            return false;
+        };
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, query, where, doc, getDoc, collection, getDocs, addDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        let imgbbKeys = [];
+
+        let courses = [];
+        let auth, db, tbody;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+
+            tbody = document.getElementById('courses-tbody');
+
+        window.deleteCourse = async (id) => {
+            if (confirm('Bạn có chắc chắn muốn xóa khóa học này? Hành động này không thể hoàn tác.')) {
+                try {
+                    await deleteDoc(doc(db, "courses", id));
+                    loadCourses(auth.currentUser.uid);
+                } catch (e) {
+                    console.error("Error deleting course: ", e);
+                    alert("Lỗi khi xóa khóa học.");
+                }
+            }
+        };
+
+        // Load Data
+        async function loadCourses(uid) {
+            tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-500">Đang tải dữ liệu...</td></tr>';
+            try {
+                const q = query(collection(db, "courses"), where("teacherId", "==", uid));
+                const snap = await getDocs(q);
+                courses = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                
+                if (courses.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-500">Chưa có khóa học nào.</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = courses.map(c => `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-4">
+                            <img src="${c.thumbnail || 'https://placehold.co/100x60/f1f5f9/94a3b8?text=No+Image'}" class="w-16 h-10 object-cover rounded">
+                        </td>
+                        <td class="p-4 font-bold text-slate-800">${c.title}</td>
+                        <td class="p-4 text-slate-600">${c.teacher}</td>
+                        <td class="p-4 text-right font-bold text-teal-600">${c.discount_price ? Number(c.discount_price).toLocaleString() + ' đ' : 'N/A'}</td>
+                        <td class="p-4 text-center space-x-2">
+                            <button onclick="window.location.href='course-editor.html?id=${c.id}'" class="text-slate-400 hover:text-teal-600 transition" title="Sửa"><i data-feather="edit-2" class="w-4 h-4"></i></button>
+                            <button onclick="deleteCourse('${c.id}')" class="text-red-500 hover:text-red-700 p-1"><i data-feather="trash-2" class="w-4 h-4"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+                feather.replace();
+            } catch(e) {
+                console.error(e);
+                tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-red-500">Lỗi tải dữ liệu.</td></tr>';
+            }
+        }
+
+        async function init() {
+            onAuthStateChanged(auth, async (user) => {
+                try {
+                    if (user) {
+                        const docSnap = await getDoc(doc(db, "users", user.uid));
+                        if (docSnap.exists() && (docSnap.data().role === 'admin' || docSnap.data().role === 'teacher')) {
+                            if (user.email !== 'giaovien@aiquiz.vn' && docSnap.data().role !== 'admin') {
+                                alert("Truy cập từ chối: Chức năng này chỉ dành cho giáo viên thuộc hệ thống AIGEO Study.");
+                                window.location.href = 'index.html';
+                                return;
+                            }
+                            document.getElementById('user-name').innerText = docSnap.data().name || user.email;
+                            if (docSnap.data().avatarUrl) {
+                                document.getElementById('user-avatar').src = docSnap.data().avatarUrl;
+                            } else {
+                                document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=0D9488&color=fff&bold=true`;
+                            }
+                            
+                            // Fetch ImgBB keys
+                            const apiKeysSnap = await getDoc(doc(db, "system_settings", "api_keys"));
+                            if (apiKeysSnap.exists()) {
+                                imgbbKeys = apiKeysSnap.data().imgbb_keys || [];
+                            }
+                            
+                            loadCourses(user.uid);
+                        } else {
+                            window.location.href = '../auth.html';
+                        }
+                    } else {
+                        window.location.href = '../auth.html';
+                    }
+                } catch (err) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-red-500">Lỗi Auth: ' + err.message + '</td></tr>';
+                }
+            });
+            
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                signOut(auth).then(() => window.location.href = '../auth.html');
+            });
+        }
+        
+        feather.replace();
+        init();
+        });
+    </script>
+    <script type="module" src="../notifications.js"></script>
+    <script src="../global-ui.js"></script>
+</body>
+</html>

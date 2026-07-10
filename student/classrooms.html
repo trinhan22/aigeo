@@ -360,8 +360,8 @@
                     }
 
                     const classrooms = classroomsSnap.docs.map(d => ({id: d.id, ...d.data()}));
-                    const teacherIds = [...new Set(classrooms.map(c => c.teacherId))];
-                    const subjectIds = [...new Set(classrooms.map(c => c.subjectId))];
+                    const teacherIds = [...new Set(classrooms.map(c => c.teacherId).filter(Boolean))];
+                    const subjectIds = [...new Set(classrooms.map(c => c.subjectId).filter(Boolean))];
                     
                     const [teacherDocs, subjectDocs] = await Promise.all([
                         fetchDocsInChunks(collection(db, "users"), "__name__", teacherIds),

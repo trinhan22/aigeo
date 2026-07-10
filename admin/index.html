@@ -152,6 +152,17 @@
                 <i data-feather="grid"></i> Tổng quan
             </a>
 
+            <!-- Nhóm Khóa học -->
+            <p class="nav-section-title">Khóa học</p>
+            <div class="space-y-1">
+                <a href="courses.html" class="nav-item">
+                    <i data-feather="monitor"></i> Quản lý Khóa học
+                </a>
+                <a href="orders.html" class="nav-item">
+                    <i data-feather="shopping-cart"></i> Quản lý Đơn hàng
+                </a>
+            </div>
+
             <!-- Nhóm 2 -->
             <p class="nav-section-title">Quản trị dữ liệu</p>
             <div class="space-y-1">
@@ -260,7 +271,7 @@
                                     <i data-feather="file-plus" class="text-teal-600"></i>
                                     <span class="font-semibold text-slate-700 text-sm">Tạo Đề thi mới</span>
                                 </a>
-                                <a href="subjects.html" class="nav-link bg-slate-50 hover:bg-blue-50 p-4 rounded-lg flex items-center space-x-3 transition-colors">
+                <a href="subjects.html" class="nav-link bg-slate-50 hover:bg-blue-50 p-4 rounded-lg flex items-center space-x-3 transition-colors">
                                     <i data-feather="folder-plus" class="text-blue-600"></i>
                                     <span class="font-semibold text-slate-700 text-sm">Quản lý Học liệu</span>
                                 </a>
@@ -442,6 +453,60 @@
     </script>
 <script type="module" src="../notifications.js"></script>
     <script src="../global-ui.js"></script>
+    <script type="module">
+        // RETROACTIVE ENROLLMENT SCRIPT (One-time)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function retroactiveEnroll() {
+            try {
+                console.log("Starting retroactive enrollment...");
+                const ordersSnap = await getDocs(collection(db, "orders"));
+                
+                for (const orderDoc of ordersSnap.docs) {
+                    const o = orderDoc.data();
+                    if (o.status === 'approved') {
+                        const items = o.items || [];
+                        const userId = o.userId;
+                        
+                        for (const courseId of items) {
+                            if (!courseId) continue;
+                            
+                            const courseSnap = await getDoc(doc(db, "courses", courseId));
+                            let targetClassId = courseId;
+                            if (courseSnap.exists() && courseSnap.data().classroomId) {
+                                targetClassId = courseSnap.data().classroomId;
+                            }
+                            
+                            if (targetClassId) {
+                                const classRef = doc(db, "classrooms", targetClassId);
+                                const classSnap = await getDoc(classRef);
+                                if (classSnap.exists()) {
+                                    const classData = classSnap.data();
+                                    let students = classData.students || [];
+                                    if (!students.includes(userId)) {
+                                        students.push(userId);
+                                        await updateDoc(classRef, { students });
+                                        console.log(`Auto-enrolled user ${userId} to classroom ${targetClassId}`);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                console.log("Retroactive enrollment finished.");
+            } catch (e) {
+                console.error("Retroactive enrollment failed:", e);
+            }
+        }
+        
+        // Give time for auth
+        setTimeout(retroactiveEnroll, 2000);
+    </script>
 </body>
 </html>
 

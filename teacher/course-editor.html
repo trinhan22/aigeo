@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chỉnh sửa Khóa học - Admin AIGEO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        :root { --primary-teal: #0D9488; --primary-emerald: #10B981; }
+        body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #f1f5f9; }
+        .admin-sidebar { width: 280px; background: #ffffff; border-right: 1px solid #F1F5F9; display: flex; flex-direction: column; height: 100vh; }
+        .nav-section-title { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: #94A3B8; margin: 20px 10px 7px 22px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; margin: 6px 20px; border-radius: 14px; font-size: 0.9rem; font-weight: 600; color: #64748B; transition: all 0.25s ease; }
+        .nav-item:hover { background-color: #F1F5F9; color: #0D9488; }
+        .nav-item.active { background: linear-gradient(135deg, #0D9488 0%, #10B981 100%); color: #ffffff; box-shadow: 0 10px 15px -3px rgba(13, 148, 136, 0.25); }
+        .brand-box { height: 80px; display: flex; align-items: center; padding: 0 32px; border-bottom: 1px solid #F8FAFC; }
+        
+        .tab-btn { padding: 1rem 1.5rem; font-weight: 600; color: #64748B; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; }
+        .tab-btn:hover { color: #0D9488; }
+        .tab-btn.active { color: #0D9488; border-bottom-color: #0D9488; }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- SIDEBAR STYLE --- */
+        .sidebar { width: 280px; background: white; border-right: 1px solid #E2E8F0; height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; }
+        .nav-group-title { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #94A3B8; padding: 1.2rem 1.5rem 0.4rem; }
+        .sidebar-link { display: flex; align-items: center; padding: 0.65rem 1rem; margin: 0.15rem 12px; border-radius: 10px; color: #64748B; font-weight: 600; font-size: 0.9rem; transition: 0.2s ease-in-out; gap: 12px; }
+        .sidebar-link i { width: 18px; height: 18px; }
+        .sidebar-link:hover { color: #0D9488; background: #F1F5F9; }
+        .sidebar-link.active { background: linear-gradient(135deg, #0D9488 0%, #10B981 100%); color: white; box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2); }
+        .sidebar-link.active i { color: white; }
+    </style>
+    <link rel="stylesheet" href="../global-responsive.css?v=5">
+</head>
+<body class="flex h-screen">
+    <aside class="sidebar">
+        <div class="p-8">
+            <a href="/" class="flex items-center gap-3">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" class="h-9 w-auto" alt="Logo">
+                <span class="text-xl font-black text-teal-600 tracking-tight">AIGEO</span>
+            </a>
+        </div>
+
+        <nav class="flex-grow overflow-y-auto">
+            <a href="index.html" class="sidebar-link"><i data-feather="grid"></i> Tổng quan</a>
+            
+            <div class="nav-group-title">Quản lý</div>
+            <a href="classrooms.html" class="sidebar-link"><i data-feather="users"></i> Quản lý lớp học</a>
+            <a href="tests.html" class="sidebar-link"><i data-feather="file-text"></i> Quản lý đề thi</a>
+            <a href="question-bank.html" class="sidebar-link"><i data-feather="database"></i> Ngân hàng câu hỏi</a>
+
+            <div class="nav-group-title">AIGEO Study</div>
+            <a href="courses.html" class="sidebar-link active"><i data-feather="book-open"></i> Quản lý Khóa học</a>
+            <a href="orders.html" class="sidebar-link"><i data-feather="shopping-cart"></i> Quản lý Đơn hàng</a>
+
+            <div class="nav-group-title">Cá nhân</div>
+            <a href="account.html" class="sidebar-link"><i data-feather="user"></i> Tài khoản</a>
+        </nav>
+
+        <div class="p-4 border-t space-y-2">
+            <button id="feedback-btn" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-50 rounded-xl transition">
+                <i data-feather="message-square" class="w-4"></i> Góp ý
+            </button>
+            <button id="view-feedback-btn" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-50 rounded-xl transition">
+                <i data-feather="inbox" class="w-4"></i> Lịch sử góp ý
+            </button>
+            <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-red-500 hover:bg-red-50 rounded-xl transition">
+                <i data-feather="log-out" class="w-4"></i> Đăng xuất
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden relative">
+        <header class="h-16 bg-white border-b flex items-center justify-between px-8 shrink-0">
+            <div class="hidden md:flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">
+                <a href="index.html" class="hover:text-teal-600">Tổng Quan</a>
+                <span>/</span>
+                <span class="text-slate-800">Chỉnh Sửa Khóa Học</span>
+            </div>
+            <div class="flex items-center gap-4 ml-auto">
+                <div id="global-notification-bell" class="mr-2 sm:mr-4 z-50"></div>
+                <div class="text-right hidden sm:block">
+                    <p id="user-name" class="text-sm font-black text-slate-800 leading-none">Đang tải...</p>
+                    <span class="text-[10px] font-bold text-teal-600 uppercase">Teacher Account</span>
+                </div>
+                <img id="user-avatar" class="h-10 w-10 rounded-xl border-2 border-slate-100 object-cover shadow-sm">
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto bg-slate-50/50 p-4 md:p-8">
+            <div class="max-w-5xl mx-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h1 id="page-title" class="text-3xl font-bold text-slate-800">Thêm Khóa học mới</h1>
+                        <p class="mt-2 text-slate-600">Quản lý chi tiết nội dung, giảng viên và đánh giá.</p>
+                    </div>
+                    <button id="save-course-btn" class="bg-teal-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-teal-700 transition-colors flex items-center gap-2 shadow-lg shadow-teal-600/30">
+                        <i data-feather="save" class="w-4 h-4"></i> Lưu Khóa học
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden min-h-[600px]">
+                    <div class="border-b border-gray-200 overflow-x-auto">
+                        <nav class="flex px-4" id="course-tabs">
+                            <button class="tab-btn active" data-target="tab-general"><i data-feather="info" class="w-4 h-4 inline-block mr-2 mb-1"></i>Thông tin</button>
+                            <button class="tab-btn" data-target="tab-features"><i data-feather="list" class="w-4 h-4 inline-block mr-2 mb-1"></i>Nội dung học</button>
+                            <button class="tab-btn" data-target="tab-curriculum"><i data-feather="book" class="w-4 h-4 inline-block mr-2 mb-1"></i>Chương trình</button>
+                            <button class="tab-btn" data-target="tab-instructors"><i data-feather="users" class="w-4 h-4 inline-block mr-2 mb-1"></i>Giảng viên</button>
+                            <button class="tab-btn" data-target="tab-reviews"><i data-feather="star" class="w-4 h-4 inline-block mr-2 mb-1"></i>Đánh giá</button>
+                        </nav>
+                    </div>
+
+                    <div class="p-6">
+                        <!-- Tab: Thông tin chung -->
+                        <div id="tab-general" class="tab-pane active space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div class="md:col-span-2 space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-bold text-slate-700 mb-1">Tên khóa học <span class="text-red-500">*</span></label>
+                                        <input type="text" id="course-title" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-bold text-slate-700 mb-1">Mô tả chi tiết</label>
+                                        <textarea id="course-desc" rows="6" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition" placeholder="Mô tả đầy đủ về khóa học..."></textarea>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-bold text-slate-700 mb-1">Giá gốc (VNĐ)</label>
+                                            <input type="number" id="course-original-price" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 transition">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-bold text-slate-700 mb-1">Giá khuyến mãi (VNĐ) <span class="text-red-500">*</span></label>
+                                            <input type="number" id="course-discount-price" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 transition">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-bold text-slate-700 mb-1">Liên kết Lớp học <span class="text-xs text-gray-500 font-normal">(Tự động tạo và thêm học viên)</span></label>
+                                        <div id="classroom-link-area" class="space-y-2">
+                                            <input type="text" id="course-classroom-name" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 transition" placeholder="Nhập tên lớp học muốn tạo (Mặc định: Tên khóa học)">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-bold text-slate-700 mb-1">Chọn Tags</label>
+                                        <div id="tags-container" class="flex flex-wrap gap-2 border border-gray-300 rounded-lg p-3 min-h-[50px] bg-gray-50">
+                                            <!-- Tags will be loaded here as checkboxes -->
+                                            <span class="text-gray-400 text-sm">Đang tải tags...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="md:col-span-1 space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-bold text-slate-700 mb-1">Ảnh Thumbnail</label>
+                                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:bg-gray-50 transition cursor-pointer" id="thumbnail-upload-area">
+                                            <i data-feather="image" class="w-8 h-8 mx-auto text-gray-400 mb-2"></i>
+                                            <p class="text-sm text-gray-500">Click để chọn ảnh</p>
+                                            <input type="file" id="course-thumbnail-file" accept="image/*" class="hidden">
+                                        </div>
+                                        <p id="upload-status" class="text-xs mt-1 text-teal-600 hidden text-center">Đang tải ảnh lên ImgBB...</p>
+                                        <input type="hidden" id="course-thumbnail-url">
+                                        <div class="mt-4 rounded-lg overflow-hidden border border-gray-200 hidden bg-gray-100 aspect-video relative" id="preview-container">
+                                            <img id="preview-thumbnail" class="w-full h-full object-contain">
+                                            <button id="remove-thumbnail" class="absolute top-1 right-1 bg-white rounded-full p-1 shadow hover:bg-red-50 text-red-500"><i data-feather="x" class="w-3 h-3"></i></button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-bold text-slate-700 mb-1">Số bài học hiển thị</label>
+                                        <input type="number" id="course-num-lessons" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="VD: 17">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab: Nội dung học (Features) -->
+                        <div id="tab-features" class="tab-pane">
+                            <h3 class="font-bold text-slate-800 mb-2">Những gì học sinh sẽ học được (Mỗi mục 1 dòng)</h3>
+                            <textarea id="course-features" rows="10" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 transition font-mono text-sm" placeholder="- 90+ livestream tổng ôn...\n- 40+ đề luyện viết tay..."></textarea>
+                        </div>
+
+                        <!-- Tab: Chương trình học -->
+                        <div id="tab-curriculum" class="tab-pane">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-bold text-slate-800">Danh sách bài học</h3>
+                                <button id="add-curriculum-btn" class="bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg text-sm font-bold hover:bg-indigo-100 flex items-center gap-1">
+                                    <i data-feather="plus" class="w-4 h-4"></i> Thêm bài
+                                </button>
+                            </div>
+                            <div id="curriculum-list" class="space-y-3">
+                                <!-- Items injected here -->
+                            </div>
+                            <div id="curriculum-empty" class="text-center py-8 text-gray-500 hidden">
+                                Chưa có bài học nào.
+                            </div>
+                        </div>
+
+                        <!-- Tab: Giảng viên -->
+                        <div id="tab-instructors" class="tab-pane">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-bold text-slate-800">Đội ngũ giảng viên</h3>
+                                <button id="add-instructor-btn" class="bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg text-sm font-bold hover:bg-indigo-100 flex items-center gap-1">
+                                    <i data-feather="plus" class="w-4 h-4"></i> Thêm GV
+                                </button>
+                            </div>
+                            <div id="instructors-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Items injected here -->
+                            </div>
+                            <div id="instructors-empty" class="text-center py-8 text-gray-500 hidden">
+                                Chưa có giảng viên nào.
+                            </div>
+                        </div>
+
+                        <!-- Tab: Đánh giá -->
+                        <div id="tab-reviews" class="tab-pane">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-bold text-slate-800">Đánh giá của học viên</h3>
+                                <button id="add-review-btn" class="bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg text-sm font-bold hover:bg-indigo-100 flex items-center gap-1">
+                                    <i data-feather="plus" class="w-4 h-4"></i> Thêm Đánh giá
+                                </button>
+                            </div>
+                            <div id="reviews-list" class="space-y-4">
+                                <!-- Items injected here -->
+                            </div>
+                            <div id="reviews-empty" class="text-center py-8 text-gray-500 hidden">
+                                Chưa có đánh giá nào.
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Firebase Script -->
+    <script src="../firebase-config.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, collection, getDocs, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        let imgbbKeys = [];
+        let auth, db;
+        let courseId = new URLSearchParams(window.location.search).get('id');
+        let currentCourse = {
+            title: '', description: '', original_price: '', discount_price: '',
+            num_lessons: '', tags: [], features: [], thumbnail: '',
+            curriculum: [], instructors: [], reviews: []
+        };
+        let availableTags = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+
+            // Tabs Logic
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById(btn.dataset.target).classList.add('active');
+                });
+            });
+
+            // ImgBB Upload
+            const uploadArea = document.getElementById('thumbnail-upload-area');
+            const fileInput = document.getElementById('course-thumbnail-file');
+            uploadArea.addEventListener('click', () => fileInput.click());
+            
+            fileInput.addEventListener('change', async (e) => {
+                if(!e.target.files.length) return;
+                const file = e.target.files[0];
+                if(imgbbKeys.length === 0) {
+                    alert("Chưa có API key ImgBB trong hệ thống!"); return;
+                }
+                
+                document.getElementById('upload-status').classList.remove('hidden');
+                const formData = new FormData();
+                formData.append('image', file);
+                
+                try {
+                    const res = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbKeys[0]}`, {
+                        method: 'POST', body: formData
+                    });
+                    const data = await res.json();
+                    if(data.success) {
+                        setThumbnail(data.data.url);
+                    } else alert("Upload thất bại.");
+                } catch(e) { console.error(e); alert("Lỗi mạng."); }
+                finally { document.getElementById('upload-status').classList.add('hidden'); }
+            });
+
+            document.getElementById('remove-thumbnail').addEventListener('click', () => setThumbnail(''));
+
+            function setThumbnail(url) {
+                currentCourse.thumbnail = url;
+                document.getElementById('course-thumbnail-url').value = url;
+                if(url) {
+                    document.getElementById('preview-thumbnail').src = url;
+                    document.getElementById('preview-container').classList.remove('hidden');
+                    uploadArea.classList.add('hidden');
+                } else {
+                    document.getElementById('preview-container').classList.add('hidden');
+                    uploadArea.classList.remove('hidden');
+                }
+            }
+
+            // Fetch initial data
+            async function init() {
+                onAuthStateChanged(auth, async (user) => {
+                    if(user) {
+                        const snap = await getDoc(doc(db, "users", user.uid));
+                        if(snap.exists() && (snap.data().role === 'admin' || snap.data().role === 'teacher')) {
+                            const userName = snap.data().fullName || snap.data().name || user.email.split('@')[0];
+                            document.getElementById('user-name').innerText = userName;
+                            if (snap.data().avatarUrl) {
+                                document.getElementById('user-avatar').src = snap.data().avatarUrl;
+                            } else {
+                                document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=0D9488&color=fff&bold=true`;
+                            }
+                            await loadApiKeys();
+                            await loadTags();
+                            if(courseId) await loadCourse(courseId);
+                            renderUI();
+                        } else {
+                            window.location.href = '../auth.html';
+                        }
+                    } else {
+                        window.location.href = '../auth.html';
+                    }
+                });
+            }
+
+            async function loadApiKeys() {
+                try {
+                    const snap = await getDoc(doc(db, "system_settings", "api_keys"));
+                    if(snap.exists()) {
+                        imgbbKeys = snap.data().imgbb_keys || [];
+                    }
+                } catch(e) {}
+            }
+
+            async function loadTags() {
+                try {
+                    const snap = await getDocs(collection(db, "tags"));
+                    availableTags = snap.docs.map(d => ({id: d.id, name: d.data().name}));
+                } catch(e) {}
+            }
+
+
+
+            async function loadCourse(id) {
+                document.getElementById('page-title').innerText = "Đang tải dữ liệu...";
+                try {
+                    const snap = await getDoc(doc(db, "courses", id));
+                    if(snap.exists()) {
+                        currentCourse = { ...currentCourse, ...snap.data() };
+                        document.getElementById('page-title').innerText = "Sửa Khóa học: " + (currentCourse.title || '');
+                    } else {
+                        alert("Không tìm thấy khóa học!");
+                        window.location.href = 'courses.html';
+                    }
+                } catch(e) { console.error(e); }
+            }
+
+            function renderUI() {
+                // General
+                document.getElementById('course-title').value = currentCourse.title || '';
+                document.getElementById('course-desc').value = currentCourse.description || '';
+                document.getElementById('course-original-price').value = currentCourse.original_price || '';
+                document.getElementById('course-discount-price').value = currentCourse.discount_price || '';
+                document.getElementById('course-num-lessons').value = currentCourse.num_lessons || '';
+                if (currentCourse.classroomId) {
+                    getDoc(doc(db, "classrooms", currentCourse.classroomId)).then(classSnap => {
+                        if (classSnap.exists()) {
+                            const area = document.getElementById('classroom-link-area');
+                            if (area) {
+                                area.innerHTML = `<div class="flex items-center gap-2 text-sm bg-teal-50 text-teal-700 p-3 rounded-lg border border-teal-200">
+                                    <i data-feather="check-circle" class="w-4 h-4"></i> Đã liên kết lớp: <b class="ml-1">${classSnap.data().className || classSnap.data().name || currentCourse.classroomId}</b>
+                                </div>`;
+                                feather.replace();
+                            }
+                        }
+                    }).catch(console.error);
+                }
+                setThumbnail(currentCourse.thumbnail);
+                document.getElementById('course-features').value = (currentCourse.features || []).join('\n');
+
+                // Tags
+                const tagsContainer = document.getElementById('tags-container');
+                tagsContainer.innerHTML = availableTags.map(t => {
+                    const isChecked = (currentCourse.tags || []).includes(t.name) ? 'checked' : '';
+                    return `<label class="flex items-center gap-1 bg-white border border-gray-200 px-3 py-1 rounded-full cursor-pointer hover:bg-gray-50 transition">
+                        <input type="checkbox" value="${t.name}" class="tag-checkbox text-teal-600 focus:ring-teal-500 rounded" ${isChecked}>
+                        <span class="text-sm text-slate-700">${t.name}</span>
+                    </label>`;
+                }).join('') || '<span class="text-gray-400 text-sm">Chưa có tag nào trong hệ thống. Hãy tạo ở Quản lý Tags.</span>';
+
+                renderCurriculum();
+                renderInstructors();
+                renderReviews();
+            }
+
+            // --- Curriculum ---
+            function renderCurriculum() {
+                const list = document.getElementById('curriculum-list');
+                const empty = document.getElementById('curriculum-empty');
+                if(!currentCourse.curriculum || currentCourse.curriculum.length === 0) {
+                    list.innerHTML = ''; empty.classList.remove('hidden'); return;
+                }
+                empty.classList.add('hidden');
+                list.innerHTML = currentCourse.curriculum.map((item, i) => `
+                    <div class="flex items-center gap-3 bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                        <span class="font-bold text-slate-400 w-6">${i+1}.</span>
+                        <input type="text" class="flex-1 p-1 border-b border-transparent focus:border-teal-500 focus:outline-none" value="${item.title}" onchange="updateCurriculum(${i}, 'title', this.value)">
+                        <label class="flex items-center gap-1 text-sm text-slate-600 cursor-pointer">
+                            <input type="checkbox" ${item.isLocked ? 'checked' : ''} onchange="updateCurriculum(${i}, 'isLocked', this.checked)"> Khóa
+                        </label>
+                        <button onclick="removeCurriculum(${i})" class="text-red-400 hover:text-red-600 p-1"><i data-feather="trash-2" class="w-4 h-4"></i></button>
+                    </div>
+                `).join('');
+                feather.replace();
+            }
+            window.updateCurriculum = (i, key, val) => { currentCourse.curriculum[i][key] = val; };
+            window.removeCurriculum = (i) => { currentCourse.curriculum.splice(i, 1); renderCurriculum(); };
+            document.getElementById('add-curriculum-btn').addEventListener('click', () => {
+                if(!currentCourse.curriculum) currentCourse.curriculum = [];
+                currentCourse.curriculum.push({ title: 'Bài học mới', isLocked: false });
+                renderCurriculum();
+            });
+
+            // --- Instructors ---
+            function renderInstructors() {
+                const list = document.getElementById('instructors-list');
+                const empty = document.getElementById('instructors-empty');
+                if(!currentCourse.instructors || currentCourse.instructors.length === 0) {
+                    list.innerHTML = ''; empty.classList.remove('hidden'); return;
+                }
+                empty.classList.add('hidden');
+                list.innerHTML = currentCourse.instructors.map((item, i) => `
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm relative">
+                        <button onclick="removeInstructor(${i})" class="absolute top-2 right-2 text-red-400 hover:text-red-600"><i data-feather="x" class="w-4 h-4"></i></button>
+                        <div class="space-y-2">
+                            <input type="text" class="w-full text-sm font-bold border-b p-1" value="${item.name}" placeholder="Tên giảng viên" onchange="updateInstructor(${i}, 'name', this.value)">
+                            <input type="text" class="w-full text-xs text-slate-500 border-b p-1" value="${item.role}" placeholder="Vai trò (VD: Giáo viên chính)" onchange="updateInstructor(${i}, 'role', this.value)">
+                            <input type="text" class="w-full text-xs text-slate-500 border-b p-1" value="${item.avatar || ''}" placeholder="Link Avatar URL (tùy chọn)" onchange="updateInstructor(${i}, 'avatar', this.value)">
+                        </div>
+                    </div>
+                `).join('');
+                feather.replace();
+            }
+            window.updateInstructor = (i, key, val) => { currentCourse.instructors[i][key] = val; };
+            window.removeInstructor = (i) => { currentCourse.instructors.splice(i, 1); renderInstructors(); };
+            document.getElementById('add-instructor-btn').addEventListener('click', () => {
+                if(!currentCourse.instructors) currentCourse.instructors = [];
+                currentCourse.instructors.push({ name: '', role: '', avatar: '' });
+                renderInstructors();
+            });
+
+            // --- Reviews ---
+            function renderReviews() {
+                const list = document.getElementById('reviews-list');
+                const empty = document.getElementById('reviews-empty');
+                if(!currentCourse.reviews || currentCourse.reviews.length === 0) {
+                    list.innerHTML = ''; empty.classList.remove('hidden'); return;
+                }
+                empty.classList.add('hidden');
+                list.innerHTML = currentCourse.reviews.map((item, i) => `
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm relative space-y-2">
+                        <button onclick="removeReview(${i})" class="absolute top-2 right-2 text-red-400 hover:text-red-600"><i data-feather="trash-2" class="w-4 h-4"></i></button>
+                        <div class="flex gap-2">
+                            <input type="text" class="w-1/3 text-sm font-bold border rounded p-1" value="${item.userName}" placeholder="Tên HV" onchange="updateReview(${i}, 'userName', this.value)">
+                            <input type="number" min="1" max="5" class="w-20 text-sm border rounded p-1" value="${item.rating}" placeholder="Sao" onchange="updateReview(${i}, 'rating', this.value)">
+                            <input type="date" class="w-1/3 text-sm border rounded p-1" value="${item.date}" onchange="updateReview(${i}, 'date', this.value)">
+                        </div>
+                        <textarea class="w-full text-sm border rounded p-2" rows="2" placeholder="Nội dung đánh giá" onchange="updateReview(${i}, 'content', this.value)">${item.content}</textarea>
+                    </div>
+                `).join('');
+                feather.replace();
+            }
+            window.updateReview = (i, key, val) => { currentCourse.reviews[i][key] = val; };
+            window.removeReview = (i) => { currentCourse.reviews.splice(i, 1); renderReviews(); };
+            document.getElementById('add-review-btn').addEventListener('click', () => {
+                if(!currentCourse.reviews) currentCourse.reviews = [];
+                currentCourse.reviews.push({ userName: '', rating: 5, date: new Date().toISOString().split('T')[0], content: '' });
+                renderReviews();
+            });
+
+            // Save Data
+            document.getElementById('save-course-btn').addEventListener('click', async () => {
+                const btn = document.getElementById('save-course-btn');
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Đang lưu...';
+
+                // Collect basic data
+                currentCourse.title = document.getElementById('course-title').value;
+                currentCourse.description = document.getElementById('course-desc').value;
+                currentCourse.original_price = Number(document.getElementById('course-original-price').value) || 0;
+                currentCourse.discount_price = Number(document.getElementById('course-discount-price').value) || 0;
+
+                currentCourse.num_lessons = Number(document.getElementById('course-num-lessons').value) || 0;
+                currentCourse.features = document.getElementById('course-features').value.split('\n').map(x=>x.trim()).filter(Boolean);
+                
+                // Collect Tags
+                const checkedTags = Array.from(document.querySelectorAll('.tag-checkbox:checked')).map(cb => cb.value);
+                currentCourse.tags = checkedTags;
+
+                currentCourse.updatedAt = new Date().toISOString();
+                if (!currentCourse.teacherId) {
+                    currentCourse.teacherId = auth.currentUser.uid;
+                }
+                if (!currentCourse.teacherId) {
+                    currentCourse.teacherId = auth.currentUser.uid;
+                }
+
+                try {
+                    // Auto-create classroom if not linked
+                    if (!currentCourse.classroomId || currentCourse.classroomId === "") {
+                        const nameInput = document.getElementById('course-classroom-name');
+                        let customName = nameInput ? nameInput.value.trim() : "";
+                        const newClassData = {
+                            className: customName || currentCourse.title || "Lớp học chưa đặt tên",
+                            teacherId: auth.currentUser.uid,
+                            students: [],
+                            assignments: [],
+                            createdAt: new Date().toISOString()
+                        };
+                        const classRef = await addDoc(collection(db, "classrooms"), newClassData);
+                        currentCourse.classroomId = classRef.id;
+                    }
+
+                    if (courseId) {
+                        await updateDoc(doc(db, "courses", courseId), currentCourse);
+                        alert("Lưu thành công!");
+                    } else {
+                        currentCourse.createdAt = new Date().toISOString();
+                        const docRef = await addDoc(collection(db, "courses"), currentCourse);
+                        alert("Tạo khóa học thành công!");
+                        window.location.href = `course-editor.html?id=${docRef.id}`;
+                    }
+                } catch(e) {
+                    console.error(e);
+                    alert("Lỗi khi lưu dữ liệu.");
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i data-feather="save" class="w-4 h-4"></i> Lưu Khóa học';
+                    feather.replace();
+                }
+            });
+
+            // No logout button explicitly handled here since it's missing from the UI or handled by global-ui if included
+
+
+
+            init();
+        });
+    </script>
+</body>
+</html>

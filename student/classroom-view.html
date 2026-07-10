@@ -579,9 +579,15 @@
                         const classroom = { id: classDocSnap.id, ...classDocSnap.data() };
                         
                         // Lấy thông tin môn học để làm Subtitle
-                        const subjectSnap = await getDoc(doc(db, "subjects", classroom.subjectId));
-                        document.getElementById('class-name-header').textContent = classroom.className;
-                        document.getElementById('class-subject-header').textContent = `${subjectSnap.data()?.name || 'Địa lí'} • Khối ${classroom.grade}`;
+                        let subjectName = 'AIGEO';
+                        if (classroom.subjectId) {
+                            try {
+                                const subjectSnap = await getDoc(doc(db, "subjects", classroom.subjectId));
+                                if (subjectSnap.exists()) subjectName = subjectSnap.data().name;
+                            } catch(e) {}
+                        }
+                        document.getElementById('class-name-header').textContent = classroom.className || 'Lớp học';
+                        document.getElementById('class-subject-header').textContent = `${subjectName} • ${classroom.grade ? 'Khối ' + classroom.grade : 'Khóa học'}`;
 
                         // Lấy thông tin Giáo viên
                         const teacherSnap = await getDoc(doc(db, "users", classroom.teacherId));

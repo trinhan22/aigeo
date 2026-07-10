@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/BKTVKGMb/FAVICON-GEO.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Details - AIGEO Study</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        teal: {
+                            50: '#fdf2f5',
+                            100: '#fae4eb',
+                            200: '#f8a9ba',
+                            300: '#f389a4',
+                            400: '#ed6589',
+                            500: '#e97b9b',
+                            600: '#d94b73',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="../global-responsive.css?v=7">
+
+    <style>
+        :root {
+            --primary: #e97b9b;
+            --secondary: #d94b73;
+            --text-main: #1E293B;
+            --text-light: #64748B;
+            --bg-body: #FFFFFF;
+            /* Adapting orange from screenshot to brand pink */
+            --brand-highlight: #e97b9b; /* Let's use the orange for high contrast calls to action if desired, but I will map to brand primary for cohesion */
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg-body); 
+            color: var(--text-main);
+        }
+
+        .tab-detail-btn {
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .tab-detail-btn.active {
+            color: #e97b9b; /* Orange from screenshot */
+            border-bottom-color: #e97b9b;
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .accordion-content.expanded {
+            max-height: 500px;
+        }
+        
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(233, 123, 155, 0.3);
+        }
+        
+        .page-fade-in {
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: none; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[var(--bg-body)]">
+
+    <!-- Header -->
+    <header class="bg-white border-b fixed top-0 left-0 w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between gap-4">
+            <!-- Logo -->
+            <a href="/" class="flex items-center gap-2 shrink-0 hover:opacity-80 transition">
+                <img src="https://i.ibb.co/BKTVKGMb/FAVICON-GEO.png" class="h-8 w-auto">
+                <span class="text-xl font-black text-[#e97b9b] tracking-tight">AIGEO Study</span>
+            </a>
+
+            <!-- Desktop Nav -->
+            <nav class="hidden md:flex items-center gap-6 text-sm font-bold text-slate-600">
+                <a href="index.html#lo-trinh" class="hover:text-[#e97b9b] transition">Lộ trình</a>
+                <a href="index.html#khoa-hoc" class="hover:text-[#e97b9b] transition">Khóa học</a>
+                <a href="index.html#giao-trinh" class="hover:text-[#e97b9b] transition">Giáo trình</a>
+            </nav>
+
+            <!-- Search Bar -->
+            <div class="hidden md:flex flex-1 max-w-md relative">
+                <i data-feather="search" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                <input type="text" placeholder="Tìm kiếm..." class="w-full bg-slate-50 border border-slate-200 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:border-[#e97b9b] transition hover:bg-white hover:shadow-sm">
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-3 shrink-0">
+                <button onclick="window.location.href='cart.html'" class="hidden sm:flex items-center gap-2 px-4 py-2 text-sm font-bold text-[#e97b9b] border-2 border-pink-100 rounded-full hover:bg-pink-50 transition relative">
+                    <i data-feather="shopping-cart" class="w-4 h-4"></i> Giỏ hàng
+                    <span id="cart-badge" class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white hidden">0</span>
+                </button>
+                
+                <div class="relative" id="auth-header-wrapper">
+                    <a href="../auth.html" id="btn-login-main" class="bg-gradient-to-r from-[#e97b9b] to-[#f389a4] text-white px-5 py-2.5 rounded-full text-sm font-bold hover:shadow-[0_4px_15px_rgba(233,123,155,0.4)] hover:-translate-y-0.5 transition-all inline-block">Đăng nhập</a>
+                    
+                    <div id="user-logged-pill" class="hidden items-center gap-2 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-full cursor-pointer transition-colors">
+                        <img id="user-avatar-header" src="https://placehold.co/32x32/f389a4/ffffff?text=U" class="w-7 h-7 rounded-full object-cover">
+                        <span id="user-name-header" class="text-sm font-bold text-slate-700 max-w-[100px] truncate"></span>
+                        <i data-feather="chevron-down" class="w-3 h-3 text-slate-400"></i>
+                    </div>
+
+                    <div id="auth-dropdown-menu" class="absolute right-0 mt-2 w-48 bg-white border border-slate-100 rounded-xl shadow-xl hidden flex-col overflow-hidden z-50">
+                        <p class="px-4 py-2 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50 mb-1 bg-slate-50">Cá nhân</p>
+                        <a href="#" id="link-to-dashboard" class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-[#fdf2f5] hover:text-[#e97b9b] transition-colors">
+                            <i data-feather="grid" class="w-4 h-4"></i> Bảng điều khiển
+                        </a>
+                        <div class="h-px bg-slate-100 my-1"></div>
+                        <button id="btn-logout-header" class="w-full text-left flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 transition-colors">
+                            <i data-feather="log-out" class="w-4 h-4"></i> Đăng xuất
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex-1 flex flex-col pt-16">
+        <!-- Hero Section -->
+        <div class="bg-gradient-to-br from-[#5a5a5a] to-[#3a3a3a] w-full pt-8 pb-10 lg:pb-16 text-white relative shadow-inner">
+            <div class="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 space-y-4 pr-0 lg:pr-12">
+                    <div class="text-xs text-gray-300 font-medium">Khóa học trực tuyến</div>
+                    <h1 id="hero-title" class="text-2xl md:text-3xl font-bold leading-tight">Đang tải...</h1>
+                    <div id="hero-instructors" class="text-[#e97b9b] font-bold text-sm flex flex-wrap gap-2">
+                    </div>
+                    <p id="hero-desc" class="text-gray-300 text-sm md:text-base">
+                        Đang tải thông tin khóa học...
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="max-w-7xl mx-auto w-full px-4 md:px-8 grid grid-cols-1 lg:grid-cols-3 gap-8 relative z-10 mb-20">
+            <!-- Left Column: Content -->
+            <div class="lg:col-span-2 bg-white min-h-[500px]">
+                
+                <!-- Tab Navigation -->
+                <div class="flex items-center gap-6 border-b border-gray-200 overflow-x-auto hide-scrollbar bg-white sticky top-16 z-40 pt-4 lg:pt-0">
+                    <button class="tab-detail-btn active py-4 font-bold text-sm whitespace-nowrap text-[#e97b9b]" onclick="switchDetailTab('thong-tin', this)">Thông tin</button>
+                    <button class="tab-detail-btn py-4 font-bold text-sm text-gray-500 hover:text-gray-800 whitespace-nowrap" onclick="switchDetailTab('giang-vien', this)">Giảng viên</button>
+                    <button class="tab-detail-btn py-4 font-bold text-sm text-gray-500 hover:text-gray-800 whitespace-nowrap" onclick="switchDetailTab('chuong-trinh', this)">Chương trình</button>
+                    <button class="tab-detail-btn py-4 font-bold text-sm text-gray-500 hover:text-gray-800 whitespace-nowrap" onclick="switchDetailTab('danh-gia', this)">Đánh giá</button>
+                    <button class="tab-detail-btn py-4 font-bold text-sm text-gray-500 hover:text-gray-800 whitespace-nowrap" onclick="switchDetailTab('lien-quan', this)">Khóa học liên quan</button>
+                </div>
+
+                <div class="py-8">
+                    <!-- Tab: Thông tin -->
+                    <div id="tab-thong-tin" class="detail-pane block page-fade-in space-y-6">
+                        <h2 class="text-xl font-bold text-slate-800">Thông tin khóa học</h2>
+                        <div>
+                            <h3 class="font-bold text-slate-800 mb-2">Nội dung học</h3>
+                            <div id="features-wrapper" class="relative max-h-[150px] overflow-hidden transition-all duration-300">
+                                <div id="course-features-list" class="text-sm text-slate-600 space-y-2 leading-relaxed">
+                                    <div>Đang tải nội dung...</div>
+                                </div>
+                                <div id="features-gradient" class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-white to-transparent"></div>
+                            </div>
+                        </div>
+                        <button id="toggle-features-btn" class="text-[#e97b9b] text-sm font-bold flex items-center gap-1 hover:underline">
+                            <i data-feather="chevron-down" class="w-4 h-4"></i> <span id="toggle-features-text">Xem thêm</span>
+                        </button>
+                    </div>
+
+                    <!-- Tab: Giảng viên -->
+                    <div id="tab-giang-vien" class="detail-pane hidden space-y-6">
+                        <h2 class="text-xl font-bold text-slate-800 mb-6">Giảng viên</h2>
+                        <div id="course-instructors-list" class="space-y-6">
+                            <div class="text-gray-500 text-sm">Đang tải thông tin...</div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Chương trình -->
+                    <div id="tab-chuong-trinh" class="detail-pane hidden space-y-6">
+                        <h2 class="text-xl font-bold text-slate-800 mb-4">Chương trình học</h2>
+                        <div id="course-curriculum-list" class="space-y-3">
+                            <div class="text-gray-500 text-sm">Đang tải chương trình...</div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Đánh giá -->
+                    <div id="tab-danh-gia" class="detail-pane hidden space-y-6">
+                        <h2 class="text-xl font-bold text-slate-800">Đánh giá của học viên</h2>
+                        <div id="course-reviews-list">
+                            <div class="text-gray-500 text-sm">Đang tải đánh giá...</div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Khóa học liên quan -->
+                    <div id="tab-lien-quan" class="detail-pane hidden space-y-6">
+                        <h2 class="text-xl font-bold text-slate-800 mb-6">Khóa học liên quan</h2>
+                        <div id="related-courses-list" class="grid gap-6">
+                            <div class="text-gray-500 text-sm">Đang tải khóa học liên quan...</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Right Column: Floating Card -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-100 overflow-hidden sticky top-24 -mt-12 lg:-mt-56 z-20">
+                    <!-- Image Area -->
+                    <div class="relative w-full aspect-video bg-gray-100 flex items-center justify-center group cursor-pointer">
+                        <img id="course-thumbnail" src="https://placehold.co/600x400/f389a4/ffffff?text=Course+Thumbnail" class="w-full h-full object-contain">
+                        <!-- Play Button -->
+                        <div class="absolute inset-0 bg-transparent flex items-center justify-center group-hover:bg-black/5 transition">
+                            <div class="w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                                <i class="fas fa-play text-[#e97b9b] ml-1"></i>
+                            </div>
+                        </div>
+                        <div class="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded">LIVE</div>
+                    </div>
+                    
+                    <!-- Details Area -->
+                    <div class="p-6">
+                        <div class="mb-4">
+                            <p id="course-original-price" class="text-sm text-slate-400 line-through font-medium hidden"></p>
+                            <div id="course-discount-price" class="text-2xl font-black text-slate-800">Đang tải...</div>
+                        </div>
+                        <button id="buy-course-btn" onclick="addToCart()" class="w-full bg-[#e97b9b] hover:bg-[#d94b73] text-white font-bold py-3 rounded-lg mb-6 transition shadow-md flex items-center justify-center gap-2">
+                            <i data-feather="shopping-cart" class="w-4 h-4"></i> Mua khóa học
+                        </button>
+                        
+                        <div class="space-y-3 text-sm text-slate-600 border-b border-gray-100 pb-4 mb-4">
+                            <div class="flex items-center gap-2">
+                                <i data-feather="monitor" class="w-4 h-4 text-slate-400"></i> Khóa học trực tuyến
+                            </div>
+                            <div class="flex items-center gap-2" id="course-num-lessons-display">
+                                <i data-feather="package" class="w-4 h-4 text-slate-400"></i> <span>Đang tải...</span>
+                            </div>
+                        </div>
+                        
+                        <div id="course-tags" class="text-xs text-[#e97b9b] font-medium flex flex-wrap gap-1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white/70 backdrop-blur-xl py-10 mt-auto border-t border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col items-center gap-8">
+            <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                <a href="https://aigeo.info.vn" class="flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl font-bold text-slate-700 bg-white border border-slate-200 hover:border-pink-200 hover:bg-pink-50 hover:text-[#e97b9b] transition-all shadow-sm hover:shadow-md">
+                    <i data-feather="home" class="w-5 h-5"></i>
+                    Trang chủ AIGEO
+                </a>
+                <a href="https://www.facebook.com/dialithaygeo" target="_blank" class="flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl font-bold text-white bg-[#e97b9b] shadow-[0_4px_15px_rgba(233,123,155,0.3)] hover:-translate-y-0.5 transition-all">
+                    <i class="fab fa-facebook-f text-lg w-5 h-5 flex items-center justify-center"></i>
+                    Fanpage Thầy Geo
+                </a>
+            </div>
+            <p class="text-sm font-bold text-slate-400">© 2026 AIGEO Study. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        feather.replace();
+
+        function switchDetailTab(tabId, btnElement) {
+            // Hide all panes
+            document.querySelectorAll('.detail-pane').forEach(pane => {
+                pane.classList.remove('block', 'page-fade-in');
+                pane.classList.add('hidden');
+            });
+            // Show selected pane
+            const activePane = document.getElementById('tab-' + tabId);
+            activePane.classList.remove('hidden');
+            activePane.classList.add('block', 'page-fade-in');
+
+            // Update buttons
+            document.querySelectorAll('.tab-detail-btn').forEach(btn => {
+                btn.classList.remove('active', 'text-[#e97b9b]');
+                btn.classList.add('text-gray-500');
+            });
+            
+            // Add active styles to clicked button
+            btnElement.classList.add('active', 'text-[#e97b9b]');
+            btnElement.classList.remove('text-gray-500');
+        }
+
+        // Cart Logic
+        function updateCartBadge() {
+            const count = parseInt(localStorage.getItem('aigeo_cart_count') || '0');
+            const badge = document.getElementById('cart-badge');
+            if (badge) {
+                if (count > 0) {
+                    badge.textContent = count;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
+        }
+
+        function addToCart() {
+            // Read existing cart items
+            let cart = [];
+            try {
+                cart = JSON.parse(localStorage.getItem('aigeo_cart_items') || '[]');
+                if (!Array.isArray(cart)) cart = [];
+            } catch(e) {
+                cart = [];
+            }
+            
+            // Get current courseId from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const currentCourseId = urlParams.get('id');
+            
+            if (currentCourseId && !cart.includes(currentCourseId)) {
+                cart.push(currentCourseId);
+                localStorage.setItem('aigeo_cart_items', JSON.stringify(cart));
+                localStorage.setItem('aigeo_cart_count', cart.length);
+                updateCartBadge();
+            } else if (currentCourseId && cart.includes(currentCourseId)) {
+                // Already in cart
+                const btn = event.currentTarget;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i data-feather="info" class="w-4 h-4"></i> Đã có trong giỏ';
+                feather.replace();
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    feather.replace();
+                }, 2000);
+                return;
+            }
+            
+            // Visual feedback on success
+            const btn = event.currentTarget;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i data-feather="check" class="w-4 h-4"></i> Đã thêm vào giỏ';
+            btn.classList.add('bg-green-500');
+            btn.classList.remove('bg-[#e97b9b]', 'hover:bg-[#d94b73]');
+            feather.replace();
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.classList.remove('bg-green-500');
+                btn.classList.add('bg-[#e97b9b]', 'hover:bg-[#d94b73]');
+                feather.replace();
+            }, 2000);
+        }
+
+        // Initialize cart badge on load
+        document.addEventListener('DOMContentLoaded', updateCartBadge);
+        
+        // Listen for changes from other tabs
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'aigeo_cart_count') {
+                updateCartBadge();
+            }
+        });
+    </script>
+    <script src="../firebase-config.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+            const auth = getAuth(app);
+            let currentUser = null;
+            
+            // --- Header Auth Logic ---
+            const btnLoginMain = document.getElementById('btn-login-main');
+            const userLoggedPill = document.getElementById('user-logged-pill');
+            const authDropdown = document.getElementById('auth-dropdown-menu');
+            const userNameHeader = document.getElementById('user-name-header');
+            const userAvatarHeader = document.getElementById('user-avatar-header');
+            const linkToDashboard = document.getElementById('link-to-dashboard');
+            const btnLogout = document.getElementById('btn-logout-header');
+
+            onAuthStateChanged(auth, async (user) => {
+                currentUser = user;
+                if (user) {
+                    if (btnLoginMain) btnLoginMain.style.display = 'none';
+                    if (userLoggedPill) {
+                        userLoggedPill.classList.remove('hidden');
+                        userLoggedPill.classList.add('flex');
+                    }
+                    if (userNameHeader) userNameHeader.textContent = user.displayName || user.email.split('@')[0];
+                    if (userAvatarHeader) userAvatarHeader.src = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || user.email)}&background=f389a4&color=fff`;
+                    if (linkToDashboard) linkToDashboard.href = '../student/index.html';
+                    
+                    // Check enrollment
+                    await checkEnrollment();
+                } else {
+                    if (btnLoginMain) btnLoginMain.style.display = 'inline-block';
+                    if (userLoggedPill) {
+                        userLoggedPill.classList.add('hidden');
+                        userLoggedPill.classList.remove('flex');
+                    }
+                }
+            });
+
+            if (userLoggedPill) {
+                userLoggedPill.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    authDropdown.classList.toggle('hidden');
+                    authDropdown.classList.toggle('flex');
+                });
+            }
+
+            document.addEventListener('click', (e) => {
+                if (authDropdown && !authDropdown.classList.contains('hidden') && !e.target.closest('#auth-header-wrapper')) {
+                    authDropdown.classList.add('hidden');
+                    authDropdown.classList.remove('flex');
+                }
+            });
+
+            if (btnLogout) {
+                btnLogout.addEventListener('click', async () => {
+                    await signOut(auth);
+                    window.location.reload();
+                });
+            }
+            
+            async function checkEnrollment() {
+                if (!currentUser || !courseId) return;
+                try {
+                    const courseSnap = await getDoc(doc(db, "courses", courseId));
+                    let classroomId = courseId;
+                    if (courseSnap.exists() && courseSnap.data().classroomId) {
+                        classroomId = courseSnap.data().classroomId;
+                    }
+
+                    const classDocRef = doc(db, 'classrooms', classroomId);
+                    const classSnap = await getDoc(classDocRef);
+                    let isEnrolled = false;
+                    
+                    if (classSnap.exists()) {
+                        const classData = classSnap.data();
+                        if (classData.students && classData.students.includes(currentUser.uid)) {
+                            isEnrolled = true;
+                        }
+                    }
+
+                    if (isEnrolled) {
+                        const buyBtn = document.getElementById('buy-course-btn');
+                        if (buyBtn) {
+                            buyBtn.innerHTML = '<i data-feather="monitor" class="w-5 h-5"></i> Vào lớp học';
+                            buyBtn.onclick = (e) => {
+                                e.preventDefault();
+                                window.location.href = `../student/classroom-view.html?classId=${classroomId}`;
+                            };
+                            feather.replace();
+                        }
+                    }
+                } catch(e) {
+                    console.error("Lỗi kiểm tra enrolled:", e);
+                }
+            }
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const courseId = urlParams.get('id');
+            
+            if (!courseId) {
+                document.getElementById('hero-title').innerText = "Không tìm thấy khóa học";
+                document.getElementById('hero-desc').innerText = "Vui lòng chọn một khóa học hợp lệ từ trang chủ.";
+                return;
+            }
+
+            try {
+                const docSnap = await getDoc(doc(db, "courses", courseId));
+                if (docSnap.exists()) {
+                    const c = docSnap.data();
+                    
+                    document.title = (c.title || 'Chi tiết khóa học') + " - AIGEO Study";
+                    document.getElementById('hero-title').innerText = c.title || 'Chưa cập nhật';
+                    document.getElementById('hero-desc').innerText = c.description || 'Chưa có thông tin mô tả.';
+                    
+                    if (c.instructors && c.instructors.length > 0) {
+                        const insNames = c.instructors.map(i => `<span>${i.name}</span>`).join('<span class="text-white font-normal">,</span> ');
+                        document.getElementById('hero-instructors').innerHTML = insNames;
+                    }
+                    
+                    if (c.thumbnail) {
+                        document.getElementById('course-thumbnail').src = c.thumbnail;
+                    }
+                    
+                    if (c.original_price) {
+                        const opEl = document.getElementById('course-original-price');
+                        opEl.innerText = `Giá gốc: ${Number(c.original_price).toLocaleString()} đ`;
+                        opEl.classList.remove('hidden');
+                    }
+                    
+                    if (c.discount_price) {
+                        document.getElementById('course-discount-price').innerText = `${Number(c.discount_price).toLocaleString()} đ`;
+                    } else {
+                        document.getElementById('course-discount-price').innerText = 'Miễn phí';
+                    }
+                    
+                    if (c.num_lessons) {
+                        document.getElementById('course-num-lessons-display').innerHTML = `<i data-feather="package" class="w-4 h-4 text-slate-400"></i> <span>${c.num_lessons} bài</span>`;
+                    } else {
+                        document.getElementById('course-num-lessons-display').innerHTML = `<i data-feather="package" class="w-4 h-4 text-slate-400"></i> <span>Chưa cập nhật số bài</span>`;
+                    }
+                    
+                    if (c.tags && c.tags.length > 0) {
+                        document.getElementById('course-tags').innerHTML = c.tags.map(t => `<span class="text-xs bg-slate-50 border border-slate-100 text-slate-600 px-2 py-1 rounded-md whitespace-nowrap"><i class="fas fa-check text-green-500 mr-1"></i>${t}</span>`).join('');
+                    }
+                    
+                    const featuresList = document.getElementById('course-features-list');
+                    if (c.features && c.features.length > 0) {
+                        // Render features as plain text preserving admin input, allowing basic HTML or newlines
+                        featuresList.innerHTML = c.features.map(f => `<div class="mb-2 text-slate-800 leading-relaxed">${f}</div>`).join('');
+                        
+                        // Setup toggle logic
+                        const toggleBtn = document.getElementById('toggle-features-btn');
+                        const wrapper = document.getElementById('features-wrapper');
+                        const gradient = document.getElementById('features-gradient');
+                        const text = document.getElementById('toggle-features-text');
+                        
+                        // Check if content exceeds max-height
+                        setTimeout(() => {
+                            if (featuresList.scrollHeight > 150) {
+                                toggleBtn.classList.remove('hidden');
+                                toggleBtn.addEventListener('click', () => {
+                                    if (wrapper.classList.contains('max-h-[150px]')) {
+                                        wrapper.classList.remove('max-h-[150px]');
+                                        wrapper.style.maxHeight = featuresList.scrollHeight + 'px';
+                                        gradient.classList.add('hidden');
+                                        text.innerText = 'Thu gọn';
+                                        toggleBtn.querySelector('i').setAttribute('data-feather', 'chevron-up');
+                                    } else {
+                                        wrapper.classList.add('max-h-[150px]');
+                                        wrapper.style.maxHeight = '';
+                                        gradient.classList.remove('hidden');
+                                        text.innerText = 'Xem thêm';
+                                        toggleBtn.querySelector('i').setAttribute('data-feather', 'chevron-down');
+                                    }
+                                    feather.replace();
+                                });
+                            } else {
+                                toggleBtn.classList.add('hidden');
+                                gradient.classList.add('hidden');
+                            }
+                        }, 100);
+                        
+                    } else {
+                        featuresList.innerHTML = '<div>Chưa có thông tin chi tiết.</div>';
+                        document.getElementById('toggle-features-btn').classList.add('hidden');
+                        document.getElementById('features-gradient').classList.add('hidden');
+                    }
+                    
+                    // Render Instructors
+                    const instructorsList = document.getElementById('course-instructors-list');
+                    if (c.instructors && c.instructors.length > 0) {
+                        instructorsList.innerHTML = c.instructors.map(t => `
+                            <div class="flex items-center gap-4">
+                                <img src="${t.avatar || 'https://ui-avatars.com/api/?name='+encodeURIComponent(t.name)+'&background=fdf2f5&color=d94b73'}" class="w-12 h-12 rounded-full object-cover">
+                                <div>
+                                    <div class="font-bold text-[#e97b9b]">${t.name}</div>
+                                    <div class="text-xs text-gray-400">${t.role}</div>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        instructorsList.innerHTML = '<div class="text-gray-500 text-sm">Chưa có thông tin giảng viên.</div>';
+                    }
+
+                    // Render Curriculum
+                    const curriculumList = document.getElementById('course-curriculum-list');
+                    if (c.curriculum && c.curriculum.length > 0) {
+                        curriculumList.innerHTML = c.curriculum.map(m => `
+                            <div class="bg-pink-100 rounded-lg p-4 flex justify-between items-center cursor-pointer transition ${m.isLocked ? 'opacity-70 bg-pink-50' : 'hover:bg-pink-200'}">
+                                <span class="font-bold ${m.isLocked ? 'text-slate-400' : 'text-slate-700'} text-sm uppercase">${m.title}</span>
+                                <i data-feather="${m.isLocked ? 'lock' : 'chevron-right'}" class="w-4 h-4 ${m.isLocked ? 'text-slate-300' : 'text-slate-500'}"></i>
+                            </div>
+                        `).join('');
+                    } else {
+                        curriculumList.innerHTML = '<div class="text-gray-500 text-sm">Chương trình học đang được cập nhật.</div>';
+                    }
+
+                    // Render Reviews
+                    const reviewsList = document.getElementById('course-reviews-list');
+                    if (c.reviews && c.reviews.length > 0) {
+                        let reviewsHtml = `<div class="flex items-center gap-2 mb-8">
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <span class="text-sm text-gray-500">(${c.reviews.length} đánh giá)</span>
+                        </div><div class="border-t border-gray-100 pt-6">`;
+                        
+                        reviewsHtml += c.reviews.map(r => `
+                            <div class="flex items-start gap-4 mb-6">
+                                <div class="w-10 h-10 rounded-full bg-[#e97b9b] text-white flex items-center justify-center font-bold shrink-0">
+                                    ${r.userName ? r.userName.charAt(0).toUpperCase() : 'U'}
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-3 mb-1">
+                                        <span class="font-bold text-sm text-slate-800">${r.userName}</span>
+                                        <span class="text-xs text-gray-400">${r.date ? r.date.split('-').reverse().join('/') : ''}</span>
+                                    </div>
+                                    <div class="flex text-yellow-400 text-xs mb-2">
+                                        ${'<i class="fas fa-star"></i>'.repeat(Number(r.rating) || 5)}
+                                    </div>
+                                    <p class="text-sm text-slate-600">${r.content}</p>
+                                </div>
+                            </div>
+                        `).join('');
+                        reviewsHtml += '</div>';
+                        reviewsList.innerHTML = reviewsHtml;
+                    } else {
+                        reviewsList.innerHTML = '<div class="text-gray-500 text-sm">Chưa có đánh giá nào.</div>';
+                    }
+                    
+                    // Fetch and Render Related Courses (Limit to 3, exclude current)
+                    const relatedList = document.getElementById('related-courses-list');
+                    try {
+                        const { collection, getDocs, limit, query, where } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
+                        const coursesRef = collection(db, "courses");
+                        const q = query(coursesRef, limit(4)); // Fetch 4 in case one is current
+                        const relSnap = await getDocs(q);
+                        
+                        const relatedHtml = relSnap.docs
+                            .filter(d => d.id !== courseId)
+                            .slice(0, 3)
+                            .map(d => {
+                                const rc = d.data();
+                                return `
+                                <div class="w-full max-w-sm bg-white rounded-2xl shadow-sm hover:shadow-xl border border-slate-100 transition-all duration-300">
+                                    <div class="w-full aspect-video bg-gray-100 rounded-t-2xl relative overflow-hidden flex items-center justify-center">
+                                        <img src="${rc.thumbnail || 'https://placehold.co/600x400/e97b9b/ffffff?text=No+Image'}" class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="p-5">
+                                        <h3 class="text-sm font-black text-slate-800 mb-2 hover:text-[#e97b9b] cursor-pointer" onclick="window.location.href='course-details.html?id=${d.id}'">${rc.title || 'Đang cập nhật'}</h3>
+                                        <p class="text-xs text-slate-500 mb-4 line-clamp-2">${rc.description || ''}</p>
+                                        <div class="text-right border-t border-slate-100 pt-3">
+                                            <span class="text-[#e97b9b] font-bold border border-[#e97b9b] rounded px-3 py-1.5 text-xs">${rc.discount_price ? Number(rc.discount_price).toLocaleString() + ' đ' : 'Miễn phí'}</span>
+                                        </div>
+                                    </div>
+                                </div>`;
+                            }).join('');
+                            
+                        if (relatedHtml) {
+                            relatedList.innerHTML = relatedHtml;
+                        } else {
+                            relatedList.innerHTML = '<div class="text-gray-500 text-sm">Chưa có khóa học liên quan.</div>';
+                        }
+                    } catch(e) {
+                        relatedList.innerHTML = '<div class="text-gray-500 text-sm">Không thể tải khóa học liên quan.</div>';
+                    }
+
+                    feather.replace();
+                } else {
+                    document.getElementById('hero-title').innerText = "Khóa học không tồn tại";
+                    document.getElementById('hero-desc').innerText = "Khóa học này đã bị xóa hoặc không còn tồn tại.";
+                }
+            } catch(e) {
+                console.error(e);
+                document.getElementById('hero-title').innerText = "Lỗi tải dữ liệu";
+                document.getElementById('hero-desc').innerText = "Vui lòng thử lại sau.";
+            }
+        });
+    </script>
+</body>
+</html>
