@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <script>
+    const IS_SUBDOMAIN = window.location.hostname.includes('dialithaygeo.aigeo.info.vn');
+    const MAIN_DOMAIN = IS_SUBDOMAIN ? 'https://aigeo.info.vn' : '..';
+</script>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/JWTx6WrX/FAVICON.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIGEO - Đăng nhập & Đăng ký</title>
+    
+    <!-- SEO & Metadata -->
+    <meta property="og:title" content="AIGEO - Nền Tảng Học Địa Lí Thông Minh" />
+    <meta property="og:description" content="Khám phá tri thức Địa lí cùng AI – hỗ trợ học tập, luyện thi và phân tích dữ liệu hiệu quả." />
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        :root { 
+            --primary: #0D9488; 
+            --primary-dark: #0F766E; 
+            --secondary: #10B981;
+        }
+        
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F0FDFA; }
+        
+        /* --- BACKGROUND EFFECTS --- */
+        .background-blobs { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; pointer-events: none; }
+        .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; animation: floatBlob 12s infinite alternate; }
+        .blob-1 { width: 500px; height: 500px; background: #99F6E4; top: -100px; left: -100px; }
+        .blob-2 { width: 400px; height: 400px; background: #BBF7D0; bottom: -50px; right: -50px; animation-delay: -5s; }
+        .blob-3 { width: 300px; height: 300px; background: #CCFBF1; top: 40%; left: 40%; animation-delay: -2s; }
+        @keyframes floatBlob { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(40px, 60px) scale(1.1); } }
+
+        /* Thu hẹp khoảng cách phần "Hoặc tiếp tục với" - Đã tăng nhẹ độ giãn */
+        .divider-space {
+            margin-top: 18px !important;    /* Tăng từ 14px lên 24px */
+            margin-bottom: 14px !important; /* Tăng từ 14px lên 20px */
+        }
+
+        /* Compact Size Inputs */
+        .input-field {
+            width: 100%; padding: 10px 14px; background: #F1F5F9; border: 2px solid transparent;
+            border-radius: 12px; font-size: 0.85rem; font-weight: 600; transition: all 0.3s; color: #1E293B;
+        }
+
+        /* Hiệu ứng đơn giản: hiện ra và trồi lên */
+        .fade-up {
+            animation: simpleFadeUp 0.5s ease-out forwards;
+        }
+
+        @keyframes simpleFadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px); /* Bắt đầu ở dưới 20px */
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0); /* Lên vị trí chuẩn */
+            }
+        }
+
+        .input-field:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1); outline: none; }
+        
+        .input-label-mini { display: block; font-size: 9px; font-weight: 800; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; margin-left: 4px; }
+
+        .role-pill-container { display: flex; background: #F1F5F9; padding: 3px; border-radius: 14px; margin-bottom: 15px; position: relative; }
+        .role-pill-btn { flex: 1; padding: 8px; border-radius: 10px; font-size: 10px; font-weight: 800; text-transform: uppercase; z-index: 10; transition: 0.3s; color: #64748B; }
+        .role-pill-btn.active { background: white; color: var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+        /* Custom Checkbox */
+        .checkbox-container { display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; padding: 2px 0; }
+        .custom-checkbox { appearance: none; width: 18px; height: 18px; border: 2px solid #CBD5E1; border-radius: 6px; position: relative; cursor: pointer; transition: 0.2s; background: white; margin: 0 !important; }
+        .custom-checkbox:checked { background-color: var(--primary); border-color: var(--primary); }
+        .custom-checkbox:checked::after { content: "\f00c"; font-family: "Font Awesome 6 Free"; font-weight: 900; font-size: 10px; color: white; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .checkbox-text { font-size: 11px; font-weight: 700; color: #64748B; line-height: 1; }
+
+        /* Buttons */
+        .btn-modern { width: 100%; padding: 12px; border-radius: 14px; font-weight: 800; font-size: 0.85rem; border: none; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-gradient { background: linear-gradient(135deg, #0D9488 0%, #10B981 100%); transition: all 0.3s ease; }
+        .btn-gradient:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(13, 148, 136, 0.3); }
+        .btn-google { background: white; color: #475569; border: 1.5px solid #F1F5F9; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        .btn-google:hover { background: #F8FAFC; border-color: #E2E8F0; }
+
+        .tab-btn { position: relative; transition: 0.3s; color: #94A3B8; }
+        .tab-btn.active { color: var(--primary); }
+        .tab-btn.active::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 3px; background: var(--primary); border-radius: 10px; }
+
+        .left-panel-gradient { background: linear-gradient(135deg, #0D9488 0%, #10B981 100%); position: relative; overflow: hidden; }
+        .left-pattern { position: absolute; inset: 0; opacity: 0.1; background-image: radial-gradient(#fff 1.5px, transparent 1.5px); background-size: 24px 24px; }
+
+        /* Modals */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.3s; }
+        .modal-overlay.show { opacity: 1; visibility: visible; }
+        .modal-content { background: white; padding: 32px; border-radius: 32px; text-align: center; transform: scale(0.9); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2); max-width: 420px; width: 90%; }
+        .modal-overlay.show .modal-content { transform: scale(1); }
+
+        .alert-icon { width: 64px; height: 64px; border-radius: 22px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 20px; }
+        .alert-error .alert-icon { background: #FEE2E2; color: #EF4444; }
+        .alert-success .alert-icon { background: #DCFCE7; color: #10B981; }
+
+        .animate-fade-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Maintenance Specific Styles */
+        .maintenance-card { background: white; border-radius: 40px; overflow: hidden; max-width: 500px; width: 95%; box-shadow: 0 30px 60px -12px rgba(0,0,0,0.25); }
+        .maintenance-glow { animation: maintenancePulse 2s infinite ease-in-out; }
+        @keyframes maintenancePulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
+    </style>
+
+    <link rel="stylesheet" href="./global-responsive.css">
+
+    <!-- Dark Mode Initializer -->
+    <link rel="stylesheet" href="dark-mode.css?v=9">
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div id="main-auth-container" class="bg-white/80 rounded-[40px] shadow-2xl overflow-hidden w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 min-h-[650px] animate-fade-up border border-white/50 backdrop-blur-2xl">
+        
+        <!-- Left Panel: Info -->
+        <div class="left-panel-gradient hidden md:flex flex-col justify-between p-12 text-white">
+            <div class="left-pattern"></div>
+            <a href="/">
+                <div class="relative z-10 flex items-center gap-4">
+                    <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-lg border border-white/30" style="background-color: white !important;">
+                        <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" class="w-8 h-8 object-contain">
+                    </div>
+                    <div>
+                        <h2 class="font-black text-2xl tracking-tight leading-none">AIGEO</h2>
+                        <p class="text-teal-100 text-[10px] font-bold tracking-widest mt-1 opacity-80 uppercase">AI Learning Platform</p>
+                    </div>
+                </div>
+            </a>
+            
+            <div class="relative z-10 mb-8">
+                <h2 class="text-5xl font-black mb-6 leading-tight">CHINH PHỤC <br><span class="text-teal-200">ĐỊA LÍ 4.0</span></h2>
+                <p class="text-teal-50 font-medium text-lg opacity-90 max-w-md leading-relaxed">Khám phá thế giới qua lăng kính công nghệ AI, giúp việc học tập trở nên sinh động và hiệu quả hơn bao giờ hết.</p>
+            </div>
+
+            <div class="relative z-10 text-xs font-bold opacity-60 flex items-center gap-2">
+                <div class="h-px w-8 bg-white/50"></div>&copy; 2025 AIGEO. All Rights Reserved.
+            </div>
+        </div>
+
+        <!-- Right Panel: Auth Forms -->
+        <div class="p-8 md:p-14 flex flex-col justify-center bg-white/40 relative">
+            
+            <!-- Mobile Logo -->
+            <div class="text-center mb-8 md:hidden">
+                <img src="https://i.ibb.co/JWTx6WrX/FAVICON.png" class="w-14 h-14 mx-auto mb-2">
+                <h3 class="font-black text-2xl text-slate-800">AIGEO</h3>
+            </div>
+
+            <div class="flex border-b border-slate-100 mb-8">
+                <button id="tab-login" class="flex-1 pb-4 text-center font-extrabold text-sm tab-btn active uppercase tracking-widest">Đăng nhập</button>
+                <button id="tab-register" class="flex-1 pb-4 text-center font-extrabold text-sm tab-btn uppercase tracking-widest">Đăng ký</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="space-y-4 fade-up">
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1 tracking-widest">Email tài khoản</label>
+                    <div class="relative">
+                        <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="email" id="login-email" class="input-field pl-12 pr-4 py-4" placeholder="example@gmail.com" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1 tracking-widest">Mật khẩu</label>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="password" id="login-password" class="input-field pl-12 pr-12 py-4" placeholder="••••••••" required>
+                        <i class="fas fa-eye absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 cursor-pointer hover:text-teal-600 transition toggle-pass"></i>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center py-1">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="remember-me" class="custom-checkbox"> 
+                        <span class="checkbox-text">Ghi nhớ đăng nhập</span>
+                    </label>
+                    <a href="#" id="btn-forgot" class="text-[11px] font-bold text-teal-600 hover:underline">Quên mật khẩu?</a>
+                </div>
+                <button type="submit" class="w-full py-4 rounded-2xl text-white font-black btn-gradient shadow-lg shadow-teal-600/30 mt-4 tracking-widest">Đăng nhập</button>
+            </form>
+
+            <!-- Register Section -->
+            <form id="register-form" class="space-y-3 hidden fade-up"> 
+                <div class="role-pill-container">
+                    <button type="button" id="btn-role-student" class="role-pill-btn active">Học sinh</button>
+                    <button type="button" id="btn-role-teacher" class="role-pill-btn">Giáo viên</button>
+                    <input type="hidden" id="reg-role" value="student">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="input-label-mini">Họ và tên</label>
+                        <input type="text" id="reg-name" class="input-field" placeholder="Nguyễn Văn A" required>
+                    </div>
+                    <div>
+                        <label class="input-label-mini">Email</label>
+                        <input type="email" id="reg-email" class="input-field" placeholder="example@gmail.com" required>
+                    </div>
+                </div>
+
+                <div id="dynamic-fields" class="grid grid-cols-2 gap-3">
+                    <div class="student-only">
+                        <label class="input-label-mini">Trường học</label>
+                        <input type="text" id="reg-school-student" class="input-field" placeholder="Tên trường">
+                    </div>
+                    <div class="student-only">
+                        <label class="input-label-mini">Khối lớp</label>
+                        <select id="reg-grade" class="input-field appearance-none cursor-pointer">
+                            <option value="10">Lớp 10</option>
+                            <option value="11">Lớp 11</option>
+                            <option value="12">Lớp 12</option>
+                        </select>
+                    </div>
+                    <div class="teacher-only hidden">
+                        <label class="input-label-mini">Nơi công tác</label>
+                        <input type="text" id="reg-school-teacher" class="input-field" placeholder="Trường / Trung tâm">
+                    </div>
+                    <div class="teacher-only hidden">
+                        <label class="input-label-mini">Môn dạy</label>
+                        <select id="reg-subject" class="input-field appearance-none cursor-pointer">
+                            <option value="" disabled selected>Chọn môn</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="input-label-mini">Mật khẩu</label>
+                        <input type="password" id="reg-pass" class="input-field" placeholder="••••••" required>
+                    </div>
+                    <div>
+                        <label class="input-label-mini">Xác nhận</label>
+                        <input type="password" id="reg-confirm" class="input-field" placeholder="••••••" required>
+                    </div>
+                </div>
+
+                <div class="px-1 py-1">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="reg-agree" class="custom-checkbox">
+                        <span class="checkbox-text">
+                            Tôi đồng ý với <a href="/dieu-khoan.html" target="_blank" class="text-teal-600 hover:underline">Điều khoản sử dụng</a> của AIGEO.
+                        </span>
+                    </label>
+                </div>
+
+                <button type="submit" class="w-full py-4 rounded-2xl text-white font-black btn-gradient shadow-lg shadow-teal-600/30 mt-2 tracking-widest">Tạo tài khoản</button>
+            </form>
+
+            <!-- Social Auth -->
+            <div class="relative divider-space text-center">
+                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-100"></div></div>
+                <span class="relative bg-white/0 px-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Hoặc tiếp tục với</span>
+            </div>
+
+            <button id="google-login-btn" class="btn-modern btn-google">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-4 h-4">
+                <span>Google Account</span>
+            </button>
+
+            <!-- Loading Overlay -->
+            <div id="loading-overlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col justify-center items-center z-50 hidden rounded-[40px]">
+                <div class="w-12 h-12 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                <p class="text-xs font-black text-teal-600 uppercase tracking-widest animate-pulse">Đang kết nối đến máy chủ...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Maintenance Modal -->
+    <div id="maintenance-modal" class="modal-overlay !bg-slate-900/60 backdrop-blur-xl">
+        <div class="maintenance-card">
+            <div class="bg-amber-500 h-2 w-full"></div>
+            <div class="p-10 text-center">
+                <div class="w-20 h-20 bg-amber-50 text-amber-500 rounded-3xl flex items-center justify-center mx-auto mb-6 text-4xl shadow-inner maintenance-glow">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <h2 class="text-3xl font-black text-slate-800 mb-4 tracking-tight">Hệ thống đang bảo trì</h2>
+                <p id="maintenance-reason" class="text-slate-500 font-medium leading-relaxed mb-6"></p>
+                
+                <div class="grid grid-cols-1 gap-3 bg-slate-50 p-6 rounded-3xl border border-slate-100 text-center mb-8">
+                    <div class="flex items-center justify-center gap-3">
+                        <i class="fas fa-clock text-teal-600 w-5"></i>
+                        <!-- Chỉ để ID, nội dung sẽ do JS đổ vào có kèm dấu ngăn cách -->
+                        <span id="maintenance-start-time" class="text-xs font-bold text-slate-600 uppercase tracking-wider"></span>
+                    </div>
+                    
+                    <div class="flex items-center justify-center gap-3">
+                        <i class="fas fa-flag-checkered text-rose-500 w-5"></i>
+                        <!-- Chỉ để ID, nội dung sẽ do JS đổ vào có kèm dấu ngăn cách -->
+                        <span id="maintenance-end-time" class="text-xs font-bold text-slate-600 uppercase tracking-wider"></span>
+                    </div>
+                </div>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Cảm ơn sự kiên nhẫn của bạn!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Admin Access Gate -->
+    <button id="admin-gate-btn" class="fixed bottom-6 right-6 w-12 h-12 bg-white/50 backdrop-blur-md border border-white/50 rounded-2xl shadow-xl flex items-center justify-center text-slate-400 hover:text-teal-600 hover:scale-110 transition-all z-[110] group">
+        <i class="fas fa-user-shield text-xl"></i>
+        <span class="absolute right-14 bg-slate-800 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">QUẢN TRỊ VIÊN</span>
+    </button>
+
+    <!-- Admin Login Modal -->
+    <div id="admin-modal" class="modal-overlay">
+        <div class="modal-content !max-w-md !p-0 overflow-hidden border-none shadow-[0_32px_64px_-12px_rgba(13,148,136,0.25)] rounded-[32px]">
+            <!-- Header với dải màu Gradient đặc trưng của AIGEO -->
+            <div class="bg-gradient-to-br from-[#0D9488] to-[#10B981] p-10 text-center relative overflow-hidden">
+                <!-- Hiệu ứng vòng tròn trang trí ẩn bên dưới -->
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-black/10 rounded-full blur-2xl"></div>
+
+                <!-- Nút đóng tinh tế -->
+                <button class="close-modal absolute top-6 right-6 text-white/50 hover:text-white transition-all hover:rotate-90">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+
+                <h3 class="text-white text-2xl font-black tracking-tight relative z-10">Admin Portal</h3>
+                <p class="text-teal-50 text-[10px] font-bold mt-2 uppercase tracking-[0.2em] opacity-80 relative z-10">Xác thực quyền quản trị viên</p>
+            </div>
+
+            <!-- Body Form -->
+            <div class="p-10 bg-white text-left">
+                <form id="admin-login-form" class="space-y-5">
+                    <div>
+                        <label class="input-label-mini">Admin Credential</label>
+                        <div class="relative group">
+                            <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-teal-500 transition-colors"></i>
+                            <input type="email" id="admin-email" class="input-field !pl-12 !py-4 border-slate-100 hover:border-teal-100 focus:border-teal-500" placeholder="admin@aigeo.vn" required>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="input-label-mini">Security Password</label>
+                        <div class="relative group">
+                            <i class="fas fa-key absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-teal-500 transition-colors"></i>
+                            <input type="password" id="admin-password" class="input-field !pl-12 !py-4 border-slate-100 hover:border-teal-100 focus:border-teal-500" placeholder="••••••••" required>
+                        </div>
+                    </div>
+
+                    <!-- Nút bấm đồng bộ với phong cách Gradient -->
+                    <div class="pt-2">
+                        <button type="submit" class="w-full py-4 bg-gradient-to-r from-[#0D9488] to-[#10B981] text-white rounded-2xl font-black text-xs uppercase tracking-[0.15em] hover:shadow-[0_12px_24px_-6px_rgba(13,148,136,0.4)] hover:-translate-y-0.5 transition-all active:scale-[0.98]">
+                            Xác nhận truy cập
+                        </button>
+                        <p class="text-center text-[10px] text-slate-400 font-medium mt-6">
+                            <i class="fas fa-info-circle mr-1"></i> Truy cập này được ghi lại bởi hệ thống bảo mật
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Role Modal -->
+    <div id="confirm-role-modal" class="modal-overlay">
+        <div class="modal-content !p-0 overflow-hidden max-w-sm">
+            <div class="h-2 w-full bg-teal-500"></div>
+            <div class="p-10">
+                <div class="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center mb-6 mx-auto text-3xl text-teal-600 border border-teal-100">
+                    <i id="confirm-icon" class="fas fa-user-graduate"></i>
+                </div>
+                <h3 class="text-xl font-black text-slate-800 mb-2 text-center">Xác nhận vai trò</h3>
+                <p class="text-sm text-slate-500 mb-6 text-center">Bạn đang đăng ký với vai trò <br><span id="confirm-role-text" class="text-teal-600 font-black text-lg"></span></p>
+                <div class="p-4 bg-amber-50 rounded-2xl border border-amber-100 text-left flex gap-3">
+                    <i class="fas fa-exclamation-triangle text-amber-500 mt-1"></i>
+                    <p class="text-[10px] text-amber-700 font-bold leading-relaxed uppercase">Lưu ý: Vai trò này không thể thay đổi sau khi tạo tài khoản!</p>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mt-8">
+                    <button class="close-modal py-4 font-black text-slate-400 uppercase text-[10px] tracking-widest">Hủy</button>
+                    <button id="btn-confirm-register" class="py-4 rounded-xl bg-teal-600 text-white font-black shadow-lg shadow-teal-600/30 uppercase text-[10px] tracking-widest">Xác nhận</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Modal -->
+    <div id="alert-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div id="alert-icon-container" class="alert-icon mb-4"><i class="fas fa-info"></i></div>
+            <h3 id="alert-title" class="text-xl font-black text-slate-800 mb-2">Thông báo</h3>
+            <p id="alert-message" class="text-sm text-slate-500 font-medium mb-8"></p>
+            <button class="close-modal w-full py-4 rounded-2xl bg-slate-100 text-slate-600 font-black uppercase text-xs tracking-widest">Đã hiểu</button>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgot-modal" class="modal-overlay">
+        <div class="modal-content text-left">
+            <div id="forgot-input-section">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-black text-slate-800 tracking-tight">Quên mật khẩu?</h3>
+                    <button class="close-modal text-slate-300 hover:text-red-500"><i class="fas fa-times"></i></button>
+                </div>
+                <p class="text-sm text-slate-500 mb-6 font-medium">Nhập email của bạn để nhận liên kết đặt lại mật khẩu.</p>
+                <form id="forgot-form" class="space-y-4">
+                    <input type="email" id="forgot-email" class="input-field w-full px-5 py-4" placeholder="Email của bạn..." required>
+                    <button type="submit" id="forgot-btn" class="w-full py-4 rounded-2xl text-white font-black btn-gradient shadow-lg tracking-widest">Gửi liên kết</button>
+                </form>
+            </div>
+            <div id="forgot-success-section" class="hidden text-center py-6">
+                <div class="w-20 h-20 bg-teal-50 text-teal-600 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">
+                    <i class="fas fa-paper-plane"></i>
+                </div>
+                <h3 class="text-xl font-black text-slate-800 mb-2">Đã gửi Email!</h3>
+                <p class="text-sm text-slate-500 mb-8 font-medium">Vui lòng kiểm tra hộp thư của bạn.</p>
+                <button class="close-modal w-full py-3.5 rounded-2xl bg-slate-100 text-slate-600 font-black text-xs tracking-widest">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <script>document.write(`<script src="${MAIN_DOMAIN}/firebase-config.js"><\/script>`);</script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, updateProfile, setPersistence, browserLocalPersistence, browserSessionPersistence, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, serverTimestamp, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let isMaintenanceMode = false;
+        let isRedirecting = false;
+        let pendingRegisterData = null;
+
+        // --- 1. UI HELPERS ---
+        const setLoading = (isLoading) => {
+            const overlay = document.getElementById('loading-overlay');
+            overlay.classList.toggle('flex', isLoading);
+            overlay.classList.toggle('hidden', !isLoading);
+        };
+
+        const showMaintenanceUI = (show) => {
+            const modal = document.getElementById('maintenance-modal');
+            const container = document.getElementById('main-auth-container');
+            if (show) {
+                modal.classList.add('show');
+                container.classList.add('opacity-20', 'pointer-events-none');
+            } else {
+                modal.classList.remove('show');
+                container.classList.remove('opacity-20', 'pointer-events-none');
+            }
+        };
+
+        window._deprecated_showAlert = (msg, type = 'error') => {
+            const modal = document.getElementById('alert-modal');
+            const title = document.getElementById('alert-title');
+            const message = document.getElementById('alert-message');
+            const iconBox = modal.querySelector('.modal-content');
+            message.innerText = msg;
+            iconBox.className = `modal-content ${type === 'error' ? 'alert-error' : 'alert-success'}`;
+            title.innerText = type === 'error' ? "Rất tiếc!" : "Tuyệt vời!";
+            document.getElementById('alert-icon-container').innerHTML = type === 'error' ? '<i class="fas fa-times"></i>' : '<i class="fas fa-check"></i>';
+            modal.classList.add('show');
+        };
+
+        // --- 2. HÀM TẢI DỮ LIỆU ---
+        const loadSubjects = async () => {
+            const subjectSelect = document.getElementById('reg-subject');
+            if (!subjectSelect) return;
+            try {
+                const querySnapshot = await getDocs(collection(db, "subjects"));
+                subjectSelect.innerHTML = '<option value="" disabled selected>Chọn môn học</option>';
+                querySnapshot.forEach((doc) => {
+                    const opt = document.createElement('option');
+                    opt.value = doc.id; opt.textContent = doc.data().name;
+                    subjectSelect.appendChild(opt);
+                });
+            } catch (e) { console.error("Lỗi tải môn học:", e); }
+        };
+
+        const checkSystemStatus = async () => {
+            try {
+                const snap = await getDoc(doc(db, "system_settings", "general"));
+                if (snap.exists()) {
+                    const data = snap.data();
+                    isMaintenanceMode = data.maintenanceMode || false;
+                    if (isMaintenanceMode) {
+                        document.getElementById('maintenance-reason').innerText = data.maintenanceReason || "Chúng tôi đang nâng cấp hệ thống.";
+                        
+                        // --- PHẦN SỬA LẠI Ở ĐÂY ---
+                        const formatTimeFull = (ts) => {
+                            if (!ts) return "--:--";
+                            const d = new Date(ts.seconds * 1000);
+                            const time = d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                            const date = d.toLocaleDateString('vi-VN');
+                            // Sử dụng innerHTML để chèn thẻ span làm dấu ngăn cách mờ
+                            return `${time} <span class="opacity-30 mx-2">|</span> ${date}`;
+                        };
+
+                        document.getElementById('maintenance-start-time').innerHTML = `BẮT ĐẦU: ${formatTimeFull(data.maintenanceStartTime)}`;
+                        document.getElementById('maintenance-end-time').innerHTML = `DỰ KIẾN: ${formatTimeFull(data.maintenanceEndTime)}`;
+                        // --------------------------
+                    }
+                }
+            } catch (e) { console.error("Lỗi kiểm tra bảo trì:", e); }
+        };
+
+        // --- 3. LOGIC XÁC THỰC ---
+        onAuthStateChanged(auth, async (user) => {
+            if (isRedirecting) return;
+            setLoading(true);
+            await checkSystemStatus();
+
+            if (user) {
+                try {
+                    const docSnap = await getDoc(doc(db, "users", user.uid));
+                    if (docSnap.exists()) {
+                        const userData = docSnap.data();
+                        
+                        // NẾU LÀ ADMIN: Vượt bảo trì
+                        if (userData.role === 'admin') {
+                            isRedirecting = true;
+                            showMaintenanceUI(false);
+                            window.location.href = MAIN_DOMAIN + "/admin/index.html";
+                            return;
+                        }
+
+                        // NẾU LÀ USER THƯỜNG: Kiểm tra bảo trì
+                        if (isMaintenanceMode) {
+                            await signOut(auth);
+                            showMaintenanceUI(true);
+                        } else {
+                            isRedirecting = true;
+                            // Check for custom redirect
+                            const urlParams = new URLSearchParams(window.location.search);
+                            let redirectUrl = urlParams.get('redirect');
+                            if (!redirectUrl) {
+                                redirectUrl = localStorage.getItem('aigeo_redirect_after_login');
+                            }
+                            if (redirectUrl) {
+                                localStorage.removeItem('aigeo_redirect_after_login');
+                                window.location.href = redirectUrl;
+                            } else {
+                                window.location.href = MAIN_DOMAIN + `/${userData.role}/index.html`;
+                            }
+                        }
+                    }
+                } catch (e) { console.error(e); }
+            } else {
+                showMaintenanceUI(isMaintenanceMode);
+            }
+            setLoading(false);
+        });
+
+        // --- 4. CÁC SỰ KIỆN FORM ---
+        
+        // Đăng nhập User
+        document.getElementById('login-form').onsubmit = async (e) => {
+            e.preventDefault();
+            if (isMaintenanceMode) return showAlert("Hệ thống đang bảo trì!");
+            setLoading(true);
+            try {
+                const remember = document.getElementById('remember-me').checked;
+                await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
+                await signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-password').value);
+            } catch (err) {
+                setLoading(false);
+                showAlert("Email hoặc mật khẩu không chính xác.");
+            }
+        };
+
+        // Đăng nhập Admin
+        document.getElementById('admin-login-form').onsubmit = async (e) => {
+            e.preventDefault();
+            setLoading(true);
+            try {
+                const userCred = await signInWithEmailAndPassword(auth, document.getElementById('admin-email').value, document.getElementById('admin-password').value);
+                const userDoc = await getDoc(doc(db, "users", userCred.user.uid));
+                if (userDoc.exists() && userDoc.data().role === 'admin') {
+                    isRedirecting = true;
+                    showMaintenanceUI(false);
+                    window.location.href = MAIN_DOMAIN + "/admin/index.html";
+                } else {
+                    await signOut(auth);
+                    showAlert("Tài khoản không có quyền Admin.");
+                }
+            } catch (err) {
+                showAlert("Thông tin Admin sai.");
+            } finally { setLoading(false); }
+        };
+
+        // Đăng ký User
+        document.getElementById('register-form').onsubmit = (e) => {
+            e.preventDefault();
+            if (!document.getElementById('reg-agree').checked) return showAlert("Cần đồng ý điều khoản.");
+            
+            const pass = document.getElementById('reg-pass').value;
+            const confirm = document.getElementById('reg-confirm').value;
+            const role = document.getElementById('reg-role').value;
+
+            if (pass !== confirm) return showAlert("Mật khẩu không khớp.");
+            if (pass.length < 6) return showAlert("Mật khẩu quá ngắn.");
+
+            pendingRegisterData = {
+                name: document.getElementById('reg-name').value,
+                email: document.getElementById('reg-email').value,
+                pass: pass, role: role,
+                school: role === 'student' ? document.getElementById('reg-school-student').value : document.getElementById('reg-school-teacher').value,
+                grade: document.getElementById('reg-grade').value,
+                subject: document.getElementById('reg-subject').value
+            };
+
+            document.getElementById('confirm-role-text').innerText = role === 'student' ? "HỌC SINH" : "GIÁO VIÊN";
+            document.getElementById('confirm-icon').className = role === 'student' ? "fas fa-user-graduate" : "fas fa-chalkboard-teacher";
+            document.getElementById('confirm-role-modal').classList.add('show');
+        };
+
+        document.getElementById('btn-confirm-register').onclick = async () => {
+            document.getElementById('confirm-role-modal').classList.remove('show');
+            setLoading(true);
+            try {
+                const { name, email, pass, role, school, grade, subject } = pendingRegisterData;
+                const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+                await updateProfile(userCred.user, { displayName: name });
+                
+                await setDoc(doc(db, "users", userCred.user.uid), {
+                    uid: userCred.user.uid, name, email, role, school,
+                    createdAt: serverTimestamp(),
+                    ...(role === 'student' ? { grade: parseInt(grade) } : { subject })
+                });
+                window.location.href = `/${role}/index.html`;
+            } catch (err) {
+                setLoading(false);
+                showAlert(err.code === 'auth/email-already-in-use' ? "Email đã tồn tại." : "Lỗi đăng ký.");
+            }
+        };
+
+        // Quên mật khẩu
+        document.getElementById('btn-forgot').onclick = () => document.getElementById('forgot-modal').classList.add('show');
+        document.getElementById('forgot-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('forgot-btn');
+            btn.disabled = true;
+            try {
+                await sendPasswordResetEmail(auth, document.getElementById('forgot-email').value);
+                document.getElementById('forgot-input-section').classList.add('hidden');
+                document.getElementById('forgot-success-section').classList.remove('hidden');
+            } catch (e) { showAlert("Lỗi gửi email."); } finally { btn.disabled = false; }
+        };
+
+        // Google Login
+        document.getElementById('google-login-btn').onclick = async () => {
+            const provider = new GoogleAuthProvider();
+            try {
+                setLoading(true);
+                const result = await signInWithPopup(auth, provider);
+                const userDoc = await getDoc(doc(db, "users", result.user.uid));
+                if (!userDoc.exists()) {
+                    await setDoc(doc(db, "users", result.user.uid), {
+                        uid: result.user.uid, name: result.user.displayName, email: result.user.email,
+                        role: "student", school: "Chưa cập nhật", grade: 10, createdAt: serverTimestamp()
+                    });
+                }
+                const role = userDoc.exists() ? userDoc.data().role : "student";
+                window.location.href = `/${role}/index.html`;
+            } catch (e) { setLoading(false); }
+        };
+
+        // --- 5. UI CONTROLS ---
+        const switchTab = (tab) => {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                document.getElementById('tab-login').classList.add('active');
+                document.getElementById('tab-register').classList.remove('active');
+            } else {
+                registerForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+                document.getElementById('tab-register').classList.add('active');
+                document.getElementById('tab-login').classList.remove('active');
+            }
+        };
+
+        document.getElementById('tab-login').onclick = () => switchTab('login');
+        document.getElementById('tab-register').onclick = () => switchTab('register');
+
+        const updateRoleUI = (role) => {
+            document.getElementById('reg-role').value = role;
+            document.getElementById('btn-role-student').classList.toggle('active', role === 'student');
+            document.getElementById('btn-role-teacher').classList.toggle('active', role === 'teacher');
+            document.querySelectorAll('.student-only').forEach(el => el.classList.toggle('hidden', role !== 'student'));
+            document.querySelectorAll('.teacher-only').forEach(el => el.classList.toggle('hidden', role !== 'teacher'));
+        };
+
+        document.getElementById('btn-role-student').onclick = () => updateRoleUI('student');
+        document.getElementById('btn-role-teacher').onclick = () => updateRoleUI('teacher');
+
+        document.getElementById('admin-gate-btn').onclick = () => document.getElementById('admin-modal').classList.add('show');
+
+        document.querySelectorAll('.close-modal').forEach(btn => {
+            btn.onclick = () => {
+                const modal = btn.closest('.modal-overlay');
+                if (modal.id === 'maintenance-modal' && isMaintenanceMode) return;
+                modal.classList.remove('show');
+            };
+        });
+
+        document.querySelectorAll('.toggle-pass').forEach(icon => {
+            icon.onclick = () => {
+                const input = icon.previousElementSibling;
+                input.type = input.type === 'password' ? 'text' : 'password';
+                icon.classList.toggle('fa-eye'); icon.classList.toggle('fa-eye-slash');
+            };
+        });
+
+        // Khởi tạo
+        loadSubjects();
+    </script>
+    <script src="./global-ui.js"></script>
+</body>
+</html>
