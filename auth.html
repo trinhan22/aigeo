@@ -538,7 +538,11 @@
                         } else {
                             isRedirecting = true;
                             // Check for custom redirect
-                            const redirectUrl = localStorage.getItem('aigeo_redirect_after_login');
+                            const urlParams = new URLSearchParams(window.location.search);
+                            let redirectUrl = urlParams.get('redirect');
+                            if (!redirectUrl) {
+                                redirectUrl = localStorage.getItem('aigeo_redirect_after_login');
+                            }
                             if (redirectUrl) {
                                 localStorage.removeItem('aigeo_redirect_after_login');
                                 window.location.href = redirectUrl;

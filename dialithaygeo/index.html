@@ -178,7 +178,7 @@
                 </button>
                 
                 <div class="relative" id="auth-header-wrapper">
-                    <a href="#" id="btn-login-main" onclick="localStorage.setItem('aigeo_redirect_after_login', window.location.href); window.location.href = MAIN_DOMAIN + '/auth.html'; return false;" class="bg-gradient-to-r from-[#e97b9b] to-[#f389a4] text-white px-5 py-2.5 rounded-full text-sm font-bold hover:shadow-[0_4px_15px_rgba(233,123,155,0.4)] hover:-translate-y-0.5 transition-all inline-block">Đăng nhập</a>
+                    <a href="#" id="btn-login-main" onclick="localStorage.setItem('aigeo_redirect_after_login', window.location.href); window.location.href = MAIN_DOMAIN + '/auth.html?redirect=' + encodeURIComponent(window.location.href); return false;" class="bg-gradient-to-r from-[#e97b9b] to-[#f389a4] text-white px-5 py-2.5 rounded-full text-sm font-bold hover:shadow-[0_4px_15px_rgba(233,123,155,0.4)] hover:-translate-y-0.5 transition-all inline-block">Đăng nhập</a>
                     
                     <div id="user-logged-pill" class="hidden items-center gap-2 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-full cursor-pointer transition-colors">
                         <img id="user-avatar-header" src="https://placehold.co/32x32/f389a4/ffffff?text=U" class="w-7 h-7 rounded-full object-cover">
