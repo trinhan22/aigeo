@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+    <script>
+        const IS_SUBDOMAIN = window.location.hostname.includes('dialithaygeo.aigeo.info.vn');
+        const MAIN_DOMAIN = IS_SUBDOMAIN ? 'https://aigeo.info.vn' : '..';
+    </script>
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="https://i.ibb.co/BKTVKGMb/FAVICON-GEO.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,7 +41,7 @@
     <script src="https://unpkg.com/feather-icons"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <link rel="stylesheet" href="../global-responsive.css?v=7">
+    <script>document.write(`<link rel="stylesheet" href="${MAIN_DOMAIN}/global-responsive.css?v=7">`);</script>
 
     <style>
         :root {
@@ -174,7 +178,7 @@
                 </button>
                 
                 <div class="relative" id="auth-header-wrapper">
-                    <a href="../auth.html" id="btn-login-main" class="bg-gradient-to-r from-[#e97b9b] to-[#f389a4] text-white px-5 py-2.5 rounded-full text-sm font-bold hover:shadow-[0_4px_15px_rgba(233,123,155,0.4)] hover:-translate-y-0.5 transition-all inline-block">Đăng nhập</a>
+                    <a href="#" id="btn-login-main" onclick="localStorage.setItem('aigeo_redirect_after_login', window.location.href); window.location.href = MAIN_DOMAIN + '/auth.html'; return false;" class="bg-gradient-to-r from-[#e97b9b] to-[#f389a4] text-white px-5 py-2.5 rounded-full text-sm font-bold hover:shadow-[0_4px_15px_rgba(233,123,155,0.4)] hover:-translate-y-0.5 transition-all inline-block">Đăng nhập</a>
                     
                     <div id="user-logged-pill" class="hidden items-center gap-2 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-full cursor-pointer transition-colors">
                         <img id="user-avatar-header" src="https://placehold.co/32x32/f389a4/ffffff?text=U" class="w-7 h-7 rounded-full object-cover">
@@ -666,7 +670,7 @@
             }
         });
     </script>
-    <script src="../firebase-config.js"></script>
+    <script>document.write(`<script src="${MAIN_DOMAIN}/firebase-config.js"><\/script>`);</script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -697,7 +701,7 @@
                     if (userAvatarHeader) userAvatarHeader.src = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || user.email)}&background=f389a4&color=fff`;
                     
                     // Determine dashboard link based on role logic (assuming student by default if not set)
-                    if (linkToDashboard) linkToDashboard.href = '../student/index.html'; // Defaulting to student for dialithaygeo buyers
+                    if (linkToDashboard) linkToDashboard.href = MAIN_DOMAIN + '/student/index.html'; // Defaulting to student for dialithaygeo buyers
                 } else {
                     if (btnLoginMain) btnLoginMain.style.display = 'inline-block';
                     if (userLoggedPill) {
@@ -732,6 +736,37 @@
             // --- Courses Loading Logic ---
             const coursesContainer = document.getElementById('courses-container');
             if (coursesContainer) {
+                coursesContainer.innerHTML = Array(3).fill(`
+                    <div class="w-full bg-white rounded-2xl shadow-sm border border-slate-100 p-4 md:p-6 flex flex-col md:flex-row gap-6 items-start">
+                        <div class="w-full md:w-64 aspect-video bg-slate-100 rounded-xl flex-shrink-0 animate-pulse"></div>
+                        <div class="flex-1 flex flex-col justify-center w-full">
+                            <div class="h-3 w-24 bg-slate-100 rounded mb-3 animate-pulse"></div>
+                            
+                            <!-- Title placeholders (2 lines) -->
+                            <div class="h-6 w-full bg-slate-200 rounded mb-2 animate-pulse"></div>
+                            <div class="h-6 w-3/4 bg-slate-200 rounded mb-4 animate-pulse"></div>
+                            
+                            <!-- Description placeholders (2 lines) -->
+                            <div class="h-3 w-full bg-slate-100 rounded mb-2 animate-pulse"></div>
+                            <div class="h-3 w-1/2 bg-slate-100 rounded mb-4 animate-pulse"></div>
+                            
+                            <!-- Tags -->
+                            <div class="flex flex-wrap gap-2">
+                                <div class="h-6 w-32 bg-slate-100 rounded-md animate-pulse"></div>
+                                <div class="h-6 w-28 bg-slate-100 rounded-md animate-pulse"></div>
+                                <div class="h-6 w-24 bg-slate-100 rounded-md animate-pulse"></div>
+                            </div>
+                        </div>
+                        <div class="flex-shrink-0 w-full md:w-48 pt-6 md:pt-0 md:pl-6 border-t md:border-t-0 md:border-l border-slate-100 flex flex-col items-start md:items-end justify-center self-stretch">
+                            <div class="text-left md:text-right mb-4 w-full flex flex-col items-start md:items-end">
+                                <div class="h-3 w-20 bg-slate-100 rounded mb-2 animate-pulse"></div>
+                                <div class="h-6 w-28 bg-slate-200 rounded animate-pulse"></div>
+                            </div>
+                            <div class="w-full h-[44px] bg-slate-100 rounded-xl mt-auto animate-pulse"></div>
+                        </div>
+                    </div>
+                `).join('');
+                
                 try {
                     const snap = await getDocs(collection(db, "courses"));
                     if (snap.empty) {

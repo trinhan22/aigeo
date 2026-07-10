@@ -315,6 +315,10 @@
                     if(user) {
                         const snap = await getDoc(doc(db, "users", user.uid));
                         if(snap.exists() && (snap.data().role === 'admin' || snap.data().role === 'teacher')) {
+                            if (user.email !== 'giaovien@aiquiz.vn' && snap.data().role !== 'admin') {
+                                window.location.href = 'index.html?error=aigeo_study_denied';
+                                return;
+                            }
                             const userName = snap.data().fullName || snap.data().name || user.email.split('@')[0];
                             document.getElementById('user-name').innerText = userName;
                             if (snap.data().avatarUrl) {
@@ -359,7 +363,7 @@
                     const snap = await getDoc(doc(db, "courses", id));
                     if(snap.exists()) {
                         currentCourse = { ...currentCourse, ...snap.data() };
-                        document.getElementById('page-title').innerText = "Sửa Khóa học: " + (currentCourse.title || '');
+                        document.getElementById('page-title').innerText = "Sửa Khóa học";
                     } else {
                         alert("Không tìm thấy khóa học!");
                         window.location.href = 'courses.html';

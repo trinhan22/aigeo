@@ -292,6 +292,18 @@
         const viewFeedbackCloseBtn = document.getElementById('view-feedback-close-btn');
         const feedbackListContainer = document.getElementById('feedback-list-container');
 
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('error') === 'aigeo_study_denied') {
+            setTimeout(() => {
+                if (typeof showToast === 'function') {
+                    showToast("Chức năng này chỉ dành cho giáo viên thuộc hệ thống AIGEO Study.", "error");
+                } else {
+                    alert("Chức năng này chỉ dành cho giáo viên thuộc hệ thống AIGEO Study.");
+                }
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }, 500);
+        }
+
 
         function _deprecated_showToast(message, type = 'success') {
             const toast = document.createElement('div');

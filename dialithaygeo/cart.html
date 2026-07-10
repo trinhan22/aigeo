@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+    <script>
+        const IS_SUBDOMAIN = window.location.hostname.includes('dialithaygeo.aigeo.info.vn');
+        const MAIN_DOMAIN = IS_SUBDOMAIN ? 'https://aigeo.info.vn' : '..';
+    </script>
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="https://i.ibb.co/BKTVKGMb/FAVICON-GEO.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,7 +26,7 @@
     </script>
     <script src="https://unpkg.com/feather-icons"></script>
     
-    <link rel="stylesheet" href="../global-responsive.css?v=7">
+    <script>document.write(`<link rel="stylesheet" href="${MAIN_DOMAIN}/global-responsive.css?v=7">`);</script>
 
     <style>
         :root {
@@ -52,7 +56,7 @@
             
             <div class="flex items-center gap-3 shrink-0">
                 <div class="relative" id="auth-header-wrapper">
-                    <a href="../auth.html" id="btn-login-main" class="bg-gradient-to-r from-[#e97b9b] to-[#f389a4] text-white px-5 py-2.5 rounded-full text-sm font-bold hover:shadow-[0_4px_15px_rgba(233,123,155,0.4)] hover:-translate-y-0.5 transition-all inline-block">Đăng nhập</a>
+                    <a href="#" id="btn-login-main" onclick="localStorage.setItem('aigeo_redirect_after_login', window.location.href); window.location.href = MAIN_DOMAIN + '/auth.html'; return false;" class="bg-gradient-to-r from-[#e97b9b] to-[#f389a4] text-white px-5 py-2.5 rounded-full text-sm font-bold hover:shadow-[0_4px_15px_rgba(233,123,155,0.4)] hover:-translate-y-0.5 transition-all inline-block">Đăng nhập</a>
                     
                     <div id="user-logged-pill" class="hidden items-center gap-2 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-full cursor-pointer transition-colors">
                         <img id="user-avatar-header" src="https://placehold.co/32x32/f389a4/ffffff?text=U" class="w-7 h-7 rounded-full object-cover">
@@ -124,8 +128,11 @@
             <button onclick="document.getElementById('checkout-modal').classList.add('hidden'); document.getElementById('checkout-modal').classList.remove('flex');" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i data-feather="x"></i></button>
             
             <h2 class="text-2xl font-black text-slate-800 mb-2">Thanh toán Quét mã QR</h2>
-            <p class="text-sm text-slate-500 mb-6 text-center">Vui lòng sử dụng Ứng dụng Ngân hàng để quét mã bên dưới. Đơn hàng của bạn sẽ được duyệt tự động sau khi nhận được thanh toán.</p>
+            <p class="text-sm text-slate-500 mb-4 text-center">Vui lòng sử dụng Ứng dụng Ngân hàng để quét mã.</p>
             
+            <div class="bg-amber-50 text-amber-700 border border-amber-200 p-3 rounded-xl text-xs text-center mb-6 font-medium leading-relaxed">
+                <span class="font-bold">Lưu ý:</span> Đơn hàng của bạn sẽ được xử lý trong vòng 24 giờ. Nếu qua thời gian này vẫn chưa được xử lý, vui lòng nhắn tin cho fanpage để được hỗ trợ.
+            </div>
             <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 mb-6 w-full flex justify-center">
                 <img id="qr-code-img" src="" alt="QR Code" class="w-48 h-48 object-contain">
             </div>
@@ -147,7 +154,7 @@
 
     <!-- Scripts -->
     <script>feather.replace();</script>
-    <script src="../firebase-config.js"></script>
+    <script>document.write(`<script src="${MAIN_DOMAIN}/firebase-config.js"><\/script>`);</script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, doc, getDoc, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -180,7 +187,7 @@
                 }
                 if (userNameHeader) userNameHeader.textContent = user.displayName || user.email.split('@')[0];
                 if (userAvatarHeader) userAvatarHeader.src = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || user.email)}&background=f389a4&color=fff`;
-                if (linkToDashboard) linkToDashboard.href = '../student/index.html';
+                if (linkToDashboard) linkToDashboard.href = MAIN_DOMAIN + '/student/index.html';
             } else {
                 if (btnLoginMain) btnLoginMain.style.display = 'inline-block';
                 if (userLoggedPill) {
@@ -317,12 +324,12 @@
             if (!currentUser) {
                 // Not logged in -> save redirect URL and go to auth
                 localStorage.setItem('aigeo_redirect_after_login', '/dialithaygeo/cart.html');
-                window.location.href = '../auth.html';
+                window.location.href = MAIN_DOMAIN + '/auth.html';
                 return;
             }
             
             const btn = document.getElementById('checkout-btn');
-            btn.innerHTML = '<i data-feather="loader" class="w-5 h-5 animate-spin mx-auto"></i> Đang xử lý...';
+            btn.innerHTML = '<i data-feather="loader" class="w-5 h-5 animate-spin"></i> Đang xử lý...';
             btn.disabled = true;
             feather.replace();
             

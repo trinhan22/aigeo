@@ -196,11 +196,11 @@
                         const docSnap = await getDoc(doc(db, "users", user.uid));
                         if (docSnap.exists() && (docSnap.data().role === 'admin' || docSnap.data().role === 'teacher')) {
                             if (user.email !== 'giaovien@aiquiz.vn' && docSnap.data().role !== 'admin') {
-                                alert("Truy cập từ chối: Chức năng này chỉ dành cho giáo viên thuộc hệ thống AIGEO Study.");
-                                window.location.href = 'index.html';
+                                window.location.href = 'index.html?error=aigeo_study_denied';
                                 return;
                             }
                             document.getElementById('user-name').innerText = docSnap.data().name || user.email;
+                            const userName = docSnap.data().name || user.email.split('@')[0];
                             if (docSnap.data().avatarUrl) {
                                 document.getElementById('user-avatar').src = docSnap.data().avatarUrl;
                             } else {
