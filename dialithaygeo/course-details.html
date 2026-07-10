@@ -420,7 +420,7 @@
                     }
                     if (userNameHeader) userNameHeader.textContent = user.displayName || user.email.split('@')[0];
                     if (userAvatarHeader) userAvatarHeader.src = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || user.email)}&background=f389a4&color=fff`;
-                    if (linkToDashboard) linkToDashboard.href = '../student/index.html';
+                    if (linkToDashboard) linkToDashboard.href = MAIN_DOMAIN + '/student/index.html';
                     
                     // Check enrollment
                     await checkEnrollment();
@@ -481,7 +481,7 @@
                             buyBtn.innerHTML = '<i data-feather="monitor" class="w-5 h-5"></i> Vào lớp học';
                             buyBtn.onclick = (e) => {
                                 e.preventDefault();
-                                window.location.href = `../student/classroom-view.html?classId=${classroomId}`;
+                                window.location.href = `${MAIN_DOMAIN}/student/classroom-view.html?classId=${classroomId}`;
                             };
                             feather.replace();
                         }

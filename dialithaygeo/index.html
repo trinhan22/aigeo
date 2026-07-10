@@ -701,7 +701,7 @@
                     if (userAvatarHeader) userAvatarHeader.src = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || user.email)}&background=f389a4&color=fff`;
                     
                     // Determine dashboard link based on role logic (assuming student by default if not set)
-                    if (linkToDashboard) linkToDashboard.href = '../student/index.html'; // Defaulting to student for dialithaygeo buyers
+                    if (linkToDashboard) linkToDashboard.href = MAIN_DOMAIN + '/student/index.html'; // Defaulting to student for dialithaygeo buyers
                 } else {
                     if (btnLoginMain) btnLoginMain.style.display = 'inline-block';
                     if (userLoggedPill) {

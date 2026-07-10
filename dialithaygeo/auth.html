@@ -531,7 +531,7 @@
                         if (userData.role === 'admin') {
                             isRedirecting = true;
                             showMaintenanceUI(false);
-                            window.location.href = "../admin/index.html";
+                            window.location.href = MAIN_DOMAIN + "/admin/index.html";
                             return;
                         }
 
@@ -551,7 +551,7 @@
                                 localStorage.removeItem('aigeo_redirect_after_login');
                                 window.location.href = redirectUrl;
                             } else {
-                                window.location.href = `../${userData.role}/index.html`;
+                                window.location.href = MAIN_DOMAIN + `/${userData.role}/index.html`;
                             }
                         }
                     }
