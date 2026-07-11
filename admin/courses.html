@@ -163,8 +163,8 @@
                             <img src="${c.thumbnail || 'https://placehold.co/100x60/f1f5f9/94a3b8?text=No+Image'}" class="w-16 h-10 object-cover rounded">
                         </td>
                         <td class="p-4 font-bold text-slate-800">${c.title}</td>
-                        <td class="p-4 text-slate-600">${c.teacher}</td>
-                        <td class="p-4 text-right font-bold text-teal-600">${c.discount_price ? Number(c.discount_price).toLocaleString() + ' đ' : 'N/A'}</td>
+                        <td class="p-4 text-slate-600">${c.instructors && c.instructors.length > 0 ? c.instructors[0].name : 'N/A'}</td>
+                        <td class="p-4 text-right font-bold text-teal-600">${c.discount_price === 0 ? 'Miễn phí' : (c.discount_price ? Number(c.discount_price).toLocaleString() + ' đ' : 'N/A')}</td>
                         <td class="p-4 text-center space-x-2">
                             <button onclick="window.location.href='course-editor.html?id=${c.id}'" class="text-slate-400 hover:text-teal-600 transition" title="Sửa"><i data-feather="edit-2" class="w-4 h-4"></i></button>
                             <button onclick="deleteCourse('${c.id}')" class="text-red-500 hover:text-red-700 p-1"><i data-feather="trash-2" class="w-4 h-4"></i></button>

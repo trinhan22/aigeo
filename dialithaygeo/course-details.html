@@ -518,16 +518,18 @@
                         document.getElementById('course-thumbnail').src = c.thumbnail;
                     }
                     
-                    if (c.original_price) {
-                        const opEl = document.getElementById('course-original-price');
-                        opEl.innerText = `Giá gốc: ${Number(c.original_price).toLocaleString()} đ`;
-                        opEl.classList.remove('hidden');
-                    }
-                    
-                    if (c.discount_price) {
-                        document.getElementById('course-discount-price').innerText = `${Number(c.discount_price).toLocaleString()} đ`;
-                    } else {
+                    if (!c.discount_price) {
+                        document.getElementById('course-original-price').classList.add('hidden');
                         document.getElementById('course-discount-price').innerText = 'Miễn phí';
+                        document.getElementById('course-discount-price').classList.remove('text-teal-600');
+                        document.getElementById('course-discount-price').classList.add('text-[#e97b9b]');
+                    } else {
+                        if (c.original_price) {
+                            const opEl = document.getElementById('course-original-price');
+                            opEl.innerText = `Giá gốc: ${Number(c.original_price).toLocaleString()} đ`;
+                            opEl.classList.remove('hidden');
+                        }
+                        document.getElementById('course-discount-price').innerText = `${Number(c.discount_price).toLocaleString()} đ`;
                     }
                     
                     if (c.num_lessons) {
@@ -666,8 +668,12 @@
                                     <div class="p-5">
                                         <h3 class="text-sm font-black text-slate-800 mb-2 hover:text-[#e97b9b] cursor-pointer" onclick="window.location.href='course-details.html?id=${d.id}'">${rc.title || 'Đang cập nhật'}</h3>
                                         <p class="text-xs text-slate-500 mb-4 line-clamp-2">${rc.description || ''}</p>
-                                        <div class="text-right border-t border-slate-100 pt-3">
-                                            <span class="text-[#e97b9b] font-bold border border-[#e97b9b] rounded px-3 py-1.5 text-xs">${rc.discount_price ? Number(rc.discount_price).toLocaleString() + ' đ' : 'Miễn phí'}</span>
+                                        <div class="text-center border-t border-slate-100 pt-3">
+                                            ${!rc.discount_price ? `
+                                                <span class="text-[#e97b9b] font-black text-xs">Miễn phí</span>
+                                            ` : `
+                                                <span class="text-[#e97b9b] font-bold border border-[#e97b9b] rounded px-3 py-1.5 text-xs">${Number(rc.discount_price).toLocaleString()} đ</span>
+                                            `}
                                         </div>
                                     </div>
                                 </div>`;

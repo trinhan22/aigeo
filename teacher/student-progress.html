@@ -498,7 +498,7 @@
                     const dateStr = String(today.getDate()).padStart(2, '0') + '_' + String(today.getMonth() + 1).padStart(2, '0') + '_' + today.getFullYear();
                     downloadLink.download = `list-student_${classData.className}_${dateStr}.xlsx`;
                 }
-                document.getElementById('class-subtitle').textContent = `Khối ${classData.grade} • ${subjectName}`;
+                document.getElementById('class-subtitle').textContent = classData.grade ? `Khối ${classData.grade} • ${subjectName}` : `AIGEO • Khóa học`;
                 // ---------------------------------------------
 
                 const studentIds = classData.students || [];

@@ -308,13 +308,17 @@
                     tr.innerHTML = `
                         <td class="font-black text-slate-800">${c.className}</td>
                         <td class="text-sm font-bold text-slate-500">${subject ? subject.name : 'Địa lí'}</td>
-                        <td class="text-sm font-black text-teal-600 uppercase tracking-tighter">Lớp ${c.grade}</td>
+                        <td class="text-sm font-black text-teal-600 uppercase tracking-tighter">
+                            ${c.grade ? `Lớp ${c.grade}` : `Khóa học`}
+                        </td>
                         <td>
+                            ${c.grade ? `
                             <div class="flex items-center gap-2">
                                 <span class="code-badge">${c.classCode}</span>
                                 <button data-action="copy-code" data-code="${c.classCode}" class="p-1.5 text-slate-400 hover:text-teal-600 transition"><i data-feather="copy" class="w-4"></i></button>
                                 <button data-action="share-link" data-code="${c.classCode}" class="p-1.5 text-slate-400 hover:text-teal-600 transition"><i data-feather="link" class="w-4"></i></button>
                             </div>
+                            ` : `<span class="text-xs text-slate-400 italic">Tự động (Khóa học)</span>`}
                         </td>
                         <td class="text-sm font-bold text-slate-500">${c.students ? c.students.length : 0} HS</td>
                         <td class="text-right">
