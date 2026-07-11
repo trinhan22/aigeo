@@ -392,11 +392,15 @@
                 classroomsGrid.innerHTML = classrooms.map(c => {
                     const subject = subjects.find(s => s.id === c.subjectId);
                     const teacher = teachers.find(t => t.id === c.teacherId);
+                    const gradeBadge = c.grade
+                        ? `<span class="text-[10px] font-black text-slate-400 bg-slate-50 px-2 py-1 rounded italic uppercase">Khối ${c.grade}</span>`
+                        : `<span class="text-[10px] font-black text-teal-600 bg-teal-50 px-2 py-1 rounded italic uppercase">Khóa học</span>`;
+
                     return `
                         <div class="class-card">
                             <div class="flex justify-between items-start mb-6">
                                 <span class="subject-badge">${subject ? subject.name : 'Địa lý'}</span>
-                                <span class="text-[10px] font-black text-slate-400 bg-slate-50 px-2 py-1 rounded italic uppercase">Khối ${c.grade}</span>
+                                ${gradeBadge}
                             </div>
                             <h3 class="text-xl font-black text-slate-800 leading-tight mb-2">${c.className}</h3>
                             <p class="text-xs font-bold text-slate-400 flex items-center gap-2 mb-8">

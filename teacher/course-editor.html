@@ -138,9 +138,12 @@
                                         </div>
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-bold text-slate-700 mb-1">Chọn Tags</label>
+                                        <label class="block text-sm font-bold text-slate-700 mb-1">Quản lý Tags</label>
+                                        <div class="flex gap-2 mb-2">
+                                            <input type="text" id="new-tag-input" class="flex-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 transition" placeholder="Tạo tag mới...">
+                                            <button onclick="createNewTag()" type="button" class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition font-bold text-sm">Thêm</button>
+                                        </div>
                                         <div id="tags-container" class="flex flex-wrap gap-2 border border-gray-300 rounded-lg p-3 min-h-[50px] bg-gray-50">
-                                            <!-- Tags will be loaded here as checkboxes -->
                                             <span class="text-gray-400 text-sm">Đang tải tags...</span>
                                         </div>
                                     </div>
@@ -233,7 +236,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, collection, getDocs, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, getDocs, addDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         let imgbbKeys = [];
         let auth, db;
@@ -392,11 +395,19 @@
                 const tagsContainer = document.getElementById('tags-container');
                 tagsContainer.innerHTML = availableTags.map(t => {
                     const isChecked = (currentCourse.tags || []).includes(t.name) ? 'checked' : '';
-                    return `<label class="flex items-center gap-1 bg-white border border-gray-200 px-3 py-1 rounded-full cursor-pointer hover:bg-gray-50 transition">
-                        <input type="checkbox" value="${t.name}" class="tag-checkbox text-teal-600 focus:ring-teal-500 rounded" ${isChecked}>
-                        <span class="text-sm text-slate-700">${t.name}</span>
-                    </label>`;
-                }).join('') || '<span class="text-gray-400 text-sm">Chưa có tag nào trong hệ thống. Hãy tạo ở Quản lý Tags.</span>';
+                    return `
+                        <div class="flex items-center gap-1 bg-white border border-gray-200 pl-3 pr-2 py-1 rounded-full shadow-sm hover:border-teal-500 transition group relative">
+                            <label class="flex items-center cursor-pointer gap-2">
+                                <input type="checkbox" value="${t.name}" class="tag-checkbox text-teal-600 focus:ring-teal-500 rounded" ${isChecked}>
+                                <span class="text-sm text-slate-700 mr-1">${t.name}</span>
+                            </label>
+                            <button type="button" onclick="deleteSystemTag('${t.id}')" class="text-red-400 hover:text-red-600 p-0.5 ml-1 opacity-50 hover:opacity-100 transition" title="Xóa tag này">
+                                <i data-feather="x" class="w-3 h-3"></i>
+                            </button>
+                        </div>
+                    `;
+                }).join('') || '<span class="text-gray-400 text-sm">Chưa có tag nào trong hệ thống.</span>';
+                if (typeof feather !== 'undefined') feather.replace();
 
                 renderCurriculum();
                 renderInstructors();
