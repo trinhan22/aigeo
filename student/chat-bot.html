@@ -250,7 +250,7 @@
             <!-- Input Area -->
             <div class="chat-input-area">
                 <div class="input-pill">
-                    <textarea id="chat-input" rows="1" placeholder="Hỏi tôi bất cứ điều gì về Địa lý..."></textarea>
+                    <textarea id="chat-input" rows="1" placeholder="Hỏi tôi bất cứ điều gì về Địa lí..."></textarea>
                     <button id="send-btn" class="send-btn" disabled>
                         <i data-feather="arrow-up" class="w-5"></i>
                     </button>
@@ -405,7 +405,7 @@
                     document.getElementById('view-feedback-close-btn').onclick = () => viewFeedbackModal.classList.replace('flex', 'hidden');
 
                     if (chatHistory.length === 0) {
-                        addMessage("Chào bạn, tôi là trợ lý AI của AIGEO. Tôi có thể giúp gì cho bạn về Địa lý?", "assistant");
+                        addMessage("Chào bạn, tôi là trợ lý AI của AIGEO. Tôi có thể giúp gì cho bạn về Địa lí?", "assistant");
                     }
                 }
             });
@@ -521,7 +521,7 @@
                 const messagesToSend = [
                     { 
                         role: "system", 
-                        content: "Bạn là một trợ lý AI chuyên gia về Địa lý cho AIGEO. Nhiệm vụ duy nhất của bạn là trả lời các câu hỏi liên quan đến Địa lý. Nếu học sinh hỏi về chủ đề khác (như toán, văn, lịch sử, hay các chủ đề chung), hãy từ chối một cách lịch sự. Ví dụ: 'Xin lỗi, tôi chỉ có thể hỗ trợ các câu hỏi liên quan đến Địa lý.' Luôn trả lời bằng tiếng Việt và sử dụng KaTeX cho công thức toán nếu cần." 
+                        content: "Bạn là một trợ lý AI chuyên gia về Địa lí cho AIGEO. Nhiệm vụ duy nhất của bạn là trả lời các câu hỏi liên quan đến Địa lí. Nếu học sinh hỏi về chủ đề khác (như toán, văn, lịch sử, hay các chủ đề chung), hãy từ chối một cách lịch sự. Ví dụ: 'Xin lỗi, tôi chỉ có thể hỗ trợ các câu hỏi liên quan đến Địa lí.' Luôn trả lời bằng tiếng Việt và sử dụng KaTeX cho công thức toán nếu cần." 
                     },
                     ...history 
                 ];
@@ -584,7 +584,7 @@
                         chatMessages.innerHTML = ''; // Clear display
                         
                         // Gui tin nhan chao mung moi
-                        addMessage("Chào bạn, tôi là trợ lý AI của AIGEO. Tôi chỉ có thể trả lời các câu hỏi liên quan đến Địa lý. Tôi có thể giúp gì cho bạn?", "assistant");
+                        addMessage("Chào bạn, tôi là trợ lý AI của AIGEO. Tôi chỉ có thể trả lời các câu hỏi liên quan đến Địa lí. Tôi có thể giúp gì cho bạn?", "assistant");
                         
                         setChatInputDisabled(false);
                     } catch (error) {

@@ -370,7 +370,7 @@
                 
                 const prompt = isDetailed 
                     ? `Giải thích chi tiết 3 câu sai tiêu biểu từ bài làm đạt ${score}/${total} điểm. Các chủ đề sai: ${topics.map(t=>t.name).join(', ')}.`
-                    : `Nhận xét ân cần về bài làm ${score}/${total} điểm Địa lý 12. Khen câu đúng và nhắc ôn lại các bài: ${topics.map(t=>t.name).join(', ')}.`;
+                    : `Nhận xét ân cần về bài làm ${score}/${total} điểm Địa lí 12. Khen câu đúng và nhắc ôn lại các bài: ${topics.map(t=>t.name).join(', ')}.`;
 
                 try {
                     const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -379,7 +379,7 @@
                         body: JSON.stringify({
                             model: "llama-3.3-70b-versatile",
                             messages: [
-                                { role: "system", content: "Bạn là Giáo viên Địa lý tâm lý của AIGEO. Xưng Mình, gọi Bạn. Trình bày bằng thẻ HTML <p>, <strong>. Ngắn gọn (3-5 câu)." },
+                                { role: "system", content: "Bạn là Giáo viên Địa lí tâm lý của AIGEO. Xưng Mình, gọi Bạn. Trình bày bằng thẻ HTML <p>, <strong>. Ngắn gọn (3-5 câu)." },
                                 { role: "user", content: prompt }
                             ]
                         })

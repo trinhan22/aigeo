@@ -293,7 +293,7 @@
                     // Chọn một API Key ngẫu nhiên từ mảng để chia tải
                     const apiKey = groqKeys[Math.floor(Math.random() * groqKeys.length)];
 
-                    const prompt = `Học sinh đạt ${data.score}/${data.totalQuestions} điểm môn Địa lý. Các chủ đề bị sai: ${topics.map(t=>t.name).join(', ')}. Dựa trên kết quả này, hãy đưa ra nhận xét ngắn gọn, khích lệ và chỉ ra hướng cải thiện kiến thức.`;
+                    const prompt = `Học sinh đạt ${data.score}/${data.totalQuestions} điểm môn Địa lí. Các chủ đề bị sai: ${topics.map(t=>t.name).join(', ')}. Dựa trên kết quả này, hãy đưa ra nhận xét ngắn gọn, khích lệ và chỉ ra hướng cải thiện kiến thức.`;
 
                     // THAY ĐỔI: Sử dụng Endpoint và Model của Groq
                     const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
