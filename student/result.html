@@ -377,7 +377,7 @@
                         method: "POST",
                         headers: { "Authorization": `Bearer ${groqKeys[0]}`, "Content-Type": "application/json" },
                         body: JSON.stringify({
-                            model: "llama-3.3-70b-versatile",
+                            model: "openai/gpt-oss-120b",
                             messages: [
                                 { role: "system", content: "Bạn là Giáo viên Địa lí tâm lý của AIGEO. Xưng Mình, gọi Bạn. Trình bày bằng thẻ HTML <p>, <strong>. Ngắn gọn (3-5 câu)." },
                                 { role: "user", content: prompt }
