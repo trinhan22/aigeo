@@ -366,8 +366,12 @@
                 const groqKeys = keys?.groq_keys || [];
                 if (!groqKeys.length) return;
                 
+                // [TỐI ƯU UX]: Hiện hiệu ứng Loading trong lúc đợi AI phản hồi để web không bị đơ
                 aiFeedbackEl.innerHTML = '<div class="flex items-center gap-3 py-4 text-slate-400 font-bold text-xs animate-pulse"><i class="fas fa-spinner fa-spin"></i> ĐANG PHÂN TÍCH BÀI LÀM...</div>';
                 
+                // [TIỀN XỬ LÝ DỮ LIỆU - DATA PREPROCESSING]: 
+                // Tự động phân tích điểm số và lấy ra tên các bài học bị sai để "mớm" cho AI phân tích.
+                // Sử dụng chiến thuật Lazy Loading (isDetailed) để tiết kiệm Token: Chỉ gọi prompt dài khi bấm nút.
                 const prompt = isDetailed 
                     ? `Giải thích chi tiết 3 câu sai tiêu biểu từ bài làm đạt ${score}/${total} điểm. Các chủ đề sai: ${topics.map(t=>t.name).join(', ')}.`
                     : `Nhận xét ân cần về bài làm ${score}/${total} điểm Địa lí 12. Khen câu đúng và nhắc ôn lại các bài: ${topics.map(t=>t.name).join(', ')}.`;
@@ -379,12 +383,16 @@
                         body: JSON.stringify({
                             model: "openai/gpt-oss-120b",
                             messages: [
+                                // [PROMPT ENGINEERING NÂNG CAO CHO GIAO DIỆN]:
+                                // Ép AI trả về thẳng thẻ HTML (<p>, <strong>) để sau khi nhận dữ liệu có thể render (hiển thị) ngay lập tức siêu đẹp.
                                 { role: "system", content: "Bạn là Giáo viên Địa lí tâm lý của AIGEO. Xưng Mình, gọi Bạn. Trình bày bằng thẻ HTML <p>, <strong>. Ngắn gọn (3-5 câu)." },
                                 { role: "user", content: prompt }
                             ]
                         })
                     });
                     const data = await res.json();
+                    
+                    // [HIỂN THỊ DỮ LIỆU]: Tiêm thẳng code HTML từ AI vào giao diện web an toàn.
                     aiFeedbackEl.innerHTML = data.choices[0].message.content;
                 } catch (e) { aiFeedbackEl.innerHTML = "<p>Mình đã xem qua bài làm, bạn hãy xem lại chi tiết các câu sai bên dưới nhé!</p>"; }
             }

@@ -396,10 +396,15 @@
                 startTestBtn.onclick = () => startTest(true);
                 submitBtn.onclick = () => handleSubmit(false);
 
+                // [HỆ THỐNG GIÁM SÁT CHỐNG GIAN LẬN]
                 if (testData.isMonitored !== false) { 
+                    // 1. Phát hiện thoát toàn màn hình (Học sinh thu nhỏ trình duyệt để tra Google)
                     document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && isTestStarted) handleCheating('Thoát toàn màn hình'); });
+                    // 2. Phát hiện chuyển Tab/Ứng dụng (Trình duyệt bị mất focus, học sinh đang chat Zalo/Mess)
                     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && isTestStarted) handleCheating('Chuyển Tab/Ứng dụng'); });
+                    // 3. Khóa chuột phải để chống inspect/xem source
                     document.body.oncontextmenu = (e) => e.preventDefault();
+                    // 4. Khóa copy/paste để chống việc copy câu hỏi ném lên ChatGPT
                     const antiCopy = (e) => { if (isTestStarted) { e.preventDefault(); handleCheating('Sao chép/Dán'); } };
                     ['copy','cut','paste'].forEach(ev => document.addEventListener(ev, antiCopy));
                 }
@@ -476,15 +481,21 @@
                 isTestStarted = false; clearInterval(timerInterval); clearInterval(sessionInterval);
                 submitBtn.disabled = true; submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
+                // [HỆ THỐNG CHẤM ĐIỂM TỰ ĐỘNG - AUTO GRADING]
                 let score = 0;
                 questions.forEach(q => {
                     const ans = userAnswers[q.id];
                     let correct = false;
+                    
+                    // Phân loại logic chấm điểm theo Định dạng đề thi 2025 của Bộ GD&ĐT
                     if (q.type === 'multiple_choice' && ans) {
+                        // Chấm điểm Trắc nghiệm 4 đáp án
                         if (q.shuffledOptions.find((o, i) => String.fromCharCode(65+i) === ans)?.original === q.correctAnswer) correct = true;
                     } else if (q.type === 'short_answer') {
+                        // Chấm điểm Câu hỏi ngắn (Tự luận): Chuyển thành chữ thường và xóa khoảng trắng thừa để so sánh chuỗi
                         if (String(ans||"").trim().toLowerCase() === String(q.correctAnswer).trim().toLowerCase()) correct = true;
                     } else if (q.type === 'true_false' || q.type === 'true_false_group') {
+                        // Chấm điểm Trắc nghiệm Đúng/Sai mới: Phải đúng cả 4 mệnh đề mới tính điểm câu đó (hoặc tùy cấu hình)
                         const stmts = q.statements || [];
                         const answers = q.answers || {};
                         correct = Array.isArray(stmts) ? stmts.every((s, i) => (ans?.[i]) === s.answer) : Object.keys(stmts).every(k => ans?.[k] === (answers[k] ?? q.statements[k]?.answer));

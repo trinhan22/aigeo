@@ -517,7 +517,9 @@
                 const MAX_RETRIES = 3;
                 let lastError = null;
 
-                // Thiết lập Prompt hệ thống cho Học sinh
+                // [GIAI ĐOẠN 1]: Bơm "Linh hồn" cho AI (Kỹ nghệ câu lệnh - Prompt Engineering)
+                // - Đưa System Prompt ẩn vào mảng đầu tiên để ép AI nhập vai chuyên gia Địa lí.
+                // - Trộn kèm lịch sử chat (...history) để AI hiểu ngữ cảnh trò chuyện như người thật.
                 const messagesToSend = [
                     { 
                         role: "system", 
@@ -526,26 +528,30 @@
                     ...history 
                 ];
 
+                // [GIAI ĐOẠN 2]: Thuật toán chống sập (Retry & Load Balancing)
+                // - Lặp tối đa 3 lần. Nếu lỗi sẽ tự động đổi API Key khác (getNextApiKey)
                 for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
                     const apiKey = getNextApiKey();
                     if (!apiKey) break;
 
-                    // Endpoint chính thức của Groq
+                    // Endpoint chính thức giao tiếp qua API
                     const API_URL = "https://api.groq.com/openai/v1/chat/completions";
                     
                     try {
+                        // [GIAI ĐOẠN 3]: Đóng gói & Gửi luồng dữ liệu (Fetch API)
                         const response = await fetch(API_URL, {
-                            method: 'POST',
+                            method: 'POST', // Dùng phương thức POST để bảo mật dữ liệu
                             headers: {
-                                'Authorization': `Bearer ${apiKey}`,
+                                'Authorization': `Bearer ${apiKey}`, // Kẹp khóa bảo mật (Dynamic Config)
                                 'Content-Type': 'application/json'
                             },
                             body: JSON.stringify({
-                                // Model Llama 3.3 70B cực mạnh của Groq
+                                // - model: Tên Mô hình Ngôn ngữ lớn (LLM)
                                 model: "openai/gpt-oss-120b",
                                 messages: messagesToSend,
+                                // - temperature: Hạ xuống 0.6 để chống Ảo giác (Hallucination), ép AI nói thật, không bịa đặt.
                                 temperature: 0.6,
-                                max_tokens: 4096 // Tăng giới hạn phản hồi cho học sinh
+                                max_tokens: 4096 // Tăng giới hạn độ dài câu trả lời
                             })
                         });
 

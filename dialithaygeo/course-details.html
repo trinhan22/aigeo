@@ -520,7 +520,7 @@
                     
                     if (!c.discount_price) {
                         document.getElementById('course-original-price').classList.add('hidden');
-                        document.getElementById('course-discount-price').innerText = 'Miễn phí';
+                        document.getElementById('course-discount-price').innerText = 'Liên hệ';
                         document.getElementById('course-discount-price').classList.remove('text-teal-600');
                         document.getElementById('course-discount-price').classList.add('text-[#e97b9b]');
                     } else {
@@ -670,7 +670,7 @@
                                         <p class="text-xs text-slate-500 mb-4 line-clamp-2">${rc.description || ''}</p>
                                         <div class="text-center border-t border-slate-100 pt-3">
                                             ${!rc.discount_price ? `
-                                                <span class="text-[#e97b9b] font-black text-xs">Miễn phí</span>
+                                                <span class="text-[#e97b9b] font-black text-xs">Liên hệ</span>
                                             ` : `
                                                 <span class="text-[#e97b9b] font-bold border border-[#e97b9b] rounded px-3 py-1.5 text-xs">${Number(rc.discount_price).toLocaleString()} đ</span>
                                             `}
